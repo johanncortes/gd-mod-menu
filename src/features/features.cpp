@@ -51,6 +51,12 @@ PatchFeature g_practiceMusicSync("Practice music sync", "practice_music_sync", s
 // "mov al,1; ret" al inicio de las dos comprobaciones
 PatchFeature g_unlockIcons("Unlock icons", "unlock_icons",
                            {{sig::kIsIconUnlocked, 0, {0xB0, 0x01, 0xC3}}, {sig::kIsColorUnlocked, 0, {0xB0, 0x01, 0xC3}}});
+// Los campos de texto dejan de recortar al llegar al máximo de letras
+PatchFeature g_textLimit("Character limit bypass", "character_limit",
+                         {{sig::kTextLimitPaste, sig::kTextLimitPasteJump, {0x90, 0xE9}},
+                          {sig::kTextLimitType, sig::kTextLimitTypeJump, {0xEB}}});
+// Los campos de texto aceptan cualquier carácter
+PatchFeature g_textFilter("Character filter bypass", "character_filter", sig::kTextFilter, sig::kTextFilterJump, {0xEB});
 
 // --- Creator ---
 // ret al inicio de la función que devuelve la cámara del editor a los límites del nivel
@@ -100,7 +106,10 @@ void loadConfig() {
         g_startPosSwitcher.load(section(level, "startpos_switcher"));
         g_practiceMusicSync.load(level);
 
-        g_unlockIcons.load(section(data, "bypass"));
+        const nlohmann::json bypass = section(data, "bypass");
+        g_unlockIcons.load(bypass);
+        g_textLimit.load(bypass);
+        g_textFilter.load(bypass);
 
         const nlohmann::json creator = section(data, "creator");
         g_freeScroll.load(creator);
@@ -132,7 +141,10 @@ void saveConfig() {
     g_startPosSwitcher.save(level["startpos_switcher"]);
     g_practiceMusicSync.save(level);
 
-    g_unlockIcons.save(data["bypass"]);
+    nlohmann::json& bypass = data["bypass"];
+    g_unlockIcons.save(bypass);
+    g_textLimit.save(bypass);
+    g_textFilter.save(bypass);
 
     nlohmann::json& creator = data["creator"];
     g_freeScroll.save(creator);
@@ -157,6 +169,8 @@ void init() {
     g_noRespawnFlash.init();
     g_practiceMusicSync.init();
     g_unlockIcons.init();
+    g_textLimit.init();
+    g_textFilter.init();
     g_freeScroll.init();
     g_levelCopy.init();
     g_customObjects.init();
@@ -187,6 +201,8 @@ void shutdown() {
     g_startPosSwitcher.disable();
     g_practiceMusicSync.disable();
     g_unlockIcons.disable();
+    g_textLimit.disable();
+    g_textFilter.disable();
     g_freeScroll.disable();
     g_levelCopy.disable();
     g_customObjects.disable();
@@ -224,7 +240,10 @@ void drawLevel() {
 }
 
 void drawBypass() {
-    if (g_unlockIcons.drawUI()) markDirty();
+    bool changed = g_unlockIcons.drawUI();
+    changed |= g_textLimit.drawUI();
+    changed |= g_textFilter.drawUI();
+    if (changed) markDirty();
 }
 
 void drawCreator() {

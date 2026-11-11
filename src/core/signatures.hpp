@@ -165,4 +165,20 @@ inline constexpr char kCustomObjectCount[] =
     "48 8B 89 ?? ?? ?? ?? FF 15 ?? ?? ?? ?? 3D C8 00 00 00 0F 82 ?? ?? ?? ?? BA C8 00 00 00 48 8D 0D ?? ?? ?? ??";
 inline constexpr int kCustomObjectCountJump = 18;
 
+// CCTextInputNode::onTextFieldInsertText: los dos sitios donde se aplica m_maxLabelLength.
+// 1) al pegar texto: "if (max > 0) recortar"  -> el `jle` pasa a `jmp` (90 E9)
+// 2) al escribir: "if (letras >= max && max > 0) no insertar" -> el `jl` pasa a `jmp` (EB)
+inline constexpr char kTextLimitPaste[] =
+    "41 8B BD ?? ?? ?? ?? 85 FF 0F 8E ?? ?? ?? ?? 4C 8D 4C 24 38 4C 8B 64 24 38 4C 8B 7C 24 50 49 83 FF 0F";
+inline constexpr int kTextLimitPasteJump = 9;
+inline constexpr char kTextLimitType[] =
+    "41 8B 85 ?? ?? ?? ?? 41 8B 97 ?? ?? ?? ?? 3B D0 7C 08 85 C0 0F 8F ?? ?? ?? ?? 41 8B 8D ?? ?? ?? ??";
+inline constexpr int kTextLimitTypeJump = 16;
+
+// Filtro de caracteres de los campos de texto (función que usa onTextFieldInsertText):
+// "if (permitidos está vacío) aceptar la letra". El `je` pasa a `jmp` y se acepta siempre.
+inline constexpr char kTextFilter[] =
+    "0F B6 2E 4D 85 ED 74 42 45 84 E4 74 06 40 80 FD 0A 74 37 49 8B FE 49 83 7E 18 0F 76 03 49 8B 3E 49 8B 46 10";
+inline constexpr int kTextFilterJump = 6;
+
 } // namespace core::signatures

@@ -9,15 +9,15 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 
 | Ventana | Opción | Estado |
 | --- | --- | --- |
-| Global | Speedhack (con opción de acelerar el audio) | Hecho, falta probar en el juego |
-| Global | FPS bypass | Hecho, falta probar en el juego |
-| Global | Physics bypass (TPS) | Hecho, falta probar en el juego |
-| Player | Noclip con contador de muertes y precisión | Hecho, falta probar en el juego |
-| Player | Mostrar hitboxes | Hecho, falta probar en el juego |
-| Player | Sin efecto de muerte / sin parpadeo al reaparecer | Hecho, falta probar en el juego |
-| Player | Respawn delay | Hecho, falta probar en el juego |
+| Global | Speedhack (con opción de acelerar el audio), FPS bypass, Physics bypass (TPS) | Probado |
+| Player | Noclip con contador de muertes y precisión, mostrar hitboxes | Probado |
+| Player | Sin efecto de muerte, sin parpadeo al reaparecer, respawn delay | Probado |
 | Player | Show trajectory | Pendiente |
-| Level, Bypass, Creator, Labels, Shortcuts, Interface, Bot | — | Pendiente (ver [PLAN.md](PLAN.md)) |
+| Level | Auto practice mode, practice music sync, hide pause menu | Hecho, falta probar en el juego |
+| Level | StartPos switcher (Q = anterior, E = siguiente) | Hecho, falta probar en el juego |
+| Bypass | Unlock icons, character limit bypass, character filter bypass | Hecho, falta probar en el juego |
+| Creator | Free scroll, level copy bypass, custom object bypass | Hecho, falta probar en el juego |
+| Labels, Shortcuts, Interface, Bot | — | Pendiente (ver [PLAN.md](PLAN.md)) |
 
 Las opciones se guardan en `config.json`, junto a la DLL.
 

@@ -50,6 +50,9 @@ int main(int argc, char** argv) {
         {"kCloneButton", sig::kCloneButton},
         {"kCustomObjectSize", sig::kCustomObjectSize},
         {"kCustomObjectCount", sig::kCustomObjectCount},
+        {"kTextLimitPaste", sig::kTextLimitPaste},
+        {"kTextLimitType", sig::kTextLimitType},
+        {"kTextFilter", sig::kTextFilter},
     };
 
     int failed = 0;

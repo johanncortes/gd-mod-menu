@@ -20,6 +20,23 @@
 | PlayerObject::playerDestroyed(bool): salto al efecto de muerte | GeometryDash.exe | `80 BB ?? ?? ?? ?? 00 74 20 40 84 FF 75 1B 40 38 BB ?? ?? ?? ?? 75 12 48 8B CB 48 8B 5C 24 30 48 83 C4 20 5F E9` (parche en +7) | build Steam 26002420 (exe 2026-10-16) | `kDeathEffect`, 0x1404F6099 (función en 0x1404F5FF0). Parche `74` -> `EB`: nunca salta a playDeathEffect (0x1404DD160) (fase 3) |
 | PlayerObject: parpadeo al reaparecer (CCBlink) | GeometryDash.exe | inicio de función, ver `kSpawnEffect` | build Steam 26002420 (exe 2026-10-16) | 0x1404F5710. La llama resetLevel para cada jugador. Parche: `C3` (ret) en el primer byte (fase 3) |
 | CCDelayTime::create | libcocos2d.dll | export `?create@CCDelayTime@cocos2d@@SAPEAV12@M@Z` | — | hook del respawn delay: cambia la duración solo si la dirección de retorno está dentro de destroyPlayer (fase 3) |
+| PlayLayer::toggleMusicInPractice: valor de m_practiceMusicSync | GeometryDash.exe | ver `kPracticeMusicSync` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1405114AF (función en 0x1405113B0). Parche en +31: el `mov byte [m_practiceMusicSync],0` pasa a 1 (fase 4) |
+| PlayLayer::setupHasCompleted() | GeometryDash.exe | inicio de función, ver `kSetupHasCompleted` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140504710. Hook del auto practice: después llama a togglePracticeMode(true) (fase 4) |
+| PlayLayer::togglePracticeMode(bool) | GeometryDash.exe | inicio de función, ver `kTogglePracticeMode` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140519FF0. Solo se llama, no se hookea (fase 4) |
+| PauseLayer::customSetup() | GeometryDash.exe | inicio de función, ver `kPauseLayerSetup` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404D68E0. Hook: tras construir el menú de pausa lo oculta (fase 4) |
+| GJBaseGameLayer::getStartPosObjectsForCurrentMode() | GeometryDash.exe | inicio de función, ver `kStartPosObjects` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1403190F0. Devuelve un CCArray autorelease con los StartPos válidos. Solo se llama (fase 4) |
+| PauseLayer::onResume: tramo final (switchToStartPosObject en línea) | GeometryDash.exe | ver `kSwitchStartPos` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404DAD4C. No se parchea: de la firma se leen el global de GameManager (0x14090BFD0), m_playLayer (+0x230), m_startPosObject (+0x3270), el byte de test mode (+0x3328), los slots 0x5B0 (resetLevel) y 0x430, y las direcciones de resetLevelFromStart (0x140518A50), updateCamera (0x140345C60), updateTestModeLabel (0x140505ED0) y startMusic (0x14051AED0) (fase 4) |
+| GameManager::isIconUnlocked(int, IconType) | GeometryDash.exe | inicio de función, ver `kIsIconUnlocked` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1402773D0. Parche `B0 01 C3` (mov al,1; ret) (fase 4) |
+| GameManager::isColorUnlocked(int, UnlockType) | GeometryDash.exe | inicio de función, ver `kIsColorUnlocked` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1402777A0. Parche `B0 01 C3` (fase 4) |
+| EditorUI::constrainGameLayerPosition(float, float) | GeometryDash.exe | inicio de función, ver `kConstrainGameLayer` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1401BF010. Parche `C3` (ret): free scroll (fase 4) |
+| LevelInfoLayer::tryCloneLevel | GeometryDash.exe | inicio de función, ver `kTryCloneLevel` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140422680. Parche en +0x33: `75 1A` -> `90 90`, copia sin pedir contraseña (fase 4) |
+| LevelInfoLayer::init: visibilidad del botón de copiar | GeometryDash.exe | ver `kCloneButton` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14041DABF. Parche en +26: `0F 95 C2` (setne dl) -> `B2 01 90` (fase 4) |
+| EditorUI::onNewCustomItem: límite de 1000 objetos seleccionados | GeometryDash.exe | ver `kCustomObjectSize` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1401F5AC1. Parche en +27: `0F 86` -> `90 E9` (fase 4) |
+| EditorUI::onNewCustomItem: límite de 200 objetos guardados | GeometryDash.exe | ver `kCustomObjectCount` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1401F5C61. Parche en +18: `0F 82` -> `90 E9` (fase 4) |
+| CCTextInputNode::onTextFieldInsertText: recorte al pegar | GeometryDash.exe | ver `kTextLimitPaste` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14005751E (función en 0x1400571F0). Parche en +9: `0F 8E` -> `90 E9` (fase 4) |
+| CCTextInputNode::onTextFieldInsertText: máximo al escribir | GeometryDash.exe | ver `kTextLimitType` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1400578A0. Parche en +16: `7C` -> `EB` (fase 4) |
+| Filtro de caracteres de los campos de texto | GeometryDash.exe | ver `kTextFilter` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1400540F1 (función en 0x140053E20). Parche en +6: `74` -> `EB`, acepta cualquier carácter (fase 4) |
+| CCNode::setVisible; CCArray::count, objectAtIndex; CCObject::retain, release | libcocos2d.dll | exports por nombre | — | hide pause menu y StartPos switcher (fase 4) |
 
 ## Notas de ingeniería inversa
 
@@ -38,3 +55,17 @@
 - **RTTI**: el exe conserva RTTI de MSVC (`.?AVPlayLayer@@`, vtable en 0x1407D59B8). Sirve para identificar funciones
   virtuales a partir del vtable cuando no hay cadenas de texto cerca.
 - **Comprobar firmas sin abrir el juego**: `build/Release/sigcheck.exe "<ruta>/GeometryDash.exe"`.
+- **Bindings de Geode**: el exe del build 26002420 es GD **2.2091**. El repositorio público
+  `geode-sdk/bindings` (`bindings/2.2091/GeometryDash.bro`) trae nombre y dirección `win` de casi todas las
+  funciones y coincide con este exe (comprobado con destroyPlayer y resetLevel). Sirve para saber *dónde* mirar;
+  en el código siguen yendo firmas, nunca esas direcciones.
+- **StartPos (2.2091)**: el juego ya trae selector de StartPos en el menú de pausa (`PauseLayer::onChangeStartpos`,
+  `getQueuedStartPos`). Al reanudar hace `switchToStartPosObject`: si es el mismo, `resetLevel()`; si no, cambia
+  `m_startPosObject` (retain/release), pone el byte de test mode, `resetLevelFromStart()`, virtual 0x430 con 0.0,
+  `updateCamera(0.0)`, `updateTestModeLabel()` y siempre `startMusic()`.
+- **Práctica (2.2091)**: `m_isPracticeMode` en PlayLayer+0x32E0 y `m_practiceMusicSync` en +0x32E1.
+  `setupHasCompleted` llama a `resetLevel()` y programa `startGame` con un CCDelayTime.
+- **Copiar nivel**: la contraseña del nivel es `[level+0x41C] - [level+0x420]` (valor con semilla): 0 = no se puede
+  copiar, 1 = copia libre, otro = pide contraseña.
+- **Campos de texto**: `onTextFieldInsertText` recibe el puntero al sub-objeto delegado (this+0x1A0); desde ahí
+  `m_maxLabelLength` está en +0xC0.
