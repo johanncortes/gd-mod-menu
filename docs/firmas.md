@@ -45,6 +45,8 @@
 | UILayer::onDeleteCheck(CCObject*) | GeometryDash.exe | función entera, ver `kUiOnDeleteCheck` | 2.2091, build Steam 26002420 | 0x1406730D0. Botón de quitar checkpoint: llama a `PlayLayer::removeCheckpoint(false)`. Solo se llama (fase 6) |
 | GJBaseGameLayer::processCommands(float, bool, bool) | GeometryDash.exe | inicio de función, ver `kProcessCommands` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140342870. Hook del bot (un paso de física). De la firma se lee en +17 el offset del contador de ticks, `m_gameState.m_commandIndex` (+0x3E0) (fase 7) |
 | GJBaseGameLayer::handleButton(bool, int, bool) | GeometryDash.exe | inicio de función, ver `kHandleButton` | 2.2091, build Steam 26002420 | 0x14033C5B0. Hook del bot: aquí se graban los inputs y con el original se reproducen (fase 7) |
+| PlayLayer::playEndAnimationToPos(CCPoint) | GeometryDash.exe | inicio de función, ver `kPlayEndAnimation` | 2.2091, build Steam 26002420 | 0x14050A2A0. Reproduce la animación de fin de nivel hacia una posición (fase 8) |
+| CCNode::setPosition | libcocos2d.dll | export `?setPosition@CCNode@cocos2d@@UEAAXAEBVCCPoint@2@@Z` | — | teletransporta al jugador a la meta en Instant complete (fase 8) |
 
 ## Notas de ingeniería inversa
 

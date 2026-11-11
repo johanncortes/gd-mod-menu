@@ -14,6 +14,7 @@
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
+#include "gui/menu.hpp"
 #include "gui/widgets.hpp"
 
 namespace features {
@@ -25,14 +26,6 @@ namespace sig = core::signatures;
 using PercentFn = float (*)(void* playLayer);
 PercentFn g_currentPercent = nullptr; // PlayLayer::getCurrentPercent
 int32_t g_attemptsOffset = 0;         // PlayLayer::m_attempts, leído de kUpdateAttempts
-
-// Una línea con sombra; avanza `y` para la siguiente
-void line(ImDrawList* draw, float& y, ImU32 color, const char* text) {
-    const ImVec2 pos(8.f, y);
-    draw->AddText({pos.x + 1.f, pos.y + 1.f}, IM_COL32(0, 0, 0, 200), text);
-    draw->AddText(pos, color, text);
-    y += ImGui::GetFontSize() + 2.f;
-}
 
 } // namespace
 
@@ -49,6 +42,7 @@ void Labels::init(bool gameAvailable) {
 
 bool Labels::drawUI() {
     bool changed = gui::toggle("Show labels", true, m_show);
+    changed |= gui::toggle("Fondo semitransparente", true, m_showBackground);
     changed |= gui::toggle("Cheat indicator", true, m_showCheat);
     changed |= gui::toggle("FPS", true, m_showFps);
     changed |= gui::toggle("CPS", true, m_showCps);
@@ -56,6 +50,17 @@ bool Labels::drawUI() {
     changed |= gui::toggle("Attempt", m_levelInfo, m_showAttempt);
     changed |= gui::toggle("Level time", m_time, m_showTime);
     changed |= gui::toggle("Clock", true, m_showClock);
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::TextDisabled("Posición: (%.0f, %.0f)", m_posX, m_posY);
+    ImGui::TextDisabled("Abre el menú con Tab para arrastrar los labels.");
+    if (gui::button("Restablecer posición", true)) {
+        m_posX = 10.f;
+        m_posY = 10.f;
+        m_resetPos = true;
+        changed = true;
+    }
     return changed;
 }
 
@@ -64,47 +69,114 @@ void Labels::drawOverlay(bool cheatsActive) {
     void* playLayer = core::game::playLayer();
     if (!m_show || !playLayer) return;
 
-    ImDrawList* draw = ImGui::GetForegroundDrawList();
-    const ImU32 white = IM_COL32(255, 255, 255, 255);
-    float y = 8.f;
-    char text[64];
+    const bool menuOpen = gui::isMenuOpen();
+    if (m_resetPos) {
+        ImGui::SetNextWindowPos(ImVec2(m_posX, m_posY), ImGuiCond_Always);
+        m_resetPos = false;
+    } else {
+        ImGui::SetNextWindowPos(ImVec2(m_posX, m_posY), ImGuiCond_FirstUseEver);
+    }
 
-    if (m_showCheat) {
-        // Punto verde = partida limpia, rojo = hay alguna trampa activa
-        const float radius = ImGui::GetFontSize() * 0.3f;
-        draw->AddCircleFilled({8.f + radius, y + ImGui::GetFontSize() * 0.5f}, radius,
-                              cheatsActive ? IM_COL32(255, 60, 60, 255) : IM_COL32(60, 220, 60, 255));
-        y += ImGui::GetFontSize() + 2.f;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_AlwaysAutoResize |
+                             ImGuiWindowFlags_NoSavedSettings |
+                             ImGuiWindowFlags_NoFocusOnAppearing |
+                             ImGuiWindowFlags_NoNav;
+
+    if (!menuOpen) {
+        flags |= ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoDecoration;
+        if (!m_showBackground) {
+            flags |= ImGuiWindowFlags_NoBackground;
+        }
+    } else {
+        flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse;
     }
-    if (m_showFps) {
-        snprintf(text, sizeof(text), "%.0f FPS", ImGui::GetIO().Framerate);
-        line(draw, y, white, text);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.f, 6.f));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, (menuOpen || m_showBackground) ? 1.0f : 0.0f);
+
+    if (m_showBackground || menuOpen) {
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.06f, 0.07f, 0.09f, menuOpen ? 0.85f : 0.60f));
+        ImGui::PushStyleColor(ImGuiCol_Border, menuOpen ? ImVec4(0.35f, 0.65f, 1.0f, 0.80f) : ImVec4(0.20f, 0.22f, 0.28f, 0.50f));
     }
-    if (m_showCps) {
-        snprintf(text, sizeof(text), "%d CPS", core::input::clicksPerSecond());
-        line(draw, y, core::input::jumpHeld() ? IM_COL32(120, 255, 120, 255) : white, text);
+
+    if (ImGui::Begin("##labels_hud", nullptr, flags)) {
+        if (menuOpen) {
+            const ImVec2 currentPos = ImGui::GetWindowPos();
+            if (currentPos.x != m_posX || currentPos.y != m_posY) {
+                m_posX = currentPos.x;
+                m_posY = currentPos.y;
+                m_posChanged = true;
+            }
+            ImGui::TextDisabled("Labels [Arrastra para mover]");
+            ImGui::Separator();
+        }
+
+        ImDrawList* draw = ImGui::GetWindowDrawList();
+        const ImU32 white = IM_COL32(255, 255, 255, 255);
+        const float fontSize = ImGui::GetFontSize();
+
+        auto drawLabelLine = [&](const char* text, ImU32 color) {
+            if (!m_showBackground && !menuOpen) {
+                const ImVec2 p = ImGui::GetCursorScreenPos();
+                const ImU32 shadow = IM_COL32(0, 0, 0, 220);
+                draw->AddText({p.x - 1.f, p.y}, shadow, text);
+                draw->AddText({p.x + 1.f, p.y}, shadow, text);
+                draw->AddText({p.x, p.y - 1.f}, shadow, text);
+                draw->AddText({p.x, p.y + 1.f}, shadow, text);
+                draw->AddText(p, color, text);
+                ImGui::Dummy(ImVec2(ImGui::CalcTextSize(text).x, fontSize));
+            } else {
+                ImGui::TextColored(ImColor(color), "%s", text);
+            }
+        };
+
+        if (m_showCheat) {
+            const ImVec2 p = ImGui::GetCursorScreenPos();
+            const float radius = fontSize * 0.35f;
+            const ImVec2 center = {p.x + radius + 1.f, p.y + fontSize * 0.5f};
+            draw->AddCircleFilled(center, radius + 1.2f, IM_COL32(0, 0, 0, 200));
+            draw->AddCircleFilled(center, radius, cheatsActive ? IM_COL32(255, 65, 65, 255) : IM_COL32(60, 220, 60, 255));
+            ImGui::Dummy(ImVec2(radius * 2.f + 4.f, fontSize));
+        }
+
+        char text[64];
+        if (m_showFps) {
+            snprintf(text, sizeof(text), "%.0f FPS", ImGui::GetIO().Framerate);
+            drawLabelLine(text, white);
+        }
+        if (m_showCps) {
+            snprintf(text, sizeof(text), "%d CPS", core::input::clicksPerSecond());
+            drawLabelLine(text, core::input::jumpHeld() ? IM_COL32(120, 255, 120, 255) : white);
+        }
+        if (m_showPercent && m_levelInfo) {
+            snprintf(text, sizeof(text), "%.2f%%", g_currentPercent(playLayer));
+            drawLabelLine(text, white);
+        }
+        if (m_showAttempt && m_levelInfo) {
+            int32_t attempts = 0;
+            memcpy(&attempts, static_cast<const uint8_t*>(playLayer) + g_attemptsOffset, 4);
+            snprintf(text, sizeof(text), "Attempt %d", attempts);
+            drawLabelLine(text, white);
+        }
+        if (m_showTime && m_time) {
+            const double seconds = core::game::attemptTime();
+            snprintf(text, sizeof(text), "%02d:%05.2f", static_cast<int>(seconds) / 60, seconds - 60 * (static_cast<int>(seconds) / 60));
+            drawLabelLine(text, white);
+        }
+        if (m_showClock) {
+            SYSTEMTIME now;
+            GetLocalTime(&now);
+            snprintf(text, sizeof(text), "%02d:%02d:%02d", now.wHour, now.wMinute, now.wSecond);
+            drawLabelLine(text, white);
+        }
     }
-    if (m_showPercent && m_levelInfo) {
-        snprintf(text, sizeof(text), "%.2f%%", g_currentPercent(playLayer));
-        line(draw, y, white, text);
+    ImGui::End();
+
+    if (m_showBackground || menuOpen) {
+        ImGui::PopStyleColor(2);
     }
-    if (m_showAttempt && m_levelInfo) {
-        int32_t attempts;
-        memcpy(&attempts, static_cast<const uint8_t*>(playLayer) + g_attemptsOffset, 4);
-        snprintf(text, sizeof(text), "Attempt %d", attempts);
-        line(draw, y, white, text);
-    }
-    if (m_showTime && m_time) {
-        const double seconds = core::game::attemptTime();
-        snprintf(text, sizeof(text), "%02d:%05.2f", static_cast<int>(seconds) / 60, seconds - 60 * (static_cast<int>(seconds) / 60));
-        line(draw, y, white, text);
-    }
-    if (m_showClock) {
-        SYSTEMTIME now;
-        GetLocalTime(&now);
-        snprintf(text, sizeof(text), "%02d:%02d:%02d", now.wHour, now.wMinute, now.wSecond);
-        line(draw, y, white, text);
-    }
+    ImGui::PopStyleVar(3);
 }
 
 void Labels::load(const nlohmann::json& j) {
@@ -116,12 +188,22 @@ void Labels::load(const nlohmann::json& j) {
     m_showAttempt = j.value("attempt", m_showAttempt);
     m_showTime = j.value("level_time", m_showTime);
     m_showClock = j.value("clock", m_showClock);
+    m_showBackground = j.value("background", m_showBackground);
+    m_posX = j.value("pos_x", m_posX);
+    m_posY = j.value("pos_y", m_posY);
 }
 
 void Labels::save(nlohmann::json& j) const {
     j = {{"show", m_show},           {"cheat_indicator", m_showCheat}, {"fps", m_showFps},
          {"cps", m_showCps},         {"percentage", m_showPercent},    {"attempt", m_showAttempt},
-         {"level_time", m_showTime}, {"clock", m_showClock}};
+         {"level_time", m_showTime}, {"clock", m_showClock},           {"background", m_showBackground},
+         {"pos_x", m_posX},          {"pos_y", m_posY}};
+}
+
+bool Labels::takePositionChanged() {
+    const bool changed = m_posChanged;
+    m_posChanged = false;
+    return changed;
 }
 
 } // namespace features

@@ -51,28 +51,68 @@ void applyStyle() {
     switch (g_theme) {
     case 1: ImGui::StyleColorsLight(); break;
     case 2: ImGui::StyleColorsClassic(); break;
-    default: ImGui::StyleColorsDark(); break;
+    default: {
+        // Tema oscuro moderno estilo Mega Hack: grafito elegante con bordes y contraste limpios
+        ImGui::StyleColorsDark();
+        ImVec4* c = style.Colors;
+        c[ImGuiCol_WindowBg]             = ImVec4(0.09f, 0.09f, 0.11f, 0.95f);
+        c[ImGuiCol_ChildBg]              = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+        c[ImGuiCol_PopupBg]              = ImVec4(0.10f, 0.11f, 0.14f, 0.96f);
+        c[ImGuiCol_Border]               = ImVec4(0.20f, 0.22f, 0.28f, 0.65f);
+        c[ImGuiCol_BorderShadow]         = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+        c[ImGuiCol_FrameBg]              = ImVec4(0.14f, 0.15f, 0.18f, 0.85f);
+        c[ImGuiCol_TitleBg]              = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+        c[ImGuiCol_TitleBgActive]        = ImVec4(0.11f, 0.12f, 0.16f, 1.00f);
+        c[ImGuiCol_TitleBgCollapsed]     = ImVec4(0.07f, 0.07f, 0.09f, 0.75f);
+        c[ImGuiCol_MenuBarBg]            = ImVec4(0.10f, 0.10f, 0.13f, 1.00f);
+        c[ImGuiCol_ScrollbarBg]          = ImVec4(0.07f, 0.07f, 0.09f, 0.50f);
+        c[ImGuiCol_ScrollbarGrab]        = ImVec4(0.22f, 0.24f, 0.30f, 0.80f);
+        c[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.30f, 0.33f, 0.40f, 0.90f);
+        c[ImGuiCol_ScrollbarGrabActive]  = ImVec4(0.38f, 0.42f, 0.50f, 1.00f);
+        c[ImGuiCol_Separator]            = ImVec4(0.20f, 0.22f, 0.28f, 0.50f);
+        break;
     }
-    style.WindowRounding = 4.f;
-    style.FrameRounding = 3.f;
+    }
+
+    // Geometría y bordes pulidos
+    style.WindowRounding    = 6.f;
+    style.ChildRounding     = 4.f;
+    style.FrameRounding     = 4.f;
+    style.PopupRounding     = 6.f;
+    style.ScrollbarRounding = 9.f;
+    style.GrabRounding      = 4.f;
+    style.TabRounding       = 4.f;
+
+    style.WindowBorderSize  = 1.0f;
+    style.FrameBorderSize   = 0.5f;
+    style.PopupBorderSize   = 1.0f;
+
+    style.WindowPadding     = ImVec2(10.f, 10.f);
+    style.FramePadding      = ImVec2(6.f, 4.f);
+    style.ItemSpacing       = ImVec2(8.f, 6.f);
+    style.ItemInnerSpacing  = ImVec2(6.f, 4.f);
+    style.ScrollbarSize     = 12.f;
+    style.WindowTitleAlign  = ImVec2(0.0f, 0.5f);
 
     // El color de acento sustituye al azul de los elementos activos
     const auto accent = [](float alpha) { return ImVec4(g_accent[0], g_accent[1], g_accent[2], alpha); };
     ImVec4* colors = style.Colors;
     colors[ImGuiCol_CheckMark] = accent(1.f);
-    colors[ImGuiCol_SliderGrab] = accent(0.8f);
+    colors[ImGuiCol_SliderGrab] = accent(0.85f);
     colors[ImGuiCol_SliderGrabActive] = accent(1.f);
-    colors[ImGuiCol_Button] = accent(0.4f);
-    colors[ImGuiCol_ButtonHovered] = accent(0.8f);
-    colors[ImGuiCol_ButtonActive] = accent(1.f);
-    colors[ImGuiCol_Header] = accent(0.3f);
-    colors[ImGuiCol_HeaderHovered] = accent(0.7f);
-    colors[ImGuiCol_HeaderActive] = accent(1.f);
+    colors[ImGuiCol_Button] = accent(0.40f);
+    colors[ImGuiCol_ButtonHovered] = accent(0.75f);
+    colors[ImGuiCol_ButtonActive] = accent(0.95f);
+    colors[ImGuiCol_Header] = accent(0.30f);
+    colors[ImGuiCol_HeaderHovered] = accent(0.65f);
+    colors[ImGuiCol_HeaderActive] = accent(0.85f);
     colors[ImGuiCol_FrameBgHovered] = accent(0.35f);
-    colors[ImGuiCol_FrameBgActive] = accent(0.6f);
-    colors[ImGuiCol_TitleBgActive] = accent(0.75f);
-    colors[ImGuiCol_ResizeGrip] = accent(0.2f);
-    colors[ImGuiCol_ResizeGripHovered] = accent(0.7f);
+    colors[ImGuiCol_FrameBgActive] = accent(0.60f);
+    colors[ImGuiCol_TitleBgActive] = accent(0.70f);
+    colors[ImGuiCol_SeparatorHovered] = accent(0.70f);
+    colors[ImGuiCol_SeparatorActive] = accent(1.00f);
+    colors[ImGuiCol_ResizeGrip] = accent(0.25f);
+    colors[ImGuiCol_ResizeGripHovered] = accent(0.75f);
     colors[ImGuiCol_ResizeGripActive] = accent(1.f);
     colors[ImGuiCol_TextSelectedBg] = accent(0.35f);
 

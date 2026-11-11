@@ -10,6 +10,7 @@ public:
     void init(bool gameAvailable); // gameAvailable: core::game::init() funcionó
     bool drawUI();                 // true si el usuario cambió algo
     void drawOverlay(bool cheatsActive);
+    bool takePositionChanged();
 
     void load(const nlohmann::json& j);
     void save(nlohmann::json& j) const;
@@ -26,6 +27,12 @@ private:
     bool m_showAttempt = false;
     bool m_showTime = false;
     bool m_showClock = false;
+    bool m_showBackground = false;
+
+    float m_posX = 10.f;
+    float m_posY = 10.f;
+    bool m_resetPos = false;
+    bool m_posChanged = false;
 };
 
 } // namespace features

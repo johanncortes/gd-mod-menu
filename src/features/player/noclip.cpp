@@ -153,7 +153,11 @@ void Noclip::drawOverlay() {
              100.0 * (g_frames - g_hitFrames) / g_frames);
     ImDrawList* draw = ImGui::GetForegroundDrawList();
     const ImVec2 pos(8.f, ImGui::GetIO().DisplaySize.y - ImGui::GetFontSize() - 8.f);
-    draw->AddText({pos.x + 1.f, pos.y + 1.f}, IM_COL32(0, 0, 0, 200), text); // sombra
+    const ImU32 shadow = IM_COL32(0, 0, 0, 220);
+    draw->AddText({pos.x - 1.f, pos.y}, shadow, text);
+    draw->AddText({pos.x + 1.f, pos.y}, shadow, text);
+    draw->AddText({pos.x, pos.y - 1.f}, shadow, text);
+    draw->AddText({pos.x, pos.y + 1.f}, shadow, text);
     draw->AddText(pos, g_hitLastFrame ? IM_COL32(255, 90, 90, 255) : IM_COL32(255, 255, 255, 255), text);
 }
 

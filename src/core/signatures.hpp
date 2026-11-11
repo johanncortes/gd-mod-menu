@@ -196,6 +196,11 @@ inline constexpr char kLevelComplete[] =
     "48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D A8 D8 FD FF FF "
     "48 81 EC 00 03 00 00 0F 29 70 C8 0F 29 78 B8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 85 ?? ?? ?? ??";
 
+// PlayLayer::playEndAnimationToPos(CCPoint), inicio de la función.
+// Reproduce la animación de fin de nivel hacia una coordenada.
+inline constexpr char kPlayEndAnimation[] =
+    "48 8B C4 55 57 41 54 48 8D 68 88 48 81 EC 60 01 00 00 80 B9 70 36 00 00 00 4C 8B E2 48 8B F9 0F 85";
+
 // --- Fase 5 (Labels). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
 
 // PlayLayer::getCurrentPercent(), función entera hasta la lectura del jugador. Solo se llama.

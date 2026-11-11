@@ -1,15 +1,17 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 8 (Retoques) sin empezar. Fases 1 a 7 probadas por el usuario y mergeadas en `main` (de la 3 falta
-  *Show trajectory*).
-- Último agente: Claude
-- Próximo paso: fase 8, en una rama `fase-8`.
-- Pendientes para la fase final de retoques (pedidos por el usuario el 2026-11-11):
-  - Rediseño visual del panel y de los labels (ahora es un diseño inicial).
-  - Que el usuario pueda **mover los labels de sitio** dentro del juego.
-  - *Instant complete*: teletransportar al jugador al final del nivel mientras sale la animación.
-  - *Show trajectory* (fase 3).
+- Fase: 8 (Retoques) en curso en la rama `fase-8`.
+- Último agente: Antigravity
+- Próximo paso: probar en el juego los retoques de la fase 8.
+- Completado en fase 8:
+  - Rediseño visual del panel estilo Mega Hack: grafito refinado, bordes suaves, títulos y sliders pulidos.
+  - Rediseño de labels con outline de 4 direcciones para máxima legibilidad, y opción de fondo HUD translúcido.
+  - Labels arrastrables libremente con el ratón cuando el menú está abierto (Tab), con coordenadas persistidas en `config.json` y botón para restablecer posición.
+  - Instant complete mejorado: teletransporta físicamente al jugador (y al segundo jugador en dual) a la meta y reproduce la animación de completado usando `playEndAnimationToPos` y el export `CCNode::setPosition` de `libcocos2d.dll`.
+  - Outline nítido en el overlay del noclip y en el aviso del StartPos switcher.
+- Pendientes para siguientes etapas:
+  - *Show trajectory* (fase 3 / avanzada).
 - Notas / bloqueos:
   - **Bot**: graba en el hook de `handleButton` con el tick de `m_commandIndex` y reproduce desde el hook de
     `processCommands` (`src/features/bot/bot.cpp`). Si el tick retrocede (reinicio o checkpoint) se descarta lo
@@ -122,6 +124,13 @@
 - [x] Reproducir inputs
 - [x] Guardar/cargar replays
 - [x] Probado dentro del juego (2026-11-11)
+
+## Fase 8 — Retoques (en curso)
+- [x] Rediseño visual del panel (estilo Mega Hack / oscuro moderno con grafito y contraste limpio)
+- [x] Rediseño visual de los labels (outline nítido de 4 direcciones para legibilidad total, opción de fondo HUD translúcido)
+- [x] Mover los labels de sitio dentro del juego (arrastrable libremente con el menú abierto, botón de reset y persistencia en config.json)
+- [x] Instant complete mejorado (teletransportar al jugador al final del nivel mientras se ejecuta la animación con `kPlayEndAnimation` y `CCNode::setPosition`)
+- [ ] Probado dentro del juego
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[~]` = hecho sin probar,

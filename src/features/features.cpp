@@ -302,7 +302,7 @@ void drawCreator() {
 }
 
 void drawLabels() {
-    if (g_labels.drawUI()) markDirty();
+    if (g_labels.drawUI() || g_labels.takePositionChanged()) markDirty();
 }
 
 void drawBot() {

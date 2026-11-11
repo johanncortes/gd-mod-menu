@@ -197,7 +197,11 @@ void StartPosSwitcher::drawOverlay() {
     const ImVec2 size = ImGui::CalcTextSize(text);
     const ImVec2 pos{viewport->Pos.x + (viewport->Size.x - size.x) * 0.5f, viewport->Pos.y + viewport->Size.y - size.y - 12.f};
     ImDrawList* draw = ImGui::GetForegroundDrawList();
-    draw->AddText({pos.x + 1.f, pos.y + 1.f}, IM_COL32(0, 0, 0, 200), text);
+    const ImU32 shadow = IM_COL32(0, 0, 0, 220);
+    draw->AddText({pos.x - 1.f, pos.y}, shadow, text);
+    draw->AddText({pos.x + 1.f, pos.y}, shadow, text);
+    draw->AddText({pos.x, pos.y - 1.f}, shadow, text);
+    draw->AddText({pos.x, pos.y + 1.f}, shadow, text);
     draw->AddText(pos, IM_COL32(255, 255, 255, 255), text);
 }
 
