@@ -55,6 +55,8 @@ int main(int argc, char** argv) {
         {"kTextFilter", sig::kTextFilter},
         {"kVerify", sig::kVerify},
         {"kLevelComplete", sig::kLevelComplete},
+        {"kCurrentPercent", sig::kCurrentPercent},
+        {"kUpdateAttempts", sig::kUpdateAttempts},
     };
 
     int failed = 0;

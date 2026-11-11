@@ -47,6 +47,25 @@ struct HeldState {
 HeldState g_window; // camino 1: mensajes de ventana (hilo principal)
 HeldState g_raw;    // camino 2: raw input (hilo de input del juego)
 
+// --- Contador de clics (label de CPS). Lo escribe el hilo de raw input y lo lee el de render ---
+constexpr size_t kClickHistory = 64;
+std::atomic<ULONGLONG> g_clickTimes[kClickHistory];
+std::atomic<size_t> g_clickNext{0};
+std::atomic<int> g_jumpsHeld{0};
+
+void jumpPressed() {
+    g_clickTimes[g_clickNext++ % kClickHistory] = GetTickCount64();
+    ++g_jumpsHeld;
+}
+
+void jumpReleased() {
+    if (--g_jumpsHeld < 0) g_jumpsHeld = 0;
+}
+
+bool isJumpKey(size_t vk) {
+    return vk == VK_SPACE || vk == VK_UP || vk == 'W';
+}
+
 using GetRawInputDataFn = UINT(WINAPI*)(HRAWINPUT, UINT, LPVOID, PUINT, UINT);
 GetRawInputDataFn g_origGetRawInputData = nullptr;
 
@@ -57,8 +76,14 @@ void filterRawMouse(RAWMOUSE& mouse) {
         // RI_MOUSE_BUTTON_n_DOWN / _UP son pares de bits consecutivos
         const USHORT down = static_cast<USHORT>(1 << (2 * b));
         const USHORT up = static_cast<USHORT>(down << 1);
-        if ((flags & down) && g_raw.buttonDown(b)) flags &= ~down;
-        if ((flags & up) && g_raw.buttonUp(b)) flags &= ~up;
+        if (flags & down) {
+            if (g_raw.buttonDown(b)) flags &= ~down;
+            else if (b == 0) jumpPressed();
+        }
+        if (flags & up) {
+            if (g_raw.buttonUp(b)) flags &= ~up;
+            else if (b == 0) jumpReleased();
+        }
     }
     const USHORT wheel = RI_MOUSE_WHEEL | RI_MOUSE_HWHEEL;
     if ((flags & wheel) && g_wantMouse) {
@@ -70,11 +95,16 @@ void filterRawMouse(RAWMOUSE& mouse) {
 void filterRawKeyboard(RAWKEYBOARD& kb) {
     const size_t vk = kb.VKey & 0xFF;
     const bool isUp = kb.Flags & RI_KEY_BREAK;
+    const bool repeat = !isUp && g_raw.keysDown[vk]; // auto-repetición de una tecla mantenida
+    const bool wasDown = g_raw.keysDown[vk];
     if (isUp ? g_raw.keyUp(vk) : g_raw.keyDown(vk)) {
         // No se puede quitar el evento: se convierte en "ninguna tecla"
         kb.VKey = 0xFF;
         kb.MakeCode = 0;
         kb.Message = WM_NULL;
+    } else if (isJumpKey(vk)) {
+        if (!isUp && !repeat) jumpPressed();
+        else if (isUp && wasDown) jumpReleased();
     }
 }
 
@@ -129,6 +159,18 @@ bool swallowWindowMessage(UINT msg, WPARAM wp, LPARAM) {
         return false;
     }
 }
+
+int clicksPerSecond() {
+    const ULONGLONG now = GetTickCount64();
+    int count = 0;
+    for (const auto& time : g_clickTimes) {
+        const ULONGLONG t = time;
+        if (t != 0 && now - t < 1000) ++count;
+    }
+    return count;
+}
+
+bool jumpHeld() { return g_jumpsHeld > 0; }
 
 bool installRawInputHook() {
     HMODULE user32 = GetModuleHandleW(L"user32.dll");

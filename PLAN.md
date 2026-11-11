@@ -1,11 +1,19 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 5 (Labels) en curso, rama `fase-5`. Fases 1 a 4 probadas por el usuario (de la 3 falta *Show trajectory*).
+- Fase: 5 (Labels) con código completo, **pendiente de probar en el juego**, rama `fase-5`. Fases 1 a 4 probadas
+  por el usuario (de la 3 falta *Show trajectory*).
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: terminar y probar la fase 5. Después: fase 6. Pendientes sueltos: *Show trajectory* y que
+- Próximo paso: que el usuario pruebe la fase 5. Después: merge de `fase-5` a `main` y fase 6. Pendientes sueltos: *Show trajectory* y que
   *Instant complete* teletransporte al jugador al final del nivel mientras sale la animación (idea del usuario).
 - Notas / bloqueos:
+  - **Fase 5 sin ejecutar en el juego.** Los labels salen arriba a la izquierda y solo dentro de un nivel. El tiempo
+    es la suma de los `dt` de `GJBaseGameLayer::update` desde el último `resetLevel` (no el contador interno del
+    juego). El CPS cuenta clic izquierdo, Espacio, Flecha arriba y W en el hook de raw input. Faltan de la lista
+    final: Best Run, Run From, Testmode, labels personalizados, presets y "Show in editor".
+  - **Hooks de nivel compartidos**: `PlayLayer::resetLevel` y `GJBaseGameLayer::update` se hookean una sola vez en
+    `src/core/game.cpp`; las features se apuntan con `core::game::onResetLevel` / `onUpdate` (MinHook no admite dos
+    hooks sobre la misma función). `core::game::playLayer()` da el nivel actual.
   - **Verify bypass e Instant complete**: el usuario pidió hacerlos (2026-11-11) aunque rozan la regla de
     `AGENTS.md` sobre servidores; su argumento es que el anti-trampas del propio juego ya se ocupa. Por eso *Instant
     complete* solo llama a `PlayLayer::levelComplete()` y **no** toca el anti-trampas del juego. No añadir bypass de
@@ -84,8 +92,9 @@
 - [x] Probado dentro del juego (2026-11-11)
 
 ## Fase 5 — Labels
-- [ ] FPS, CPS, porcentaje, intentos, tiempo, reloj
-- [ ] Cheat indicator, noclip accuracy
+- [x] FPS, CPS, porcentaje, intentos, tiempo, reloj
+- [x] Cheat indicator, noclip accuracy
+- [ ] Probado dentro del juego
 
 ## Fase 6 — Interface y Shortcuts
 - [ ] Temas, color de acento, escala, fuente
@@ -133,9 +142,9 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [`] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [ ] Slider Limit ·
 [ ] Smooth Editor Trail · [`] Verify Bypass (*)
 
-**Labels**: [ ] Show Labels · [ ] Show in Editor · [ ] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
-[ ] Presets · [ ] FPS · [ ] Testmode · [ ] Run From · [ ] Attempt · [ ] Percentage · [ ] Level Time · [ ] Best Run ·
-[ ] Clock · [ ] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
+**Labels**: [`] Show Labels · [ ] Show in Editor · [`] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
+[ ] Presets · [`] FPS · [ ] Testmode · [ ] Run From · [`] Attempt · [`] Percentage · [`] Level Time · [ ] Best Run ·
+[`] Clock · [`] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
 
 **Shortcuts**: [`] StartPos switcher (no sale en la captura, se mantiene) · [ ] P1 Jump · [ ] P2 Jump · [ ] Show Options · [ ] Uncomplete Level · [ ] Restart Level ·
 [ ] Toggle Practice Mode · [ ] Place Checkpoint · [ ] Remove Checkpoint · [ ] Inject DLL · [ ] Save Folder ·

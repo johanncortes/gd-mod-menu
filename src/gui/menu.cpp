@@ -25,7 +25,7 @@ const Window kWindows[] = {
     {"Player", features::drawPlayer},
     {"Bot", nullptr},
     {"Creator", features::drawCreator},
-    {"Labels", nullptr},
+    {"Labels", features::drawLabels},
     {"Shortcuts", nullptr},
     {"Interface", nullptr},
 };

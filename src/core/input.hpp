@@ -17,4 +17,9 @@ bool swallowWindowMessage(UINT msg, WPARAM wp, LPARAM lp);
 // Si falla, el menú funciona igual pero los clics sobre el panel también llegan al juego.
 bool installRawInputHook();
 
+// Para el label de CPS: pulsaciones de salto (clic izquierdo, Espacio, Flecha arriba, W)
+// que llegaron al juego en el último segundo, y si alguna sigue pulsada.
+int clicksPerSecond();
+bool jumpHeld();
+
 } // namespace core::input
