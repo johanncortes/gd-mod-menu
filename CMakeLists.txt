@@ -58,7 +58,14 @@ add_library(gdmenu SHARED
     src/core/log.cpp
     src/core/hooks.cpp
     src/core/input.cpp
-    src/gui/menu.cpp)
+    src/core/memory.cpp
+    src/config/config.cpp
+    src/gui/menu.cpp
+    src/gui/widgets.cpp
+    src/features/features.cpp
+    src/features/global/speedhack.cpp
+    src/features/global/fps_bypass.cpp
+    src/features/global/tps_bypass.cpp)
 target_include_directories(gdmenu PRIVATE src)
 target_link_libraries(gdmenu PRIVATE minhook imgui nlohmann_json::nlohmann_json opengl32)
 target_compile_definitions(gdmenu PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE

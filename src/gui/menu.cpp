@@ -5,6 +5,7 @@
 #include <imgui.h>
 
 #include "core/log.hpp"
+#include "features/features.hpp"
 
 namespace gui {
 
@@ -13,9 +14,20 @@ namespace {
 bool g_open = false;
 
 // Una ventana por categoría; se irán llenando en las fases siguientes
-const char* const kWindows[] = {
-    "Global", "Level", "Bypass", "Player", "Bot",
-    "Creator", "Labels", "Shortcuts", "Interface",
+struct Window {
+    const char* name;
+    void (*draw)(); // nullptr = todavía sin contenido
+};
+const Window kWindows[] = {
+    {"Global", features::drawGlobal},
+    {"Level", nullptr},
+    {"Bypass", nullptr},
+    {"Player", nullptr},
+    {"Bot", nullptr},
+    {"Creator", nullptr},
+    {"Labels", nullptr},
+    {"Shortcuts", nullptr},
+    {"Interface", nullptr},
 };
 
 // El juego oculta el cursor durante un nivel; en ese caso ImGui dibuja el suyo
@@ -37,16 +49,18 @@ void draw() {
     ImGui::GetIO().MouseDrawCursor = g_open && osCursorHidden();
     if (!g_open) return;
 
-    // Posición inicial: rejilla de 5 columnas
-    const float w = 180.f, h = 140.f, gap = 10.f;
+    // Posición inicial: rejilla de 5 columnas; el alto se ajusta al contenido
+    const float w = 250.f, h = 200.f, gap = 10.f;
     int i = 0;
-    for (const char* name : kWindows) {
+    for (const Window& window : kWindows) {
         const float x = gap + (i % 5) * (w + gap);
         const float y = gap + (i / 5) * (h + gap);
         ImGui::SetNextWindowPos({x, y}, ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize({w, h}, ImGuiCond_FirstUseEver);
-        if (ImGui::Begin(name))
-            ImGui::TextDisabled("(vacío)");
+        ImGui::SetNextWindowSize({w, 0.f}, ImGuiCond_FirstUseEver);
+        if (ImGui::Begin(window.name)) {
+            if (window.draw) window.draw();
+            else ImGui::TextDisabled("(vacío)");
+        }
         ImGui::End();
         ++i;
     }

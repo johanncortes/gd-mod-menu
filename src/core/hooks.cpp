@@ -13,6 +13,7 @@
 
 #include "core/input.hpp"
 #include "core/log.hpp"
+#include "features/features.hpp"
 #include "gui/menu.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
@@ -91,6 +92,7 @@ void shutdownBackends() {
 BOOL WINAPI swapBuffersHook(HDC hdc) {
     if (g_unloadRequested) {
         if (!g_renderDown) {
+            features::shutdown(); // deshace parches y restaura valores, en el hilo del juego
             if (g_imguiReady) shutdownBackends();
             if (ImGui::GetCurrentContext()) ImGui::DestroyContext();
             g_renderDown = true;
@@ -103,12 +105,14 @@ BOOL WINAPI swapBuffersHook(HDC hdc) {
     if (hwnd && hwnd != g_hwnd) {
         if (g_imguiReady) shutdownBackends();
         initImGui(hwnd);
+        features::init(); // solo actúa la primera vez
     }
 
     if (g_imguiReady) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
+        features::update();
         gui::draw();
         ImGui::Render();
         const ImGuiIO& io = ImGui::GetIO();

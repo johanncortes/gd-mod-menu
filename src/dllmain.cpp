@@ -1,5 +1,6 @@
 #include <windows.h>
 
+#include "config/config.hpp"
 #include "core/hooks.hpp"
 #include "core/log.hpp"
 
@@ -14,6 +15,7 @@ DWORD WINAPI startThread(LPVOID param) {
     core::logInit(self, false);
 #endif
     core::logMsg("DLL cargada");
+    config::init(self);
 
     if (!core::hooks::install()) {
         // Sin hooks no hay menú, pero el juego sigue funcionando normal

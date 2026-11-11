@@ -30,10 +30,10 @@
 - [x] Probado dentro del juego
 
 ## Fase 2 — Global (cocos2d, estables)
-- [ ] Speedhack (hook `CCScheduler::update`)
-- [ ] FPS bypass
-- [ ] Physics bypass (TPS)
-- [ ] Guardar/cargar config.json
+- [x] Speedhack (hook `CCScheduler::update`)
+- [x] FPS bypass
+- [x] Physics bypass (TPS)
+- [x] Guardar/cargar config.json
 
 ## Fase 3 — Player
 - [ ] Noclip (+ contador de muertes y precisión)
