@@ -37,6 +37,19 @@ int main(int argc, char** argv) {
         {"kUpdateHitboxVisibility", sig::kUpdateHitboxVisibility},
         {"kDeathEffect", sig::kDeathEffect},
         {"kSpawnEffect", sig::kSpawnEffect},
+        {"kPracticeMusicSync", sig::kPracticeMusicSync},
+        {"kSetupHasCompleted", sig::kSetupHasCompleted},
+        {"kTogglePracticeMode", sig::kTogglePracticeMode},
+        {"kPauseLayerSetup", sig::kPauseLayerSetup},
+        {"kStartPosObjects", sig::kStartPosObjects},
+        {"kSwitchStartPos", sig::kSwitchStartPos},
+        {"kIsIconUnlocked", sig::kIsIconUnlocked},
+        {"kIsColorUnlocked", sig::kIsColorUnlocked},
+        {"kConstrainGameLayer", sig::kConstrainGameLayer},
+        {"kTryCloneLevel", sig::kTryCloneLevel},
+        {"kCloneButton", sig::kCloneButton},
+        {"kCustomObjectSize", sig::kCustomObjectSize},
+        {"kCustomObjectCount", sig::kCustomObjectCount},
     };
 
     int failed = 0;

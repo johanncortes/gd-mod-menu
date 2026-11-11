@@ -9,32 +9,44 @@
 
 namespace features {
 
+PatchFeature::PatchFeature(const char* label, const char* key, std::vector<PatchSite> sites, bool cheat)
+    : m_label(label), m_key(key), m_sites(std::move(sites)), m_cheat(cheat) {}
+
 PatchFeature::PatchFeature(const char* label, const char* key, const char* signature, int offset,
                            std::vector<uint8_t> bytes)
-    : m_label(label), m_key(key), m_signature(signature), m_offset(offset), m_bytes(std::move(bytes)) {}
+    : PatchFeature(label, key, {{signature, offset, std::move(bytes)}}) {}
 
 void PatchFeature::init() {
-    uint8_t* site = core::memory::findPattern(GetModuleHandleW(nullptr), m_signature);
-    if (!site) {
-        core::logMsg("%s: no disponible (firma no encontrada)", m_label);
-        return;
+    // Solo queda disponible si aparecen todas las firmas
+    HMODULE exe = GetModuleHandleW(nullptr);
+    for (const PatchSite& site : m_sites) {
+        uint8_t* match = core::memory::findPattern(exe, site.signature);
+        if (!match) {
+            core::logMsg("%s: no disponible (firma %zu de %zu no encontrada)", m_label, m_patches.size() + 1,
+                         m_sites.size());
+            m_patches.clear();
+            return;
+        }
+        m_patches.emplace_back().set(match + site.offset, site.bytes);
     }
-    m_patch.set(site + m_offset, m_bytes);
     m_available = true;
-    core::logMsg("%s: listo (firma en %p)", m_label, static_cast<void*>(site));
+    core::logMsg("%s: listo", m_label);
 }
 
 void PatchFeature::enable() {
     m_enabled = true;
-    if (m_available && !m_patch.apply()) {
-        m_enabled = false;
+    if (!m_available) return;
+    for (core::memory::Patch& patch : m_patches) {
+        if (patch.apply()) continue;
         core::logMsg("%s: no se pudo aplicar el parche", m_label);
+        disable();
+        return;
     }
 }
 
 void PatchFeature::disable() {
     m_enabled = false;
-    m_patch.revert();
+    for (core::memory::Patch& patch : m_patches) patch.revert();
 }
 
 bool PatchFeature::drawUI() {

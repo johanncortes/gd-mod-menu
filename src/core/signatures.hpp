@@ -75,4 +75,94 @@ inline constexpr char kSpawnEffect[] =
     "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 30 0F 29 74 24 20 48 8B F1 80 B9 ?? ?? ?? ?? 00 "
     "0F 85 ?? ?? ?? ?? BA 0B 00 00 00 FF 15 ?? ?? ?? ?? BA 04 00 00 00 F3 0F 10 05";
 
+// --- Fase 4 (Level / Bypass / Creator). Todas: GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// PlayLayer::toggleMusicInPractice: final de la función, donde decide m_practiceMusicSync.
+// kPracticeMusicSyncValue es el inmediato del "mov byte [m_practiceMusicSync], 0": con 1 siempre sincroniza.
+inline constexpr char kPracticeMusicSync[] =
+    "48 8B 87 ?? ?? ?? ?? 83 B8 ?? ?? ?? ?? 02 75 09 C6 87 ?? ?? ?? ?? 01 EB 07 C6 87 ?? ?? ?? ?? 00 "
+    "48 8B 4C 24 48 48 33 CC";
+inline constexpr int kPracticeMusicSyncValue = 31;
+
+// PlayLayer::setupHasCompleted(), inicio de la función (el nivel terminó de cargar).
+inline constexpr char kSetupHasCompleted[] =
+    "48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 B8 "
+    "48 81 EC 20 01 00 00 0F 29 78 C8 44 0F 29 40 B8 44 0F 29 48 A8 48 8B 05 ?? ?? ?? ??";
+
+// PlayLayer::togglePracticeMode(bool), inicio de la función.
+inline constexpr char kTogglePracticeMode[] =
+    "48 89 5C 24 08 57 48 83 EC 20 0F B6 FA 48 8B D9 38 91 ?? ?? ?? ?? 0F 84 ?? ?? ?? ?? "
+    "84 D2 74 34 E8 ?? ?? ?? ?? 48 8B CB";
+
+// PauseLayer::customSetup(), inicio de la función (construye el menú de pausa).
+inline constexpr char kPauseLayerSetup[] =
+    "48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D A8 08 FF FF FF "
+    "48 81 EC D0 01 00 00 0F 29 70 C8 0F 29 78 B8 44 0F 29 40 A8 44 0F 29 48 98 44 0F 29 50 88 "
+    "44 0F 29 A0 78 FF FF FF 44 0F 29 A8 68 FF FF FF 44 0F 29 B0 58 FF FF FF 44 0F 29 B8 48 FF FF FF "
+    "48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 30 4C 8B F1";
+
+// GJBaseGameLayer::getStartPosObjectsForCurrentMode(), inicio de la función.
+// Devuelve un CCArray nuevo (autorelease) con los StartPos que valen para el modo actual.
+inline constexpr char kStartPosObjects[] =
+    "48 89 74 24 10 57 48 83 EC 20 48 8B F9 FF 15 ?? ?? ?? ?? 48 8B 97 ?? ?? ?? ?? 48 8B F0 "
+    "83 BA ?? ?? ?? ?? 02 75 1E 48 8B 97 ?? ?? ?? ??";
+
+// PauseLayer::onResume: el tramo final, que es PlayLayer::switchToStartPosObject en línea.
+// El switcher repite esos mismos pasos; todo lo que necesita se lee de la propia firma:
+inline constexpr char kSwitchStartPos[] =
+    "40 84 F6 0F 84 ?? ?? ?? ?? 48 8B 1D ?? ?? ?? ?? 48 85 DB 75 32 B9 E8 06 00 00 E8 ?? ?? ?? ?? "
+    "48 89 44 24 30 48 8B C8 E8 ?? ?? ?? ?? 90 48 89 05 ?? ?? ?? ?? 48 8B 08 48 8B 51 48 48 8B C8 FF D2 "
+    "48 8B 1D ?? ?? ?? ?? 48 8B 9B ?? ?? ?? ?? 48 39 BB ?? ?? ?? ?? 75 0E 48 8B 03 48 8B CB "
+    "FF 90 ?? ?? ?? ?? EB 5D 48 85 FF 74 09 48 8B CF FF 15 ?? ?? ?? ?? 48 8B 8B ?? ?? ?? ?? 48 85 C9 74 06 "
+    "FF 15 ?? ?? ?? ?? 48 89 BB ?? ?? ?? ?? 48 85 FF 0F 95 C0 88 83 ?? ?? ?? ?? 48 8B CB E8 ?? ?? ?? ?? "
+    "48 8B 03 0F 57 C9 48 8B CB FF 90 ?? ?? ?? ?? 0F 57 C9 48 8B CB E8 ?? ?? ?? ?? 48 8B CB "
+    "E8 ?? ?? ?? ?? 48 8B CB E8 ?? ?? ?? ??";
+inline constexpr int kSwitchGameManager = 0x0C;        // disp RIP del puntero global a GameManager
+inline constexpr int kSwitchPlayLayer = 0x4A;          // GameManager::m_playLayer
+inline constexpr int kSwitchStartPosObject = 0x51;     // PlayLayer::m_startPosObject
+inline constexpr int kSwitchResetLevelSlot = 0x5F;     // desplazamiento en el vtable de resetLevel()
+inline constexpr int kSwitchTestMode = 0x94;           // byte "se juega desde un StartPos"
+inline constexpr int kSwitchResetFromStart = 0x9C;     // rel32 de PlayLayer::resetLevelFromStart
+inline constexpr int kSwitchVirtualSlot = 0xAB;        // desplazamiento en el vtable de una virtual (float)
+inline constexpr int kSwitchUpdateCamera = 0xB6;       // rel32 de GJBaseGameLayer::updateCamera(float)
+inline constexpr int kSwitchUpdateTestLabel = 0xBE;    // rel32 de PlayLayer::updateTestModeLabel
+inline constexpr int kSwitchStartMusic = 0xC6;         // rel32 de PlayLayer::startMusic
+
+// GameManager::isIconUnlocked(int, IconType) y GameManager::isColorUnlocked(int, UnlockType),
+// inicio de cada función. Parche: "mov al,1; ret".
+inline constexpr char kIsIconUnlocked[] =
+    "40 53 56 57 48 83 EC 50 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 48 41 8B F8 8B DA 48 8B F1 "
+    "45 85 C0 0F 85 ?? ?? ?? ??";
+inline constexpr char kIsColorUnlocked[] =
+    "40 53 56 57 48 83 EC 50 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 48 41 8B F0 8B FA 48 8B D9 "
+    "83 FA 04 7D 07 B0 01 E9 ?? ?? ?? ??";
+
+// EditorUI::constrainGameLayerPosition(float, float), inicio de la función. Parche: "ret".
+inline constexpr char kConstrainGameLayer[] =
+    "48 89 5C 24 10 48 89 7C 24 18 55 48 8B EC 48 81 EC 80 00 00 00 48 8B 81 ?? ?? ?? ?? 48 8B F9 "
+    "0F 29 74 24 70 0F 29 7C 24 60 0F 28 FA 44 0F 29 44 24 50";
+
+// LevelInfoLayer::tryCloneLevel: "contraseña == 1 (copia libre)? si no, pedirla".
+// kTryCloneLevelJump es ese `jne`; con dos `nop` siempre copia directamente.
+inline constexpr char kTryCloneLevel[] =
+    "48 89 5C 24 10 57 48 81 EC 90 00 00 00 48 8B F9 80 B9 ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? "
+    "48 8B 89 ?? ?? ?? ?? 8B 81 ?? ?? ?? ?? 2B 81 ?? ?? ?? ?? 83 F8 01 75 1A 33 D2";
+inline constexpr int kTryCloneLevelJump = 0x33;
+
+// LevelInfoLayer::init: "botón de copiar visible = (contraseña != 0)".
+// kCloneButtonSetne es el `setne dl`; con "mov dl,1; nop" el botón sale siempre.
+inline constexpr char kCloneButton[] =
+    "49 8B 8E ?? ?? ?? ?? 4D 8B 86 ?? ?? ?? ?? 8B 81 ?? ?? ?? ?? 3B 81 ?? ?? ?? ?? 0F 95 C2 "
+    "49 8B 00 49 8B C8 FF 90 ?? ?? ?? ??";
+inline constexpr int kCloneButtonSetne = 26;
+
+// EditorUI::onNewCustomItem: los dos límites (1000 objetos seleccionados, 200 objetos guardados).
+// En cada firma el salto condicional "está dentro del límite" pasa a ser un `jmp` (90 E9).
+inline constexpr char kCustomObjectSize[] =
+    "48 8B 89 ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? FF 15 ?? ?? ?? ?? 3D E8 03 00 00 0F 86 ?? ?? ?? ??";
+inline constexpr int kCustomObjectSizeJump = 27;
+inline constexpr char kCustomObjectCount[] =
+    "48 8B 89 ?? ?? ?? ?? FF 15 ?? ?? ?? ?? 3D C8 00 00 00 0F 82 ?? ?? ?? ?? BA C8 00 00 00 48 8D 0D ?? ?? ?? ??";
+inline constexpr int kCustomObjectCountJump = 18;
+
 } // namespace core::signatures

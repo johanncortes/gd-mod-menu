@@ -67,6 +67,9 @@ add_library(gdmenu SHARED
     src/features/global/fps_bypass.cpp
     src/features/global/tps_bypass.cpp
     src/features/patch_feature.cpp
+    src/features/level/auto_practice.cpp
+    src/features/level/hide_pause.cpp
+    src/features/level/startpos_switcher.cpp
     src/features/player/noclip.cpp
     src/features/player/hitboxes.cpp
     src/features/player/respawn_delay.cpp)
