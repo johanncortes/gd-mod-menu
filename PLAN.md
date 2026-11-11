@@ -1,18 +1,33 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 0 (proyecto recién creado, sin código).
-- Último agente: —
-- Próximo paso: Fase 1, esqueleto.
-- Notas / bloqueos: ninguno.
+- Fase: 1 completada (esqueleto probado dentro del juego el 2026-11-10).
+- Último agente: Claude (Fable 5.2)
+- Próximo paso: Fase 2, Global (speedhack con hook a `CCScheduler::update`).
+- Notas / bloqueos:
+  - **Input de GD**: el juego lee clics y teclas por *raw input* en un hilo aparte
+    (`GetRawInputData` en libcocos2d), además de los mensajes de ventana. Bloquear solo en el
+    WndProc no basta: el filtro está en `src/core/input.cpp` y cubre los dos caminos. Cualquier
+    feature que lea o simule input (atajos, bot) debe tenerlo en cuenta.
+  - ImGui solo captura el teclado cuando hay un campo de texto activo; con el panel abierto
+    las teclas siguen llegando al juego (se puede jugar con el panel abierto).
+  - Opciones de CMake: `GDMENU_DEV` (ON: End descarga la DLL) y `GDMENU_CONSOLE` (OFF: la consola
+    quita el foco y minimiza el juego a pantalla completa). El log va siempre a
+    `build/Release/gdmenu.log`.
+  - Flujo de prueba: abrir GD, `build/Release/injector.exe`, Tab. Para recompilar: End en el
+    juego (libera la DLL), compilar, inyectar otra vez.
+  - Las capturas de pantalla externas (GDI/PrintWindow) no reflejan lo que dibuja el juego a
+    pantalla completa; para verificar el render hay que leer el framebuffer desde la DLL.
+  - Pendiente menor: la posición de las ventanas no se guarda (`IniFilename = nullptr`), va con
+    la config de la fase 2/6. No se probó el cambio ventana <-> pantalla completa con el menú cargado.
 
 ## Fase 1 — Esqueleto
-- [ ] CMakeLists con MinHook, ImGui y nlohmann/json vía FetchContent
-- [ ] `dllmain.cpp` + hilo de inicio + consola de debug opcional
-- [ ] Hook `wglSwapBuffers` y `WndProc`; ImGui dibujando
-- [ ] Panel con Tab y ventanas vacías: Global, Level, Bypass, Player, Bot, Creator, Labels, Shortcuts, Interface
-- [ ] Inyector para desarrollo
-- [ ] Probado dentro del juego
+- [x] CMakeLists con MinHook, ImGui y nlohmann/json vía FetchContent
+- [x] `dllmain.cpp` + hilo de inicio + consola de debug opcional
+- [x] Hook `wglSwapBuffers` y `WndProc`; ImGui dibujando
+- [x] Panel con Tab y ventanas vacías: Global, Level, Bypass, Player, Bot, Creator, Labels, Shortcuts, Interface
+- [x] Inyector para desarrollo
+- [x] Probado dentro del juego
 
 ## Fase 2 — Global (cocos2d, estables)
 - [ ] Speedhack (hook `CCScheduler::update`)

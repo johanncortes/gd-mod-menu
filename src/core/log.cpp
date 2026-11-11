@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <mutex>
 
+#include <share.h>
+
 namespace core {
 
 namespace {
@@ -18,9 +20,10 @@ void logInit(HMODULE self, bool withConsole) {
     wchar_t path[MAX_PATH] = {};
     GetModuleFileNameW(self, path, MAX_PATH);
     auto logPath = std::filesystem::path(path).parent_path() / L"gdmenu.log";
-    _wfopen_s(&g_file, logPath.c_str(), L"w");
+    // _SH_DENYNO: el log se puede leer mientras el juego sigue abierto
+    g_file = _wfsopen(logPath.c_str(), L"w", _SH_DENYNO);
 
-    // Ojo: cerrar la ventana de la consola cierra también el juego
+    // Ojo: la consola le quita el foco al juego, y cerrar su ventana cierra también el juego
     if (withConsole && AllocConsole()) {
         SetConsoleTitleW(L"gdmenu debug");
         SetConsoleOutputCP(CP_UTF8);

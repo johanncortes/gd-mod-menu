@@ -4,6 +4,8 @@
 
 #include <imgui.h>
 
+#include "core/log.hpp"
+
 namespace gui {
 
 namespace {
@@ -25,7 +27,10 @@ bool osCursorHidden() {
 
 } // namespace
 
-void toggleMenu() { g_open = !g_open; }
+void toggleMenu() {
+    g_open = !g_open;
+    core::logMsg("Panel %s", g_open ? "abierto" : "cerrado");
+}
 bool isMenuOpen() { return g_open; }
 
 void draw() {

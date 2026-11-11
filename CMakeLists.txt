@@ -11,8 +11,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # CRT estático: la DLL no depende del redistribuible de VC++
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-# Modo desarrollo: consola de debug + tecla End para descargar la DLL
-option(GDMENU_DEV "Consola de debug y descarga de la DLL con End" ON)
+# Modo desarrollo: la tecla End descarga la DLL (para recompilar e inyectar sin cerrar el juego)
+option(GDMENU_DEV "Descarga de la DLL con End" ON)
+# Consola de debug. Apagada por defecto: al abrirse le quita el foco al juego y, si está
+# a pantalla completa, lo minimiza. El log siempre se escribe en gdmenu.log junto a la DLL.
+option(GDMENU_CONSOLE "Abrir una consola de debug al cargar la DLL" OFF)
 
 include(FetchContent)
 
@@ -54,11 +57,13 @@ add_library(gdmenu SHARED
     src/dllmain.cpp
     src/core/log.cpp
     src/core/hooks.cpp
+    src/core/input.cpp
     src/gui/menu.cpp)
 target_include_directories(gdmenu PRIVATE src)
 target_link_libraries(gdmenu PRIVATE minhook imgui nlohmann_json::nlohmann_json opengl32)
 target_compile_definitions(gdmenu PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE
-    $<$<BOOL:${GDMENU_DEV}>:GDMENU_DEV>)
+    $<$<BOOL:${GDMENU_DEV}>:GDMENU_DEV>
+    $<$<BOOL:${GDMENU_CONSOLE}>:GDMENU_CONSOLE>)
 target_compile_options(gdmenu PRIVATE /W4 /utf-8)
 
 # --- Inyector para desarrollo ---

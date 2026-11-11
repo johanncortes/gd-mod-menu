@@ -4,11 +4,14 @@
 
 #include <atomic>
 
+#include <GL/gl.h>
+
 #include <MinHook.h>
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_win32.h>
 
+#include "core/input.hpp"
 #include "core/log.hpp"
 #include "gui/menu.hpp"
 
@@ -30,31 +33,13 @@ bool g_imguiReady = false; // solo se toca desde el hilo de render
 std::atomic<bool> g_unloadRequested{false};
 std::atomic<bool> g_renderDown{false};
 
-// ¿Este mensaje es un input que ImGui quiere para sí?
-// Los "up" siempre pasan al juego para que no se queden teclas/botones pegados.
-bool imguiWantsMessage(UINT msg) {
-    const ImGuiIO& io = ImGui::GetIO();
-    switch (msg) {
-    case WM_LBUTTONDOWN: case WM_LBUTTONDBLCLK:
-    case WM_RBUTTONDOWN: case WM_RBUTTONDBLCLK:
-    case WM_MBUTTONDOWN: case WM_MBUTTONDBLCLK:
-    case WM_XBUTTONDOWN: case WM_XBUTTONDBLCLK:
-    case WM_MOUSEWHEEL:  case WM_MOUSEHWHEEL:
-        return io.WantCaptureMouse;
-    case WM_KEYDOWN:
-    case WM_CHAR:
-        return io.WantCaptureKeyboard;
-    default:
-        return false;
-    }
-}
-
 LRESULT CALLBACK wndProcHook(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     const bool firstPress = msg == WM_KEYDOWN && !(lp & (1 << 30)); // sin auto-repetición
     if (firstPress && wp == VK_TAB) {
         gui::toggleMenu();
         return 0;
     }
+    if (msg == WM_CHAR && wp == VK_TAB) return 0; // el carácter que genera ese mismo Tab
 #ifdef GDMENU_DEV
     if (firstPress && wp == VK_END) {
         g_unloadRequested = true;
@@ -64,7 +49,7 @@ LRESULT CALLBACK wndProcHook(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
     if (g_imguiReady) {
         ImGui_ImplWin32_WndProcHandler(hwnd, msg, wp, lp);
-        if (gui::isMenuOpen() && imguiWantsMessage(msg))
+        if (input::swallowWindowMessage(msg, wp, lp))
             return 0;
     }
     return CallWindowProcW(g_origWndProc, hwnd, msg, wp, lp);
@@ -86,12 +71,15 @@ void initImGui(HWND hwnd) {
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplOpenGL3_Init();
     g_imguiReady = true;
-    logMsg("ImGui iniciado (hwnd=%p)", static_cast<void*>(hwnd));
+    logMsg("ImGui iniciado (hwnd=%p, OpenGL %s, %s)", static_cast<void*>(hwnd),
+           reinterpret_cast<const char*>(glGetString(GL_VERSION)),
+           reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
 }
 
 // Cierra los backends y devuelve el WndProc original. El contexto de ImGui se conserva.
 void shutdownBackends() {
     g_imguiReady = false;
+    input::setCapture(false, false);
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplWin32_Shutdown();
     if (IsWindow(g_hwnd) && g_origWndProc)
@@ -123,8 +111,11 @@ BOOL WINAPI swapBuffersHook(HDC hdc) {
         ImGui::NewFrame();
         gui::draw();
         ImGui::Render();
+        const ImGuiIO& io = ImGui::GetIO();
+        input::setCapture(gui::isMenuOpen() && io.WantCaptureMouse, gui::isMenuOpen() && io.WantCaptureKeyboard);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
+
     return g_origSwap(hdc);
 }
 
@@ -158,6 +149,7 @@ bool install() {
     }
 
     logMsg("Hook de wglSwapBuffers instalado");
+    input::installRawInputHook(); // si falla, el menú sigue funcionando
     return true;
 }
 

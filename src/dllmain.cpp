@@ -8,7 +8,7 @@ namespace {
 DWORD WINAPI startThread(LPVOID param) {
     HMODULE self = static_cast<HMODULE>(param);
 
-#ifdef GDMENU_DEV
+#ifdef GDMENU_CONSOLE
     core::logInit(self, true);
 #else
     core::logInit(self, false);
