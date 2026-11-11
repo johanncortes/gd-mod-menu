@@ -13,6 +13,7 @@
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
+#include "gui/theme.hpp"
 #include "gui/widgets.hpp"
 
 namespace features {
@@ -193,16 +194,27 @@ void StartPosSwitcher::drawOverlay() {
     char text[48];
     if (g_shownTotal == 0) snprintf(text, sizeof(text), "Este nivel no tiene StartPos");
     else snprintf(text, sizeof(text), "StartPos %d/%d", g_shownIndex, g_shownTotal);
+
+    ImFont* font = gui::theme::getPusabFont();
+    if (!font) font = ImGui::GetFont();
+    const float fontSize = 24.f * ImGui::GetIO().FontGlobalScale;
+    const ImVec2 size = font->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, text);
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
-    const ImVec2 size = ImGui::CalcTextSize(text);
-    const ImVec2 pos{viewport->Pos.x + (viewport->Size.x - size.x) * 0.5f, viewport->Pos.y + viewport->Size.y - size.y - 12.f};
+    const ImVec2 pos{viewport->Pos.x + (viewport->Size.x - size.x) * 0.5f,
+                     viewport->Pos.y + viewport->Size.y - size.y - 25.f};
+
     ImDrawList* draw = ImGui::GetForegroundDrawList();
-    const ImU32 shadow = IM_COL32(0, 0, 0, 220);
-    draw->AddText({pos.x - 1.f, pos.y}, shadow, text);
-    draw->AddText({pos.x + 1.f, pos.y}, shadow, text);
-    draw->AddText({pos.x, pos.y - 1.f}, shadow, text);
-    draw->AddText({pos.x, pos.y + 1.f}, shadow, text);
-    draw->AddText(pos, IM_COL32(255, 255, 255, 255), text);
+    constexpr float o = 2.0f;
+    const ImU32 shadow = IM_COL32(0, 0, 0, 240);
+    draw->AddText(font, fontSize, {pos.x - o, pos.y - o}, shadow, text);
+    draw->AddText(font, fontSize, {pos.x,     pos.y - o}, shadow, text);
+    draw->AddText(font, fontSize, {pos.x + o, pos.y - o}, shadow, text);
+    draw->AddText(font, fontSize, {pos.x - o, pos.y},     shadow, text);
+    draw->AddText(font, fontSize, {pos.x + o, pos.y},     shadow, text);
+    draw->AddText(font, fontSize, {pos.x - o, pos.y + o}, shadow, text);
+    draw->AddText(font, fontSize, {pos.x,     pos.y + o}, shadow, text);
+    draw->AddText(font, fontSize, {pos.x + o, pos.y + o}, shadow, text);
+    draw->AddText(font, fontSize, pos, IM_COL32(255, 255, 255, 255), text);
 }
 
 void StartPosSwitcher::load(const nlohmann::json& j) {

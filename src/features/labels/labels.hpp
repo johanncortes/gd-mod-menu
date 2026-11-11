@@ -28,6 +28,11 @@ private:
     bool m_showTime = false;
     bool m_showClock = false;
     bool m_showBackground = false;
+    bool m_usePusab = true;
+
+    float m_scale = 1.0f;
+    float m_outlineWidth = 1.8f;
+    float m_lineSpacing = 3.0f;
 
     float m_posX = 10.f;
     float m_posY = 10.f;
