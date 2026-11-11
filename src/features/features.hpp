@@ -19,6 +19,7 @@ void drawLevel();
 void drawBypass();
 void drawCreator();
 void drawLabels();
+void drawBot();
 void drawShortcuts();
 void drawInterface();
 

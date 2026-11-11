@@ -24,7 +24,7 @@ const Window kWindows[] = {
     {"Level", features::drawLevel},
     {"Bypass", features::drawBypass},
     {"Player", features::drawPlayer},
-    {"Bot", nullptr},
+    {"Bot", features::drawBot},
     {"Creator", features::drawCreator},
     {"Labels", features::drawLabels},
     {"Shortcuts", features::drawShortcuts},

@@ -9,6 +9,7 @@
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
+#include "features/bot/bot.hpp"
 #include "features/bypass/instant_complete.hpp"
 #include "features/global/fps_bypass.hpp"
 #include "features/global/speedhack.hpp"
@@ -85,6 +86,9 @@ Labels g_labels;
 // --- Shortcuts ---
 Shortcuts g_shortcuts;
 
+// --- Bot ---
+Bot g_bot;
+
 bool g_ready = false;
 bool g_dirty = false;      // hay cambios sin guardar
 ULONGLONG g_dirtySince = 0;
@@ -134,6 +138,8 @@ void loadConfig() {
 
         g_labels.load(section(data, "labels"));
 
+        g_bot.load(section(data, "bot"));
+
         gui::theme::load(section(data, "interface"));
         gui::keybinds::load(section(data, "keybinds"));
     } catch (const nlohmann::json::exception& e) {
@@ -175,6 +181,8 @@ void saveConfig() {
 
     g_labels.save(data["labels"]);
 
+    g_bot.save(data["bot"]);
+
     gui::theme::save(data["interface"]);
     gui::keybinds::save(data["keybinds"]);
     config::save(data);
@@ -206,6 +214,7 @@ void init() {
     g_startPosSwitcher.init(gameAvailable);
     g_instantComplete.init(gameAvailable);
     g_shortcuts.init(gameAvailable);
+    g_bot.init(gameAvailable);
     g_verify.init();
     g_autoPractice.init();
     g_hidePause.init();
@@ -239,6 +248,7 @@ void shutdown() {
     g_levelCopy.disable();
     g_customObjects.disable();
     g_verify.disable();
+    g_bot.disable();
     g_ready = false;
 }
 
@@ -295,6 +305,10 @@ void drawLabels() {
     if (g_labels.drawUI()) markDirty();
 }
 
+void drawBot() {
+    if (g_bot.drawUI()) markDirty();
+}
+
 void drawShortcuts() {
     g_shortcuts.drawUI();
 }
@@ -311,7 +325,7 @@ void drawOverlay() {
 }
 
 bool cheatsActive() {
-    return g_speedhack.active() || g_tpsBypass.active() || g_noclip.active();
+    return g_speedhack.active() || g_tpsBypass.active() || g_noclip.active() || g_bot.active();
 }
 
 } // namespace features

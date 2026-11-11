@@ -21,7 +21,7 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Shortcuts | Reiniciar nivel, alternar modo práctica, poner y quitar checkpoint | Probado |
 | Interface | Tema, color de acento, escala, fuente y tamaño | Probado |
 | Keybinds | Clic derecho sobre cualquier opción para asignarle una tecla | Probado |
-| Bot | — | Pendiente (ver [PLAN.md](PLAN.md)) |
+| Bot | Grabar y reproducir inputs, guardar y cargar replays | Hecho, falta probar en el juego |
 
 Las opciones se guardan en `config.json`, junto a la DLL.
 

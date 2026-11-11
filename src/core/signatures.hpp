@@ -223,4 +223,18 @@ inline constexpr char kUiOnDeleteCheck[] =
     "E8 ?? ?? ?? ?? 90 48 89 05 ?? ?? ?? ?? 48 8B 08 48 8B 51 48 48 8B C8 FF D2 48 8B 0D ?? ?? ?? ?? "
     "48 8B 89 ?? ?? ?? ?? 48 85 C9 74 14 80 B9 ?? ?? ?? ?? 00 74 0B 33 D2 48 83 C4 28 E9 ?? ?? ?? ??";
 
+// --- Fase 7 (Bot). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// GJBaseGameLayer::processCommands(float, bool, bool), inicio de la función: un paso de física.
+// kProcessCommandsTick es la posición del offset del contador de ticks ("mov eax,[rcx+X]").
+inline constexpr char kProcessCommands[] =
+    "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 40 8B 81 ?? ?? ?? ?? 41 0F B6 F1 0F 29 74 24 30 "
+    "41 0F B6 F8 0F 29 7C 24 20 0F 57 F6";
+inline constexpr int kProcessCommandsTick = 17;
+
+// GJBaseGameLayer::handleButton(bool down, int button, bool isPlayer1), inicio de la función.
+inline constexpr char kHandleButton[] =
+    "48 89 5C 24 10 48 89 6C 24 18 48 89 74 24 20 57 41 56 41 57 48 83 EC 30 41 0F B6 E9 41 8B F8 "
+    "0F B6 F2 48 8B D9 0F B6 89 ?? ?? ?? ??";
+
 } // namespace core::signatures
