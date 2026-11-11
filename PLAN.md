@@ -1,23 +1,18 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 4 (Level / Bypass / Creator) con código completo, **pendiente de probar en el juego** (primera prueba del
-  usuario: el StartPos switcher no hacía nada en niveles online; corregido, falta volver a probar).
-  Fases 1, 2 y 3 probadas (de la 3 falta *Show trajectory*). Rama de trabajo: `fase-4`.
+- Fase: 5 (Labels) en curso, rama `fase-5`. Fases 1 a 4 probadas por el usuario (de la 3 falta *Show trajectory*).
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: que el usuario pruebe la fase 4. Después: merge de `fase-4` a `main`, *Show trajectory* y fase 5.
+- Próximo paso: terminar y probar la fase 5. Después: fase 6. Pendientes sueltos: *Show trajectory* y que
+  *Instant complete* teletransporte al jugador al final del nivel mientras sale la animación (idea del usuario).
 - Notas / bloqueos:
-  - **Fase 4 sin ejecutar en el juego.** Compila en Release sin warnings y las 25 firmas coinciden con el exe
-    instalado (`sigcheck`). Dudas a mirar al probar: *Auto practice* llama a `togglePracticeMode(true)` justo después
-    de `setupHasCompleted` (puede sonar la música de práctica antes de que arranque el nivel); *StartPos switcher*
-    hace el cambio desde el hook de render, fuera de la pausa (el juego solo lo hace desde el menú de pausa).
   - **Verify bypass e Instant complete**: el usuario pidió hacerlos (2026-11-11) aunque rozan la regla de
     `AGENTS.md` sobre servidores; su argumento es que el anti-trampas del propio juego ya se ocupa. Por eso *Instant
     complete* solo llama a `PlayLayer::levelComplete()` y **no** toca el anti-trampas del juego. No añadir bypass de
     ese anti-trampas sin que el usuario lo pida.
   - **StartPos switcher**: usa `m_startPosObjects` directamente. La función del juego
     `getStartPosObjectsForCurrentMode` devuelve lista vacía en niveles online en modo normal (por eso falló la
-    primera prueba). Si no hay StartPos, al pulsar Q/E sale el aviso "Este nivel no tiene StartPos".
+    primera prueba; ya probado y funciona). Si no hay StartPos, al pulsar Q/E sale el aviso "Este nivel no tiene StartPos".
   - **Object limit bypass**: en 2.2091 ya no existe ese límite en el editor; en su lugar se hizo *Custom object
     bypass* (los dos límites de los objetos personalizados), que es lo que trae la lista final.
   - **Show trajectory sin hacer**: hay que crear un PlayerObject falso, copiarle el estado del real y simular
@@ -33,7 +28,8 @@
     El reversing de las fases 2 y 3 se hizo con `dumpbin /disasm` (Build Tools) y scripts de Python: referencias
     RIP, tabla `.pdata` para los límites de función, IAT para los imports y RTTI para los vtables. Sirve de plan B.
   - **Git**: `origin` es `github.com/johanncortes/gd-mod-menu` (privado). Desde la fase 4, cada fase va en su rama
-    `fase-N`: commits pequeños, push tras cada commit y merge a `main` cuando el usuario la confirme probada.
+    `fase-N`: commits pequeños, push tras cada commit y merge a `main` cuando el usuario la confirme probada
+    (el usuario dio permiso para que el agente haga los merges).
   - **Input de GD**: el juego lee clics y teclas por *raw input* en un hilo aparte
     (`GetRawInputData` en libcocos2d), además de los mensajes de ventana. Bloquear solo en el
     WndProc no basta: el filtro está en `src/core/input.cpp` y cubre los dos caminos. Cualquier
@@ -85,7 +81,7 @@
 - [x] StartPos switcher (Q / E)
 - [x] Verify bypass
 - [x] Instant complete (botón)
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-11)
 
 ## Fase 5 — Labels
 - [ ] FPS, CPS, porcentaje, intentos, tiempo, reloj
