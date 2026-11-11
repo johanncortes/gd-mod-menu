@@ -18,6 +18,7 @@ void drawPlayer();
 void drawLevel();
 void drawBypass();
 void drawCreator();
+void drawLabels();
 
 // Lo que se dibuja sobre el juego aunque el panel esté cerrado (contador de noclip...).
 void drawOverlay();

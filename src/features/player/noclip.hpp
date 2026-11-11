@@ -24,7 +24,7 @@ public:
 
 private:
     bool m_available = false;
-    bool m_statsAvailable = false; // hooks de resetLevel y update (contador y precisión)
+    bool m_statsAvailable = false; // hooks de nivel de core::game (contador y precisión)
     bool m_enabled = false;
     bool m_showStats = true;
 };

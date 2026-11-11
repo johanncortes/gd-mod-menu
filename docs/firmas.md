@@ -39,6 +39,8 @@
 | CCNode::setVisible; CCArray::count, objectAtIndex; CCObject::retain, release | libcocos2d.dll | exports por nombre | — | hide pause menu y StartPos switcher (fase 4) |
 | ShareLevelLayer::onShare: comprobación de nivel verificado | GeometryDash.exe | ver `kVerify` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140631DF6 (función en 0x140631CE0). Parche en +15: `0F 84` -> `90 E9`, no sale el aviso "Unverified" (fase 4) |
 | PlayLayer::levelComplete() | GeometryDash.exe | inicio de función, ver `kLevelComplete` | 2.2091, build Steam 26002420 | 0x1405061B0. Solo se llama (botón Instant complete); no se toca su anti-trampas (fase 4) |
+| PlayLayer::getCurrentPercent() | GeometryDash.exe | inicio de función, ver `kCurrentPercent` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140512300. Devuelve float. Solo se llama, para el label de porcentaje (fase 5) |
+| PlayLayer::updateAttempts() | GeometryDash.exe | inicio de función, ver `kUpdateAttempts` | 2.2091, build Steam 26002420 | 0x140519D30. No se llama: de la firma se lee en +13 el offset de `m_attempts` (+0x3164) (fase 5) |
 
 ## Notas de ingeniería inversa
 

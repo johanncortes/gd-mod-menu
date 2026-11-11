@@ -69,6 +69,7 @@ add_library(gdmenu SHARED
     src/features/global/tps_bypass.cpp
     src/features/patch_feature.cpp
     src/features/bypass/instant_complete.cpp
+    src/features/labels/labels.cpp
     src/features/level/auto_practice.cpp
     src/features/level/hide_pause.cpp
     src/features/level/startpos_switcher.cpp

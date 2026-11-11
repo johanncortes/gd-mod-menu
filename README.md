@@ -17,7 +17,8 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Level | StartPos switcher (Q = anterior, E = siguiente) | Probado |
 | Bypass | Unlock icons, character limit bypass, character filter bypass, instant complete | Probado |
 | Creator | Free scroll, level copy bypass, custom object bypass, verify bypass | Probado |
-| Labels, Shortcuts, Interface, Bot | — | Pendiente (ver [PLAN.md](PLAN.md)) |
+| Labels | Cheat indicator, FPS, CPS, porcentaje, intento, tiempo, reloj | Hecho, falta probar en el juego |
+| Shortcuts, Interface, Bot | — | Pendiente (ver [PLAN.md](PLAN.md)) |
 
 Las opciones se guardan en `config.json`, junto a la DLL.
 

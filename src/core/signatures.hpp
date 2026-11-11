@@ -195,4 +195,17 @@ inline constexpr char kLevelComplete[] =
     "48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D A8 D8 FD FF FF "
     "48 81 EC 00 03 00 00 0F 29 70 C8 0F 29 78 B8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 85 ?? ?? ?? ??";
 
+// --- Fase 5 (Labels). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// PlayLayer::getCurrentPercent(), función entera hasta la lectura del jugador. Solo se llama.
+inline constexpr char kCurrentPercent[] =
+    "40 53 48 83 EC 20 80 B9 ?? ?? ?? ?? 00 48 8B D9 74 18 48 8B 81 ?? ?? ?? ?? 66 0F 6E 80 ?? ?? ?? ?? "
+    "0F 5B C0 48 83 C4 20 5B C3 48 8B 89 ?? ?? ?? ??";
+
+// PlayLayer::updateAttempts(), inicio de la función: "inc dword [rcx + m_attempts]".
+// kUpdateAttemptsOffset es la posición de ese offset dentro de la firma.
+inline constexpr char kUpdateAttempts[] =
+    "40 53 56 57 48 83 EC 20 48 8B F1 FF 81 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 48 85 C9 75 32 B9 E8 06 00 00";
+inline constexpr int kUpdateAttemptsOffset = 13;
+
 } // namespace core::signatures

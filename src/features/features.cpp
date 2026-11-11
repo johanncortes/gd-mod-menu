@@ -13,6 +13,7 @@
 #include "features/global/fps_bypass.hpp"
 #include "features/global/speedhack.hpp"
 #include "features/global/tps_bypass.hpp"
+#include "features/labels/labels.hpp"
 #include "features/level/auto_practice.hpp"
 #include "features/level/hide_pause.hpp"
 #include "features/level/startpos_switcher.hpp"
@@ -75,6 +76,9 @@ PatchFeature g_customObjects("Custom object bypass", "custom_objects",
                              {{sig::kCustomObjectSize, sig::kCustomObjectSizeJump, {0x90, 0xE9}},
                               {sig::kCustomObjectCount, sig::kCustomObjectCountJump, {0x90, 0xE9}}});
 
+// --- Labels ---
+Labels g_labels;
+
 bool g_ready = false;
 bool g_dirty = false;      // hay cambios sin guardar
 ULONGLONG g_dirtySince = 0;
@@ -121,6 +125,8 @@ void loadConfig() {
         g_levelCopy.load(creator);
         g_customObjects.load(creator);
         g_verify.load(creator);
+
+        g_labels.load(section(data, "labels"));
     } catch (const nlohmann::json::exception& e) {
         // Un valor con el tipo equivocado: se queda lo cargado hasta ese punto
         core::logMsg("config.json con valores inválidos: %s", e.what());
@@ -157,6 +163,8 @@ void saveConfig() {
     g_levelCopy.save(creator);
     g_customObjects.save(creator);
     g_verify.save(creator);
+
+    g_labels.save(data["labels"]);
     config::save(data);
     g_dirty = false;
 }
@@ -172,16 +180,17 @@ void init() {
     // Las firmas se buscan antes de instalar ningún hook: un hook reescribe el inicio de la
     // función y la firma dejaría de coincidir. destroyPlayer lo usan dos features.
     uint8_t* destroyPlayer = core::memory::findPattern(GetModuleHandleW(nullptr), core::signatures::kDestroyPlayer);
+    const bool gameAvailable = core::game::init(); // GameManager y hooks de nivel compartidos
     g_noDeathEffect.init();
     g_noRespawnFlash.init();
     g_practiceMusicSync.init();
+    g_labels.init(gameAvailable);
     g_unlockIcons.init();
     g_textLimit.init();
     g_textFilter.init();
     g_freeScroll.init();
     g_levelCopy.init();
     g_customObjects.init();
-    const bool gameAvailable = core::game::init();
     g_startPosSwitcher.init(gameAvailable);
     g_instantComplete.init(gameAvailable);
     g_verify.init();
@@ -266,8 +275,13 @@ void drawCreator() {
     if (changed) markDirty();
 }
 
+void drawLabels() {
+    if (g_labels.drawUI()) markDirty();
+}
+
 void drawOverlay() {
     if (!g_ready) return;
+    g_labels.drawOverlay(cheatsActive());
     g_noclip.drawOverlay();
     g_startPosSwitcher.drawOverlay();
 }

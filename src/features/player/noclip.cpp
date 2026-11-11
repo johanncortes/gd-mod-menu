@@ -10,6 +10,7 @@
 #include <imgui.h>
 #include <nlohmann/json.hpp>
 
+#include "core/game.hpp"
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
@@ -21,12 +22,8 @@ namespace {
 
 // Todo esto se toca solo desde el hilo principal del juego (lógica y render van en el mismo)
 using DestroyPlayerFn = void (*)(void* playLayer, void* player, void* object);
-using ResetLevelFn = void (*)(void* playLayer);
-using UpdateFn = void (*)(void* gameLayer, float dt);
 
 DestroyPlayerFn g_origDestroyPlayer = nullptr;
-ResetLevelFn g_origResetLevel = nullptr;
-UpdateFn g_origUpdate = nullptr;
 
 bool g_enabled = false;
 int32_t g_spikeOffset = 0; // PlayLayer::m_anticheatSpike, leído de la firma
@@ -39,7 +36,6 @@ int g_frames = 0;
 int g_hitFrames = 0;
 bool g_hitThisFrame = false;
 bool g_hitLastFrame = false;
-ULONGLONG g_lastUpdate = 0; // para saber si el nivel está corriendo ahora mismo
 
 void resetStats() {
     g_deaths = g_frames = g_hitFrames = 0;
@@ -73,15 +69,14 @@ void destroyPlayerHook(void* playLayer, void* player, void* object) {
     g_origDestroyPlayer(playLayer, player, object);
 }
 
-void resetLevelHook(void* playLayer) {
+// Empieza un intento (aviso de core::game)
+void onResetLevel(void* playLayer) {
     g_playLayer = playLayer;
     resetStats();
-    g_origResetLevel(playLayer);
 }
 
-// GJBaseGameLayer::update corre una vez por frame mientras el nivel no está en pausa
-void updateHook(void* gameLayer, float dt) {
-    g_origUpdate(gameLayer, dt);
+// Un frame de nivel (aviso de core::game)
+void onUpdate(void* gameLayer, float) {
     if (!g_enabled || gameLayer != g_playLayer) return;
     ++g_frames;
     if (g_hitThisFrame) {
@@ -90,7 +85,6 @@ void updateHook(void* gameLayer, float dt) {
     }
     g_hitLastFrame = g_hitThisFrame;
     g_hitThisFrame = false;
-    g_lastUpdate = GetTickCount64();
 }
 
 bool hookAt(void* target, void* hook, void** original) {
@@ -100,7 +94,6 @@ bool hookAt(void* target, void* hook, void** original) {
 } // namespace
 
 void Noclip::init(uint8_t* destroyPlayer) {
-    HMODULE exe = GetModuleHandleW(nullptr);
     if (!destroyPlayer) {
         core::logMsg("Noclip: no disponible (firma kDestroyPlayer no encontrada)");
         return;
@@ -117,14 +110,13 @@ void Noclip::init(uint8_t* destroyPlayer) {
     if (!m_available) return;
 
     // Contador y precisión: opcionales, el noclip funciona sin ellos
-    uint8_t* resetLevel = core::memory::findPattern(exe, core::signatures::kResetLevel);
-    uint8_t* update = core::memory::findPattern(exe, core::signatures::kGameLayerUpdate);
-    m_statsAvailable = resetLevel && update &&
-                       hookAt(resetLevel, &resetLevelHook, reinterpret_cast<void**>(&g_origResetLevel)) &&
-                       hookAt(update, &updateHook, reinterpret_cast<void**>(&g_origUpdate));
-    if (!m_statsAvailable)
-        core::logMsg("Noclip: contador no disponible (firma: %s%s)", resetLevel ? "" : "kResetLevel ",
-                     update ? "" : "kGameLayerUpdate");
+    m_statsAvailable = core::game::levelHooksAvailable();
+    if (m_statsAvailable) {
+        core::game::onResetLevel(&onResetLevel);
+        core::game::onUpdate(&onUpdate);
+    } else {
+        core::logMsg("Noclip: contador no disponible (hooks de nivel)");
+    }
 }
 
 void Noclip::enable() {
@@ -154,7 +146,7 @@ bool Noclip::drawUI() {
 void Noclip::drawOverlay() {
     // Solo mientras el nivel corre (ni en pausa ni fuera del nivel)
     if (!active() || !m_statsAvailable || !m_showStats || g_frames == 0) return;
-    if (GetTickCount64() - g_lastUpdate > 250) return;
+    if (!core::game::levelRunning()) return;
 
     char text[64];
     snprintf(text, sizeof(text), "Noclip: %d muertes  %.2f%%", g_deaths,
