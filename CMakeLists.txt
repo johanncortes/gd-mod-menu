@@ -1,0 +1,72 @@
+cmake_minimum_required(VERSION 3.24)
+project(gdmenu LANGUAGES C CXX)
+
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message(FATAL_ERROR "Solo x64: configura con  cmake -B build -A x64")
+endif()
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+# CRT estático: la DLL no depende del redistribuible de VC++
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+# Modo desarrollo: consola de debug + tecla End para descargar la DLL
+option(GDMENU_DEV "Consola de debug y descarga de la DLL con End" ON)
+
+include(FetchContent)
+
+# MinHook e ImGui se bajan solo como fuentes (SOURCE_SUBDIR inexistente = no usar su CMake)
+FetchContent_Declare(minhook
+    GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
+    GIT_TAG        v1.3.4
+    GIT_SHALLOW    TRUE
+    SOURCE_SUBDIR  _sin_cmake)
+FetchContent_Declare(imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG        v1.91.9b
+    GIT_SHALLOW    TRUE
+    SOURCE_SUBDIR  _sin_cmake)
+FetchContent_Declare(json
+    URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
+FetchContent_MakeAvailable(minhook imgui json)
+
+# --- MinHook ---
+add_library(minhook STATIC
+    ${minhook_SOURCE_DIR}/src/buffer.c
+    ${minhook_SOURCE_DIR}/src/hook.c
+    ${minhook_SOURCE_DIR}/src/trampoline.c
+    ${minhook_SOURCE_DIR}/src/hde/hde64.c)
+target_include_directories(minhook PUBLIC ${minhook_SOURCE_DIR}/include)
+
+# --- Dear ImGui (backends Win32 + OpenGL3) ---
+add_library(imgui STATIC
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_win32.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp)
+target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
+
+# --- La DLL del menú ---
+add_library(gdmenu SHARED
+    src/dllmain.cpp
+    src/core/log.cpp
+    src/core/hooks.cpp
+    src/gui/menu.cpp)
+target_include_directories(gdmenu PRIVATE src)
+target_link_libraries(gdmenu PRIVATE minhook imgui nlohmann_json::nlohmann_json opengl32)
+target_compile_definitions(gdmenu PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE
+    $<$<BOOL:${GDMENU_DEV}>:GDMENU_DEV>)
+target_compile_options(gdmenu PRIVATE /W4 /utf-8)
+
+# --- Inyector para desarrollo ---
+add_executable(injector injector/main.cpp)
+target_compile_definitions(injector PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
+target_compile_options(injector PRIVATE /W4 /utf-8)
+
+# Todo junto en build/<Config>/
+set_target_properties(gdmenu injector PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

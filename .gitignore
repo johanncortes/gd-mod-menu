@@ -5,3 +5,4 @@ out/
 !.vscode/extensions.json
 *.user
 config.json
+gdmenu.log
