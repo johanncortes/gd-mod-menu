@@ -21,6 +21,9 @@
 #include "features/player/hitboxes.hpp"
 #include "features/player/noclip.hpp"
 #include "features/player/respawn_delay.hpp"
+#include "features/shortcuts/shortcuts.hpp"
+#include "gui/keybinds.hpp"
+#include "gui/theme.hpp"
 
 namespace features {
 
@@ -79,6 +82,9 @@ PatchFeature g_customObjects("Custom object bypass", "custom_objects",
 // --- Labels ---
 Labels g_labels;
 
+// --- Shortcuts ---
+Shortcuts g_shortcuts;
+
 bool g_ready = false;
 bool g_dirty = false;      // hay cambios sin guardar
 ULONGLONG g_dirtySince = 0;
@@ -127,6 +133,9 @@ void loadConfig() {
         g_verify.load(creator);
 
         g_labels.load(section(data, "labels"));
+
+        gui::theme::load(section(data, "interface"));
+        gui::keybinds::load(section(data, "keybinds"));
     } catch (const nlohmann::json::exception& e) {
         // Un valor con el tipo equivocado: se queda lo cargado hasta ese punto
         core::logMsg("config.json con valores inválidos: %s", e.what());
@@ -165,6 +174,9 @@ void saveConfig() {
     g_verify.save(creator);
 
     g_labels.save(data["labels"]);
+
+    gui::theme::save(data["interface"]);
+    gui::keybinds::save(data["keybinds"]);
     config::save(data);
     g_dirty = false;
 }
@@ -193,6 +205,7 @@ void init() {
     g_customObjects.init();
     g_startPosSwitcher.init(gameAvailable);
     g_instantComplete.init(gameAvailable);
+    g_shortcuts.init(gameAvailable);
     g_verify.init();
     g_autoPractice.init();
     g_hidePause.init();
@@ -230,9 +243,12 @@ void shutdown() {
 }
 
 void update() {
-    if (g_ready) g_startPosSwitcher.update();
+    if (!g_ready) return;
+    gui::keybinds::update();
+    if (gui::keybinds::takeChanged()) markDirty();
+    g_startPosSwitcher.update();
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
-    if (g_ready && g_dirty && GetTickCount64() - g_dirtySince > 500) saveConfig();
+    if (g_dirty && GetTickCount64() - g_dirtySince > 500) saveConfig();
 }
 
 void drawGlobal() {
@@ -277,6 +293,14 @@ void drawCreator() {
 
 void drawLabels() {
     if (g_labels.drawUI()) markDirty();
+}
+
+void drawShortcuts() {
+    g_shortcuts.drawUI();
+}
+
+void drawInterface() {
+    if (gui::theme::drawUI()) markDirty();
 }
 
 void drawOverlay() {

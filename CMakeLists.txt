@@ -62,12 +62,15 @@ add_library(gdmenu SHARED
     src/core/game.cpp
     src/config/config.cpp
     src/gui/menu.cpp
+    src/gui/keybinds.cpp
+    src/gui/theme.cpp
     src/gui/widgets.cpp
     src/features/features.cpp
     src/features/global/speedhack.cpp
     src/features/global/fps_bypass.cpp
     src/features/global/tps_bypass.cpp
     src/features/patch_feature.cpp
+    src/features/shortcuts/shortcuts.cpp
     src/features/bypass/instant_complete.cpp
     src/features/labels/labels.cpp
     src/features/level/auto_practice.cpp

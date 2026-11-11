@@ -41,6 +41,8 @@
 | PlayLayer::levelComplete() | GeometryDash.exe | inicio de función, ver `kLevelComplete` | 2.2091, build Steam 26002420 | 0x1405061B0. Solo se llama (botón Instant complete); no se toca su anti-trampas (fase 4) |
 | PlayLayer::getCurrentPercent() | GeometryDash.exe | inicio de función, ver `kCurrentPercent` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140512300. Devuelve float. Solo se llama, para el label de porcentaje (fase 5) |
 | PlayLayer::updateAttempts() | GeometryDash.exe | inicio de función, ver `kUpdateAttempts` | 2.2091, build Steam 26002420 | 0x140519D30. No se llama: de la firma se lee en +13 el offset de `m_attempts` (+0x3164) (fase 5) |
+| UILayer::onCheck(CCObject*) | GeometryDash.exe | función entera, ver `kUiOnCheck` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140673050. Botón de poner checkpoint. No usa sus argumentos (saca el PlayLayer de GameManager) y solo actúa en modo práctica. Solo se llama (fase 6) |
+| UILayer::onDeleteCheck(CCObject*) | GeometryDash.exe | función entera, ver `kUiOnDeleteCheck` | 2.2091, build Steam 26002420 | 0x1406730D0. Botón de quitar checkpoint: llama a `PlayLayer::removeCheckpoint(false)`. Solo se llama (fase 6) |
 
 ## Notas de ingeniería inversa
 

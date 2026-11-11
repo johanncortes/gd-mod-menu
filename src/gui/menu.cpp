@@ -6,6 +6,7 @@
 
 #include "core/log.hpp"
 #include "features/features.hpp"
+#include "gui/keybinds.hpp"
 
 namespace gui {
 
@@ -26,8 +27,8 @@ const Window kWindows[] = {
     {"Bot", nullptr},
     {"Creator", features::drawCreator},
     {"Labels", features::drawLabels},
-    {"Shortcuts", nullptr},
-    {"Interface", nullptr},
+    {"Shortcuts", features::drawShortcuts},
+    {"Interface", features::drawInterface},
 };
 
 // El juego oculta el cursor durante un nivel; en ese caso ImGui dibuja el suyo
@@ -39,6 +40,8 @@ bool osCursorHidden() {
 
 } // namespace
 
+void drawWindows();
+
 void toggleMenu() {
     g_open = !g_open;
     core::logMsg("Panel %s", g_open ? "abierto" : "cerrado");
@@ -48,7 +51,24 @@ bool isMenuOpen() { return g_open; }
 void draw() {
     ImGui::GetIO().MouseDrawCursor = g_open && osCursorHidden();
     features::drawOverlay();
-    if (!g_open) return;
+    if (g_open) drawWindows();
+
+    // Teclas asignadas que nadie atendió (panel cerrado o ventana plegada): las opciones se
+    // dibujan una vez en una ventana invisible, y así cada una reacciona a su tecla con el
+    // mismo código que cuando se hace clic.
+    if (keybinds::anyFired()) {
+        ImGui::SetNextWindowPos({-10000.f, -10000.f});
+        const ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs |
+                                       ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+                                       ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBackground;
+        if (ImGui::Begin("##keybinds", nullptr, flags))
+            for (const Window& window : kWindows)
+                if (window.draw) window.draw();
+        ImGui::End();
+    }
+}
+
+void drawWindows() {
 
     // Posición inicial: rejilla de 5 columnas; el alto se ajusta al contenido
     const float w = 250.f, h = 200.f, gap = 10.f;

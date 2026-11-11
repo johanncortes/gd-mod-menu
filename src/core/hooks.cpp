@@ -15,6 +15,7 @@
 #include "core/log.hpp"
 #include "features/features.hpp"
 #include "gui/menu.hpp"
+#include "gui/theme.hpp"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
@@ -60,9 +61,8 @@ void initImGui(HWND hwnd) {
     if (!ImGui::GetCurrentContext()) {
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
-        io.IniFilename = nullptr; // la posición de ventanas se guardará con la config (fase 6)
         io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange; // el cursor del SO lo maneja el juego
-        ImGui::StyleColorsDark();
+        gui::theme::init(); // estilo y archivo donde se guarda la posición de las ventanas
     }
 
     g_hwnd = hwnd;
@@ -109,6 +109,7 @@ BOOL WINAPI swapBuffersHook(HDC hdc) {
     }
 
     if (g_imguiReady) {
+        gui::theme::applyPending(); // cambio de fuente: tiene que ser antes de empezar el frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
