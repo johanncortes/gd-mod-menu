@@ -47,3 +47,26 @@ Salida: `build/Release/gdmenu.dll` e `injector.exe`.
 3. Commits en español, formato: `fase N: qué se hizo`.
 4. Al terminar o antes de quedarte sin contexto: actualiza **Estado actual** en `PLAN.md`, marca las casillas completadas y haz commit.
 5. Toda firma o dirección nueva va a `docs/firmas.md`.
+
+## Cuándo una fase está terminada
+Una fase está terminada cuando se cumplen las tres cosas:
+1. Compila sin errores en Release.
+2. Todas sus casillas en `PLAN.md` están marcadas `[x]`.
+3. El usuario la probó en el juego y confirmó que funciona.
+
+Al terminar el código de una fase, **detente** y muestra este bloque, sin pasar a la siguiente fase:
+
+```
+✅ FASE N LISTA PARA PROBAR
+Cómo probar:
+1. ...
+2. ...
+Qué debería pasar: ...
+Si falla, dime qué viste.
+```
+
+Cuando el usuario confirme que funciona: marca la fase como probada en `PLAN.md`, actualiza **Estado actual** y haz commit `fase N: probada`.
+
+## Pruebas en el equipo del usuario
+- No simules clics ni teclas en el equipo (scripts de input, automatización) salvo que el usuario lo pida en esa sesión. Las pruebas dentro del juego las hace el usuario.
+- Si te lo pide: verifica antes de cada acción que `GeometryDash.exe` esté en primer plano, y aborta si no lo está.
