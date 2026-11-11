@@ -62,8 +62,8 @@
 - [x] Mostrar hitboxes
 - [x] No death effect / no respawn flash
 - [x] Respawn delay
+- [x] Probado dentro del juego (todo lo anterior, 2026-11-11)
 - [ ] Show trajectory (sin hacer, ver Estado actual)
-- [ ] Probado dentro del juego
 
 ## Fase 4 — Level / Bypass / Creator (parches de bytes)
 - [ ] Practice music sync, auto practice mode, hide pause menu
@@ -84,6 +84,59 @@
 - [ ] Grabar inputs
 - [ ] Reproducir inputs
 - [ ] Guardar/cargar replays
+
+## Lista final de funciones (objetivo)
+Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[~]` = hecho sin probar,
+`[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
+de la fase 7.
+
+**Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [ ] Pitch Shift · [x] Audio Speed (opción del
+speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
+[ ] Discord RPC · [ ] Lock Cursor · [ ] No Short Numbers · [ ] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
+[ ] Transparent Lists
+
+**Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [ ] All Modes in Platformer · [ ] All Passable ·
+[ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [ ] Auto Practice Mode · [ ] Auto Song Download ·
+[ ] Checkpoint Delay · [ ] Confirm Full Restart · [ ] Confirm Practice Mode · [ ] Confirm Restart ·
+[ ] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [ ] Hide Pause Menu ·
+[ ] Hitbox Multiplier · [ ] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
+[ ] Mute Level SFX · [ ] No Mirror · [ ] No Object Glow · [ ] No Particles · [ ] No Portal Lightning ·
+[ ] No Shaders · [ ] Pause Countdown · [ ] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
+
+**Bypass**: [ ] Allow Low Volume · [ ] Character Filter Bypass · [ ] Character Limit Bypass · [ ] Checkpoint Limit ·
+[ ] Comment History Bypass · [ ] Quick Chests · [ ] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
+[ ] Music Customizer · [ ] Pause Buffering · [ ] Practice Music Sync · [ ] Unlock Icons · [ ] Unlock Main Levels ·
+[ ] Unlock Paths · [ ] Unlock Shops · [ ] Unlock Vaults
+
+**Player**: [ ] Always Show Trail · [ ] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
+[ ] Custom Wave Trail · [ ] Frame Stepper · [ ] Jump Hack · [ ] Mute Level Audio on Death ·
+[ ] Mute Rewards SFX on Death · [x] No Death Effect · [ ] No Ghost Trail · [ ] No Hide Trigger ·
+[ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [ ] No Spider Dash · [ ] No Trail ·
+[ ] No Vehicle Particles · [x] Noclip · [ ] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
+[x] Mostrar hitboxes (no sale en la captura, se mantiene)
+
+**Bot**: [ ] Disabled / Record / Playback · [ ] Replays (New, Save, Load, Delete) · [ ] Ignore Inputs
+
+**Creator**: [ ] Custom Object Bypass · [ ] Default Song Bypass · [ ] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
+[ ] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [ ] Slider Limit ·
+[ ] Smooth Editor Trail · [ ] Verify Bypass (*)
+
+**Labels**: [ ] Show Labels · [ ] Show in Editor · [ ] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
+[ ] Presets · [ ] FPS · [ ] Testmode · [ ] Run From · [ ] Attempt · [ ] Percentage · [ ] Level Time · [ ] Best Run ·
+[ ] Clock · [ ] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
+
+**Shortcuts**: [ ] P1 Jump · [ ] P2 Jump · [ ] Show Options · [ ] Uncomplete Level · [ ] Restart Level ·
+[ ] Toggle Practice Mode · [ ] Place Checkpoint · [ ] Remove Checkpoint · [ ] Inject DLL · [ ] Save Folder ·
+[ ] Reset BG Volume · [ ] Reset SFX Volume
+
+**Keybinds**: [x] Open Menu (Tab) · [ ] In-game only · [ ] Clic derecho en cualquier opción para asignarle una tecla
+
+**Interface**: [ ] Theme · [ ] UI Scale · [ ] Font · [ ] Font Size · [ ] Reload Fonts · [ ] Layout Type · [ ] Style ·
+[ ] Enable Blur · [ ] Animate Windows · [ ] Accent Color · [ ] Background Color · [ ] Language · [ ] Search
+
+(*) Chocan con la regla de `AGENTS.md` "nada de funciones para subir completions ni interactuar con servidores de
+GD": *Instant Complete* da un completado falso y *Verify Bypass* sirve para subir niveles sin verificar. Decidir con
+el usuario antes de hacerlas; mientras tanto, cualquier trampa activa debe ir con Safe Mode.
 
 ## Mantenimiento por actualización de GD
 1. Ver qué firmas fallan: `build/Release/sigcheck.exe "<ruta>/GeometryDash.exe"` (o el panel, que las marca "no disponible").
