@@ -18,9 +18,9 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Bypass | Unlock icons, character limit bypass, character filter bypass, instant complete | Probado |
 | Creator | Free scroll, level copy bypass, custom object bypass, verify bypass | Probado |
 | Labels | Cheat indicator, FPS, CPS, porcentaje, intento, tiempo, reloj | Probado |
-| Shortcuts | Reiniciar nivel, alternar modo práctica, poner y quitar checkpoint | Hecho, falta probar en el juego |
-| Interface | Tema, color de acento, escala, fuente y tamaño | Hecho, falta probar en el juego |
-| Keybinds | Clic derecho sobre cualquier opción para asignarle una tecla | Hecho, falta probar en el juego |
+| Shortcuts | Reiniciar nivel, alternar modo práctica, poner y quitar checkpoint | Probado |
+| Interface | Tema, color de acento, escala, fuente y tamaño | Probado |
+| Keybinds | Clic derecho sobre cualquier opción para asignarle una tecla | Probado |
 | Bot | — | Pendiente (ver [PLAN.md](PLAN.md)) |
 
 Las opciones se guardan en `config.json`, junto a la DLL.
