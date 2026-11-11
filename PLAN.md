@@ -1,16 +1,27 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 5 (Labels) con código completo, **pendiente de probar en el juego**, rama `fase-5`. Fases 1 a 4 probadas
-  por el usuario (de la 3 falta *Show trajectory*).
+- Fase: 6 (Interface y Shortcuts) con código completo, **pendiente de probar en el juego**, rama `fase-6`.
+  Fases 1 a 5 probadas por el usuario (de la 3 falta *Show trajectory*).
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: que el usuario pruebe la fase 5. Después: merge de `fase-5` a `main` y fase 6. Pendientes sueltos: *Show trajectory* y que
-  *Instant complete* teletransporte al jugador al final del nivel mientras sale la animación (idea del usuario).
+- Próximo paso: que el usuario pruebe la fase 6. Después: merge de `fase-6` a `main` y fase 7 (Bot).
+- Pendientes para la fase final de retoques (pedidos por el usuario el 2026-11-11):
+  - Rediseño visual del panel y de los labels (ahora es un diseño inicial).
+  - Que el usuario pueda **mover los labels de sitio** dentro del juego.
+  - *Instant complete*: teletransportar al jugador al final del nivel mientras sale la animación.
+  - *Show trajectory* (fase 3).
 - Notas / bloqueos:
-  - **Fase 5 sin ejecutar en el juego.** Los labels salen arriba a la izquierda y solo dentro de un nivel. El tiempo
-    es la suma de los `dt` de `GJBaseGameLayer::update` desde el último `resetLevel` (no el contador interno del
-    juego). El CPS cuenta clic izquierdo, Espacio, Flecha arriba y W en el hook de raw input. Faltan de la lista
-    final: Best Run, Run From, Testmode, labels personalizados, presets y "Show in editor".
+  - **Fase 6 sin ejecutar en el juego.** Dudas a mirar al probar: el cambio de fuente (se reconstruye el atlas y
+    la textura antes de `NewFrame`) y los atajos de checkpoint (se llaman los manejadores de `UILayer` con
+    argumentos nulos, porque no los usan).
+  - **Keybinds**: clic derecho sobre cualquier casilla o botón (`gui/keybinds.cpp`). La opción se identifica por
+    su texto: **no puede haber dos opciones con el mismo texto**. Con el panel cerrado, las opciones se dibujan un
+    frame en una ventana invisible para que la tecla use el mismo código que el clic (`gui/menu.cpp`).
+    El StartPos switcher sigue con Q/E fijas.
+  - **Labels**: salen arriba a la izquierda y solo dentro de un nivel. El tiempo es la suma de los `dt` de
+    `GJBaseGameLayer::update` desde el último `resetLevel`. El CPS cuenta clic izquierdo, Espacio, Flecha arriba
+    y W en el hook de raw input. Faltan de la lista final: Best Run, Run From, Testmode, labels personalizados,
+    presets y "Show in editor".
   - **Hooks de nivel compartidos**: `PlayLayer::resetLevel` y `GJBaseGameLayer::update` se hookean una sola vez en
     `src/core/game.cpp`; las features se apuntan con `core::game::onResetLevel` / `onUpdate` (MinHook no admite dos
     hooks sobre la misma función). `core::game::playLayer()` da el nivel actual.
@@ -56,8 +67,8 @@
     juego (libera la DLL), compilar, inyectar otra vez.
   - Las capturas de pantalla externas (GDI/PrintWindow) no reflejan lo que dibuja el juego a
     pantalla completa; para verificar el render hay que leer el framebuffer desde la DLL.
-  - Pendiente menor: la posición de las ventanas no se guarda (`IniFilename = nullptr`), va con
-    la fase 6. No se probó el cambio ventana <-> pantalla completa con el menú cargado.
+  - La posición de las ventanas se guarda en `gdmenu_layout.ini` junto a la DLL. No se probó el cambio
+    ventana <-> pantalla completa con el menú cargado.
 
 ## Fase 1 — Esqueleto
 - [x] CMakeLists con MinHook, ImGui y nlohmann/json vía FetchContent
@@ -94,12 +105,13 @@
 ## Fase 5 — Labels
 - [x] FPS, CPS, porcentaje, intentos, tiempo, reloj
 - [x] Cheat indicator, noclip accuracy
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-11)
 
 ## Fase 6 — Interface y Shortcuts
-- [ ] Temas, color de acento, escala, fuente
-- [ ] Keybinds (clic derecho en cualquier opción)
-- [ ] Atajos: reiniciar nivel, toggle practice, checkpoints
+- [x] Temas, color de acento, escala, fuente
+- [x] Keybinds (clic derecho en cualquier opción)
+- [x] Atajos: reiniciar nivel, toggle practice, checkpoints
+- [ ] Probado dentro del juego
 
 ## Fase 7 — Bot (al final)
 - [ ] Grabar inputs
@@ -146,14 +158,14 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] Presets · [`] FPS · [ ] Testmode · [ ] Run From · [`] Attempt · [`] Percentage · [`] Level Time · [ ] Best Run ·
 [`] Clock · [`] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
 
-**Shortcuts**: [`] StartPos switcher (no sale en la captura, se mantiene) · [ ] P1 Jump · [ ] P2 Jump · [ ] Show Options · [ ] Uncomplete Level · [ ] Restart Level ·
-[ ] Toggle Practice Mode · [ ] Place Checkpoint · [ ] Remove Checkpoint · [ ] Inject DLL · [ ] Save Folder ·
+**Shortcuts**: [`] StartPos switcher (no sale en la captura, se mantiene) · [ ] P1 Jump · [ ] P2 Jump · [ ] Show Options · [ ] Uncomplete Level · [~] Restart Level ·
+[~] Toggle Practice Mode · [~] Place Checkpoint · [~] Remove Checkpoint · [ ] Inject DLL · [ ] Save Folder ·
 [ ] Reset BG Volume · [ ] Reset SFX Volume
 
-**Keybinds**: [x] Open Menu (Tab) · [ ] In-game only · [ ] Clic derecho en cualquier opción para asignarle una tecla
+**Keybinds**: [x] Open Menu (Tab) · [ ] In-game only · [~] Clic derecho en cualquier opción para asignarle una tecla
 
-**Interface**: [ ] Theme · [ ] UI Scale · [ ] Font · [ ] Font Size · [ ] Reload Fonts · [ ] Layout Type · [ ] Style ·
-[ ] Enable Blur · [ ] Animate Windows · [ ] Accent Color · [ ] Background Color · [ ] Language · [ ] Search
+**Interface**: [~] Theme · [~] UI Scale · [~] Font · [~] Font Size · [ ] Reload Fonts · [ ] Layout Type · [ ] Style ·
+[ ] Enable Blur · [ ] Animate Windows · [~] Accent Color · [ ] Background Color · [ ] Language · [ ] Search
 
 (*) Chocan con la regla de `AGENTS.md` "nada de funciones para subir completions ni interactuar con servidores de
 GD". El usuario decidió hacerlas igualmente (2026-11-11), ver Estado actual.

@@ -57,6 +57,8 @@ int main(int argc, char** argv) {
         {"kLevelComplete", sig::kLevelComplete},
         {"kCurrentPercent", sig::kCurrentPercent},
         {"kUpdateAttempts", sig::kUpdateAttempts},
+        {"kUiOnCheck", sig::kUiOnCheck},
+        {"kUiOnDeleteCheck", sig::kUiOnDeleteCheck},
     };
 
     int failed = 0;

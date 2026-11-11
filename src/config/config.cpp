@@ -17,6 +17,10 @@ void init(HMODULE self) {
     g_path = std::filesystem::path(path).parent_path() / L"config.json";
 }
 
+std::string siblingPath(const char* fileName) {
+    return (g_path.parent_path() / fileName).string();
+}
+
 nlohmann::json load() {
     std::ifstream file(g_path);
     if (!file) return nlohmann::json::object();

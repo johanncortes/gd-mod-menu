@@ -2,12 +2,11 @@
 
 #include <windows.h>
 
-#include <imgui.h>
-
 #include "core/game.hpp"
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
+#include "gui/widgets.hpp"
 
 namespace features {
 
@@ -26,15 +25,9 @@ void InstantComplete::init(bool gameAvailable) {
 }
 
 void InstantComplete::drawUI() {
-    // Solo se puede pulsar dentro de un nivel
-    void* playLayer = m_available ? core::game::playLayer() : nullptr;
-    ImGui::BeginDisabled(!playLayer);
-    if (ImGui::Button("Instant complete")) g_levelComplete(playLayer);
-    ImGui::EndDisabled();
-    if (!m_available) {
-        ImGui::SameLine();
-        ImGui::TextDisabled("(no disponible)");
-    }
+    // Fuera de un nivel el botón (y su tecla) no hace nada
+    void* playLayer = core::game::playLayer();
+    if (gui::button("Instant complete", m_available) && playLayer) g_levelComplete(playLayer);
 }
 
 } // namespace features
