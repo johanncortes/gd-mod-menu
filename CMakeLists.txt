@@ -65,7 +65,11 @@ add_library(gdmenu SHARED
     src/features/features.cpp
     src/features/global/speedhack.cpp
     src/features/global/fps_bypass.cpp
-    src/features/global/tps_bypass.cpp)
+    src/features/global/tps_bypass.cpp
+    src/features/patch_feature.cpp
+    src/features/player/noclip.cpp
+    src/features/player/hitboxes.cpp
+    src/features/player/respawn_delay.cpp)
 target_include_directories(gdmenu PRIVATE src)
 target_link_libraries(gdmenu PRIVATE minhook imgui nlohmann_json::nlohmann_json opengl32)
 target_compile_definitions(gdmenu PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE
@@ -78,7 +82,13 @@ add_executable(injector injector/main.cpp)
 target_compile_definitions(injector PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
 target_compile_options(injector PRIVATE /W4 /utf-8)
 
+# --- Comprobador de firmas: sigcheck.exe <GeometryDash.exe> (sin abrir el juego) ---
+add_executable(sigcheck tools/sigcheck.cpp src/core/memory.cpp)
+target_include_directories(sigcheck PRIVATE src)
+target_compile_definitions(sigcheck PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+target_compile_options(sigcheck PRIVATE /W4 /utf-8)
+
 # Todo junto en build/<Config>/
-set_target_properties(gdmenu injector PROPERTIES
+set_target_properties(gdmenu injector sigcheck PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

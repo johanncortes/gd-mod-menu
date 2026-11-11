@@ -14,6 +14,10 @@ void update();
 
 // Contenido de cada ventana del panel.
 void drawGlobal();
+void drawPlayer();
+
+// Lo que se dibuja sobre el juego aunque el panel esté cerrado (contador de noclip...).
+void drawOverlay();
 
 // true si hay alguna función de trampa activa (para el Cheat Indicator de la fase 5).
 bool cheatsActive();

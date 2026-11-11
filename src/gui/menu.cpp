@@ -22,7 +22,7 @@ const Window kWindows[] = {
     {"Global", features::drawGlobal},
     {"Level", nullptr},
     {"Bypass", nullptr},
-    {"Player", nullptr},
+    {"Player", features::drawPlayer},
     {"Bot", nullptr},
     {"Creator", nullptr},
     {"Labels", nullptr},
@@ -47,6 +47,7 @@ bool isMenuOpen() { return g_open; }
 
 void draw() {
     ImGui::GetIO().MouseDrawCursor = g_open && osCursorHidden();
+    features::drawOverlay();
     if (!g_open) return;
 
     // Posición inicial: rejilla de 5 columnas; el alto se ajusta al contenido
