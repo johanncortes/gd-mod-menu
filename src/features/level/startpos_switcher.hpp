@@ -9,7 +9,7 @@ namespace features {
 // (PlayLayer::switchToStartPosObject), con funciones y offsets leídos de kSwitchStartPos.
 class StartPosSwitcher {
 public:
-    void init();
+    void init(bool gameAvailable); // gameAvailable: core::game::init() funcionó
     void enable();
     void disable();
     void update();      // una vez por frame: mira las teclas

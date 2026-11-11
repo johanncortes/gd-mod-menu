@@ -24,7 +24,7 @@
 | PlayLayer::setupHasCompleted() | GeometryDash.exe | inicio de función, ver `kSetupHasCompleted` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140504710. Hook del auto practice: después llama a togglePracticeMode(true) (fase 4) |
 | PlayLayer::togglePracticeMode(bool) | GeometryDash.exe | inicio de función, ver `kTogglePracticeMode` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140519FF0. Solo se llama, no se hookea (fase 4) |
 | PauseLayer::customSetup() | GeometryDash.exe | inicio de función, ver `kPauseLayerSetup` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404D68E0. Hook: tras construir el menú de pausa lo oculta (fase 4) |
-| GJBaseGameLayer::getStartPosObjectsForCurrentMode() | GeometryDash.exe | inicio de función, ver `kStartPosObjects` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1403190F0. Devuelve un CCArray autorelease con los StartPos válidos. Solo se llama (fase 4) |
+| GJBaseGameLayer::getStartPosObjectsForCurrentMode() | GeometryDash.exe | inicio de función, ver `kStartPosObjects` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1403190F0. No se llama (fuera del editor y en modo normal devuelve una lista vacía): de la firma se lee en +41 el offset de `m_startPosObjects` (+0x3278), el CCArray con todos los StartPos, que `PlayLayer::addObject` rellena en cualquier nivel (fase 4) |
 | PauseLayer::onResume: tramo final (switchToStartPosObject en línea) | GeometryDash.exe | ver `kSwitchStartPos` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404DAD4C. No se parchea: de la firma se leen el global de GameManager (0x14090BFD0), m_playLayer (+0x230), m_startPosObject (+0x3270), el byte de test mode (+0x3328), los slots 0x5B0 (resetLevel) y 0x430, y las direcciones de resetLevelFromStart (0x140518A50), updateCamera (0x140345C60), updateTestModeLabel (0x140505ED0) y startMusic (0x14051AED0) (fase 4) |
 | GameManager::isIconUnlocked(int, IconType) | GeometryDash.exe | inicio de función, ver `kIsIconUnlocked` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1402773D0. Parche `B0 01 C3` (mov al,1; ret) (fase 4) |
 | GameManager::isColorUnlocked(int, UnlockType) | GeometryDash.exe | inicio de función, ver `kIsColorUnlocked` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1402777A0. Parche `B0 01 C3` (fase 4) |
@@ -37,6 +37,8 @@
 | CCTextInputNode::onTextFieldInsertText: máximo al escribir | GeometryDash.exe | ver `kTextLimitType` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1400578A0. Parche en +16: `7C` -> `EB` (fase 4) |
 | Filtro de caracteres de los campos de texto | GeometryDash.exe | ver `kTextFilter` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1400540F1 (función en 0x140053E20). Parche en +6: `74` -> `EB`, acepta cualquier carácter (fase 4) |
 | CCNode::setVisible; CCArray::count, objectAtIndex; CCObject::retain, release | libcocos2d.dll | exports por nombre | — | hide pause menu y StartPos switcher (fase 4) |
+| ShareLevelLayer::onShare: comprobación de nivel verificado | GeometryDash.exe | ver `kVerify` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140631DF6 (función en 0x140631CE0). Parche en +15: `0F 84` -> `90 E9`, no sale el aviso "Unverified" (fase 4) |
+| PlayLayer::levelComplete() | GeometryDash.exe | inicio de función, ver `kLevelComplete` | 2.2091, build Steam 26002420 | 0x1405061B0. Solo se llama (botón Instant complete); no se toca su anti-trampas (fase 4) |
 
 ## Notas de ingeniería inversa
 

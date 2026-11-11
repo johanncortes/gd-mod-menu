@@ -53,6 +53,8 @@ int main(int argc, char** argv) {
         {"kTextLimitPaste", sig::kTextLimitPaste},
         {"kTextLimitType", sig::kTextLimitType},
         {"kTextFilter", sig::kTextFilter},
+        {"kVerify", sig::kVerify},
+        {"kLevelComplete", sig::kLevelComplete},
     };
 
     int failed = 0;

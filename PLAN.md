@@ -1,7 +1,8 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 4 (Level / Bypass / Creator) con código completo salvo *Verify bypass*, **pendiente de probar en el juego**.
+- Fase: 4 (Level / Bypass / Creator) con código completo, **pendiente de probar en el juego** (primera prueba del
+  usuario: el StartPos switcher no hacía nada en niveles online; corregido, falta volver a probar).
   Fases 1, 2 y 3 probadas (de la 3 falta *Show trajectory*). Rama de trabajo: `fase-4`.
 - Último agente: Claude (Fable 5.2)
 - Próximo paso: que el usuario pruebe la fase 4. Después: merge de `fase-4` a `main`, *Show trajectory* y fase 5.
@@ -10,8 +11,13 @@
     instalado (`sigcheck`). Dudas a mirar al probar: *Auto practice* llama a `togglePracticeMode(true)` justo después
     de `setupHasCompleted` (puede sonar la música de práctica antes de que arranque el nivel); *StartPos switcher*
     hace el cambio desde el hook de render, fuera de la pausa (el juego solo lo hace desde el menú de pausa).
-  - **Verify bypass sin hacer**: sirve para subir niveles sin verificar, y la regla de `AGENTS.md` dice que nada de
-    interactuar con los servidores. Pendiente de que el usuario decida.
+  - **Verify bypass e Instant complete**: el usuario pidió hacerlos (2026-11-11) aunque rozan la regla de
+    `AGENTS.md` sobre servidores; su argumento es que el anti-trampas del propio juego ya se ocupa. Por eso *Instant
+    complete* solo llama a `PlayLayer::levelComplete()` y **no** toca el anti-trampas del juego. No añadir bypass de
+    ese anti-trampas sin que el usuario lo pida.
+  - **StartPos switcher**: usa `m_startPosObjects` directamente. La función del juego
+    `getStartPosObjectsForCurrentMode` devuelve lista vacía en niveles online en modo normal (por eso falló la
+    primera prueba). Si no hay StartPos, al pulsar Q/E sale el aviso "Este nivel no tiene StartPos".
   - **Object limit bypass**: en 2.2091 ya no existe ese límite en el editor; en su lugar se hizo *Custom object
     bypass* (los dos límites de los objetos personalizados), que es lo que trae la lista final.
   - **Show trajectory sin hacer**: hay que crear un PlayerObject falso, copiarle el estado del real y simular
@@ -77,7 +83,8 @@
 - [x] Unlock icons, character limit bypass, character filter bypass
 - [x] Custom object bypass (sustituye a object limit bypass), free scroll, level copy bypass
 - [x] StartPos switcher (Q / E)
-- [ ] Verify bypass (pendiente de decisión, ver Estado actual)
+- [x] Verify bypass
+- [x] Instant complete (botón)
 - [ ] Probado dentro del juego
 
 ## Fase 5 — Labels
@@ -113,7 +120,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] No Shaders · [ ] Pause Countdown · [ ] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
 
 **Bypass**: [ ] Allow Low Volume · [`] Character Filter Bypass · [`] Character Limit Bypass · [ ] Checkpoint Limit ·
-[ ] Comment History Bypass · [ ] Quick Chests · [ ] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
+[ ] Comment History Bypass · [ ] Quick Chests · [`] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
 [ ] Music Customizer · [ ] Pause Buffering · [`] Practice Music Sync · [`] Unlock Icons · [ ] Unlock Main Levels ·
 [ ] Unlock Paths · [ ] Unlock Shops · [ ] Unlock Vaults
 
@@ -128,7 +135,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 
 **Creator**: [`] Custom Object Bypass · [ ] Default Song Bypass · [`] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
 [`] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [ ] Slider Limit ·
-[ ] Smooth Editor Trail · [ ] Verify Bypass (*)
+[ ] Smooth Editor Trail · [`] Verify Bypass (*)
 
 **Labels**: [ ] Show Labels · [ ] Show in Editor · [ ] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
 [ ] Presets · [ ] FPS · [ ] Testmode · [ ] Run From · [ ] Attempt · [ ] Percentage · [ ] Level Time · [ ] Best Run ·
@@ -144,8 +151,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] Enable Blur · [ ] Animate Windows · [ ] Accent Color · [ ] Background Color · [ ] Language · [ ] Search
 
 (*) Chocan con la regla de `AGENTS.md` "nada de funciones para subir completions ni interactuar con servidores de
-GD": *Instant Complete* da un completado falso y *Verify Bypass* sirve para subir niveles sin verificar. Decidir con
-el usuario antes de hacerlas; mientras tanto, cualquier trampa activa debe ir con Safe Mode.
+GD". El usuario decidió hacerlas igualmente (2026-11-11), ver Estado actual.
 
 ## Mantenimiento por actualización de GD
 1. Ver qué firmas fallan: `build/Release/sigcheck.exe "<ruta>/GeometryDash.exe"` (o el panel, que las marca "no disponible").

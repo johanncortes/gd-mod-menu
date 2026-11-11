@@ -5,9 +5,11 @@
 #include <nlohmann/json.hpp>
 
 #include "config/config.hpp"
+#include "core/game.hpp"
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
+#include "features/bypass/instant_complete.hpp"
 #include "features/global/fps_bypass.hpp"
 #include "features/global/speedhack.hpp"
 #include "features/global/tps_bypass.hpp"
@@ -57,8 +59,11 @@ PatchFeature g_textLimit("Character limit bypass", "character_limit",
                           {sig::kTextLimitType, sig::kTextLimitTypeJump, {0xEB}}});
 // Los campos de texto aceptan cualquier carácter
 PatchFeature g_textFilter("Character filter bypass", "character_filter", sig::kTextFilter, sig::kTextFilterJump, {0xEB});
+InstantComplete g_instantComplete;
 
 // --- Creator ---
+// El nivel se puede subir aunque no esté verificado
+PatchFeature g_verify("Verify bypass", "verify", sig::kVerify, sig::kVerifyJump, {0x90, 0xE9});
 // ret al inicio de la función que devuelve la cámara del editor a los límites del nivel
 PatchFeature g_freeScroll("Free scroll", "free_scroll", sig::kConstrainGameLayer, 0, {0xC3});
 // El botón de copiar sale siempre y nunca pide contraseña
@@ -115,6 +120,7 @@ void loadConfig() {
         g_freeScroll.load(creator);
         g_levelCopy.load(creator);
         g_customObjects.load(creator);
+        g_verify.load(creator);
     } catch (const nlohmann::json::exception& e) {
         // Un valor con el tipo equivocado: se queda lo cargado hasta ese punto
         core::logMsg("config.json con valores inválidos: %s", e.what());
@@ -150,6 +156,7 @@ void saveConfig() {
     g_freeScroll.save(creator);
     g_levelCopy.save(creator);
     g_customObjects.save(creator);
+    g_verify.save(creator);
     config::save(data);
     g_dirty = false;
 }
@@ -174,7 +181,10 @@ void init() {
     g_freeScroll.init();
     g_levelCopy.init();
     g_customObjects.init();
-    g_startPosSwitcher.init();
+    const bool gameAvailable = core::game::init();
+    g_startPosSwitcher.init(gameAvailable);
+    g_instantComplete.init(gameAvailable);
+    g_verify.init();
     g_autoPractice.init();
     g_hidePause.init();
     g_respawnDelay.init(destroyPlayer);
@@ -206,6 +216,7 @@ void shutdown() {
     g_freeScroll.disable();
     g_levelCopy.disable();
     g_customObjects.disable();
+    g_verify.disable();
     g_ready = false;
 }
 
@@ -244,12 +255,14 @@ void drawBypass() {
     changed |= g_textLimit.drawUI();
     changed |= g_textFilter.drawUI();
     if (changed) markDirty();
+    g_instantComplete.drawUI();
 }
 
 void drawCreator() {
     bool changed = g_freeScroll.drawUI();
     changed |= g_levelCopy.drawUI();
     changed |= g_customObjects.drawUI();
+    changed |= g_verify.drawUI();
     if (changed) markDirty();
 }
 

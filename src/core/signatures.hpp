@@ -102,10 +102,13 @@ inline constexpr char kPauseLayerSetup[] =
     "48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 30 4C 8B F1";
 
 // GJBaseGameLayer::getStartPosObjectsForCurrentMode(), inicio de la función.
-// Devuelve un CCArray nuevo (autorelease) con los StartPos que valen para el modo actual.
+// Esa función filtra (en niveles online y modo normal devuelve una lista vacía), así que no se
+// llama: de la firma solo se lee kStartPosObjectsArray, el offset de m_startPosObjects
+// (CCArray con todos los StartPos del nivel, ordenados).
 inline constexpr char kStartPosObjects[] =
     "48 89 74 24 10 57 48 83 EC 20 48 8B F9 FF 15 ?? ?? ?? ?? 48 8B 97 ?? ?? ?? ?? 48 8B F0 "
     "83 BA ?? ?? ?? ?? 02 75 1E 48 8B 97 ?? ?? ?? ??";
+inline constexpr int kStartPosObjectsArray = 41;
 
 // PauseLayer::onResume: el tramo final, que es PlayLayer::switchToStartPosObject en línea.
 // El switcher repite esos mismos pasos; todo lo que necesita se lee de la propia firma:
@@ -180,5 +183,16 @@ inline constexpr int kTextLimitTypeJump = 16;
 inline constexpr char kTextFilter[] =
     "0F B6 2E 4D 85 ED 74 42 45 84 E4 74 06 40 80 FD 0A 74 37 49 8B FE 49 83 7E 18 0F 76 03 49 8B 3E 49 8B 46 10";
 inline constexpr int kTextFilterJump = 6;
+
+// ShareLevelLayer::onShare: "nivel verificado (== 1) o no listado? subir : aviso Unverified".
+// kVerifyJump es el primer `je`; como `jmp` (90 E9) siempre sigue con la subida.
+inline constexpr char kVerify[] =
+    "8B 87 ?? ?? ?? ?? 2B 87 ?? ?? ?? ?? 83 F8 01 0F 84 ?? ?? ?? ?? 80 BF ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ??";
+inline constexpr int kVerifyJump = 15;
+
+// PlayLayer::levelComplete(), inicio de la función. Solo se llama (Instant complete).
+inline constexpr char kLevelComplete[] =
+    "48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D A8 D8 FD FF FF "
+    "48 81 EC 00 03 00 00 0F 29 70 C8 0F 29 78 B8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 85 ?? ?? ?? ??";
 
 } // namespace core::signatures

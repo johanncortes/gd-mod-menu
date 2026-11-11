@@ -15,8 +15,8 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Player | Show trajectory | Pendiente |
 | Level | Auto practice mode, practice music sync, hide pause menu | Hecho, falta probar en el juego |
 | Level | StartPos switcher (Q = anterior, E = siguiente) | Hecho, falta probar en el juego |
-| Bypass | Unlock icons, character limit bypass, character filter bypass | Hecho, falta probar en el juego |
-| Creator | Free scroll, level copy bypass, custom object bypass | Hecho, falta probar en el juego |
+| Bypass | Unlock icons, character limit bypass, character filter bypass, instant complete | Hecho, falta probar en el juego |
+| Creator | Free scroll, level copy bypass, custom object bypass, verify bypass | Hecho, falta probar en el juego |
 | Labels, Shortcuts, Interface, Bot | — | Pendiente (ver [PLAN.md](PLAN.md)) |
 
 Las opciones se guardan en `config.json`, junto a la DLL.

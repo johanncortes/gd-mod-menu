@@ -59,6 +59,7 @@ add_library(gdmenu SHARED
     src/core/hooks.cpp
     src/core/input.cpp
     src/core/memory.cpp
+    src/core/game.cpp
     src/config/config.cpp
     src/gui/menu.cpp
     src/gui/widgets.cpp
@@ -67,6 +68,7 @@ add_library(gdmenu SHARED
     src/features/global/fps_bypass.cpp
     src/features/global/tps_bypass.cpp
     src/features/patch_feature.cpp
+    src/features/bypass/instant_complete.cpp
     src/features/level/auto_practice.cpp
     src/features/level/hide_pause.cpp
     src/features/level/startpos_switcher.cpp

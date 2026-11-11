@@ -9,6 +9,7 @@
 #include <imgui.h>
 #include <nlohmann/json.hpp>
 
+#include "core/game.hpp"
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
@@ -25,14 +26,12 @@ constexpr int kNextKey = 'E';
 
 using PlayLayerFn = void (*)(void* playLayer);
 using PlayLayerFloatFn = void (*)(void* playLayer, float value);
-using StartPosListFn = void* (*)(void* gameLayer);          // devuelve un CCArray*
 using ArrayCountFn = unsigned (*)(const void* array);
 using ArrayAtFn = void* (*)(void* array, unsigned index);
 using RefFn = void (*)(void* object);
 
-// Del exe (todo sale de la firma kSwitchStartPos)
-void** g_gameManager = nullptr; // puntero global al GameManager
-int32_t g_playLayerOffset = 0;  // GameManager::m_playLayer
+// Del exe (sale de las firmas kSwitchStartPos y kStartPosObjects)
+int32_t g_startPosListOffset = 0; // GJBaseGameLayer::m_startPosObjects (CCArray*)
 int32_t g_startPosOffset = 0;   // PlayLayer::m_startPosObject
 int32_t g_testModeOffset = 0;   // PlayLayer: byte "se juega desde un StartPos"
 int32_t g_resetLevelSlot = 0;   // posición en el vtable
@@ -41,7 +40,6 @@ PlayLayerFn g_resetFromStart = nullptr;
 PlayLayerFloatFn g_updateCamera = nullptr;
 PlayLayerFn g_updateTestLabel = nullptr;
 PlayLayerFn g_startMusic = nullptr;
-StartPosListFn g_startPosList = nullptr;
 
 // De libcocos2d.dll
 ArrayCountFn g_arrayCount = nullptr;
@@ -80,11 +78,6 @@ bool plausibleOffset(int32_t value) {
     return value > 0 && value < 0x10000;
 }
 
-void* currentPlayLayer() {
-    void* gameManager = *g_gameManager;
-    return gameManager ? fieldAt<void*>(gameManager, g_playLayerOffset) : nullptr;
-}
-
 // Lo mismo que PlayLayer::switchToStartPosObject (está en línea en PauseLayer::onResume).
 // startPos == nullptr es el inicio del nivel.
 void switchTo(void* playLayer, void* startPos) {
@@ -112,7 +105,11 @@ bool gameFocused() {
 
 } // namespace
 
-void StartPosSwitcher::init() {
+void StartPosSwitcher::init(bool gameAvailable) {
+    if (!gameAvailable) {
+        core::logMsg("StartPos switcher: no disponible (GameManager)");
+        return;
+    }
     HMODULE exe = GetModuleHandleW(nullptr);
     uint8_t* code = core::memory::findPattern(exe, sig::kSwitchStartPos);
     uint8_t* list = core::memory::findPattern(exe, sig::kStartPosObjects);
@@ -121,8 +118,6 @@ void StartPosSwitcher::init() {
                      list ? "" : "kStartPosObjects");
         return;
     }
-    g_gameManager = relTarget<void**>(code + sig::kSwitchGameManager);
-    g_playLayerOffset = readInt(code + sig::kSwitchPlayLayer);
     g_startPosOffset = readInt(code + sig::kSwitchStartPosObject);
     g_testModeOffset = readInt(code + sig::kSwitchTestMode);
     g_resetLevelSlot = readInt(code + sig::kSwitchResetLevelSlot);
@@ -131,8 +126,8 @@ void StartPosSwitcher::init() {
     g_updateCamera = relTarget<PlayLayerFloatFn>(code + sig::kSwitchUpdateCamera);
     g_updateTestLabel = relTarget<PlayLayerFn>(code + sig::kSwitchUpdateTestLabel);
     g_startMusic = relTarget<PlayLayerFn>(code + sig::kSwitchStartMusic);
-    g_startPosList = reinterpret_cast<StartPosListFn>(list);
-    if (!plausibleOffset(g_playLayerOffset) || !plausibleOffset(g_startPosOffset) || !plausibleOffset(g_testModeOffset) ||
+    g_startPosListOffset = readInt(list + sig::kStartPosObjectsArray);
+    if (!plausibleOffset(g_startPosListOffset) || !plausibleOffset(g_startPosOffset) || !plausibleOffset(g_testModeOffset) ||
         !plausibleOffset(g_resetLevelSlot) || !plausibleOffset(g_virtualSlot)) {
         core::logMsg("StartPos switcher: no disponible (offsets inesperados)");
         return;
@@ -153,11 +148,14 @@ void StartPosSwitcher::enable() { m_enabled = true; }
 void StartPosSwitcher::disable() { m_enabled = false; }
 
 void StartPosSwitcher::step(int direction) {
-    void* playLayer = currentPlayLayer();
+    void* playLayer = core::game::playLayer();
     if (!playLayer) return;
-    void* list = g_startPosList(playLayer);
+    // Todos los StartPos del nivel (también en niveles online y en modo normal)
+    void* list = fieldAt<void*>(playLayer, g_startPosListOffset);
     const int total = list ? static_cast<int>(g_arrayCount(list)) : 0;
-    if (total == 0) return;
+    g_shownAt = GetTickCount64();
+    g_shownIndex = g_shownTotal = 0;
+    if (total == 0) return; // el aviso dirá que el nivel no tiene StartPos
 
     // Posición actual: 0 = inicio del nivel, 1..total = StartPos
     void* current = fieldAt<void*>(playLayer, g_startPosOffset);
@@ -169,7 +167,6 @@ void StartPosSwitcher::step(int direction) {
     switchTo(playLayer, index == 0 ? nullptr : g_arrayAt(list, static_cast<unsigned>(index - 1)));
     g_shownIndex = index;
     g_shownTotal = total;
-    g_shownAt = GetTickCount64();
 }
 
 void StartPosSwitcher::update() {
@@ -194,7 +191,8 @@ bool StartPosSwitcher::drawUI() {
 void StartPosSwitcher::drawOverlay() {
     if (!m_available || !m_enabled || GetTickCount64() - g_shownAt > 1500) return;
     char text[48];
-    snprintf(text, sizeof(text), "StartPos %d/%d", g_shownIndex, g_shownTotal);
+    if (g_shownTotal == 0) snprintf(text, sizeof(text), "Este nivel no tiene StartPos");
+    else snprintf(text, sizeof(text), "StartPos %d/%d", g_shownIndex, g_shownTotal);
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
     const ImVec2 size = ImGui::CalcTextSize(text);
     const ImVec2 pos{viewport->Pos.x + (viewport->Size.x - size.x) * 0.5f, viewport->Pos.y + viewport->Size.y - size.y - 12.f};
