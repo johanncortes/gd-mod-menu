@@ -55,7 +55,7 @@
 - [x] FPS bypass
 - [x] Physics bypass (TPS)
 - [x] Guardar/cargar config.json
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego
 
 ## Fase 3 — Player
 - [x] Noclip (+ contador de muertes y precisión)
