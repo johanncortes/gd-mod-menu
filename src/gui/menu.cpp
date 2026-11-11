@@ -82,7 +82,7 @@ void drawWindows() {
         const float y = gap + (i / 5) * (h + gap);
         ImGui::SetNextWindowPos({x, y}, ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowSizeConstraints({w * scale, 0.f}, {FLT_MAX, FLT_MAX});
-        if (ImGui::Begin(window.name, nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        if (ImGui::Begin(window.name, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
             if (window.draw) window.draw();
             else ImGui::TextDisabled("(vacío)");
         }

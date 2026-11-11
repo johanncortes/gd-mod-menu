@@ -38,9 +38,9 @@ constexpr float kMinFontSize = 10.f, kMaxFontSize = 28.f;
 int g_theme = 0;
 float g_accent[3] = {0.26f, 0.59f, 0.98f}; // azul de ImGui
 float g_scale = 1.f;
-int g_font = 0;
+int g_font = 1; // 1 = Segoe UI (fuente moderna por defecto en Windows)
 float g_fontSize = 16.f;
-bool g_fontPending = false;
+bool g_fontPending = true; // cargar la fuente al primer frame
 
 std::string g_layoutPath; // ImGui guarda el puntero, tiene que seguir vivo
 
@@ -92,7 +92,7 @@ void applyStyle() {
     style.ItemSpacing       = ImVec2(8.f, 6.f);
     style.ItemInnerSpacing  = ImVec2(6.f, 4.f);
     style.ScrollbarSize     = 12.f;
-    style.WindowTitleAlign  = ImVec2(0.0f, 0.5f);
+    style.WindowTitleAlign  = ImVec2(0.5f, 0.5f);
 
     // El color de acento sustituye al azul de los elementos activos
     const auto accent = [](float alpha) { return ImVec4(g_accent[0], g_accent[1], g_accent[2], alpha); };
@@ -155,7 +155,7 @@ void applyPending() {
 
 bool drawUI() {
     bool changed = false;
-    ImGui::PushItemWidth(120.f * g_scale);
+    ImGui::PushItemWidth(155.f * g_scale);
 
     changed |= ImGui::Combo("Tema", &g_theme, kThemes, IM_ARRAYSIZE(kThemes));
     changed |= ImGui::ColorEdit3("Color de acento", g_accent, ImGuiColorEditFlags_NoInputs);
