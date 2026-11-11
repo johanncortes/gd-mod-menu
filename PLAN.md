@@ -14,9 +14,13 @@
     no se escribió. Hacerlo en una sesión con el usuario probando (o con permiso para manejar el juego).
   - **Physics bypass**: solo se redirigen las dos constantes del bucle de física. Falta comprobar en el juego que el
     porcentaje y el tiempo del nivel siguen bien con TPS distinto de 240 (no se encontró dónde se calculan).
-  - **REA/Ghidra no funciona en este equipo**: REA exige Ghidra 12.1.x, y Ghidra 12.2 exige JDK 25 (hay JDK 21).
+  - **REA/Ghidra**: REA exige Ghidra 12.1.x. El 2026-11-11 se instaló Ghidra 12.1.4 en
+    `C:\Tools\ghidra_12.1.4_PUBLIC` (`GHIDRA_INSTALL_DIR` de usuario apunta ahí) y Temurin JDK 25; el modo headless
+    arranca. **Falta comprobar REA** tras reiniciar VS Code (el servidor MCP lee la variable al arrancar).
     El reversing de las fases 2 y 3 se hizo con `dumpbin /disasm` (Build Tools) y scripts de Python: referencias
-    RIP, tabla `.pdata` para los límites de función, IAT para los imports y RTTI para los vtables.
+    RIP, tabla `.pdata` para los límites de función, IAT para los imports y RTTI para los vtables. Sirve de plan B.
+  - **Git**: `origin` es `github.com/johanncortes/gd-mod-menu` (privado). Desde la fase 4, cada fase va en su rama
+    `fase-N`: commits pequeños, push tras cada commit y merge a `main` cuando el usuario la confirme probada.
   - **Input de GD**: el juego lee clics y teclas por *raw input* en un hilo aparte
     (`GetRawInputData` en libcocos2d), además de los mensajes de ventana. Bloquear solo en el
     WndProc no basta: el filtro está en `src/core/input.cpp` y cubre los dos caminos. Cualquier
