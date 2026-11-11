@@ -43,6 +43,8 @@
 | PlayLayer::updateAttempts() | GeometryDash.exe | inicio de función, ver `kUpdateAttempts` | 2.2091, build Steam 26002420 | 0x140519D30. No se llama: de la firma se lee en +13 el offset de `m_attempts` (+0x3164) (fase 5) |
 | UILayer::onCheck(CCObject*) | GeometryDash.exe | función entera, ver `kUiOnCheck` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140673050. Botón de poner checkpoint. No usa sus argumentos (saca el PlayLayer de GameManager) y solo actúa en modo práctica. Solo se llama (fase 6) |
 | UILayer::onDeleteCheck(CCObject*) | GeometryDash.exe | función entera, ver `kUiOnDeleteCheck` | 2.2091, build Steam 26002420 | 0x1406730D0. Botón de quitar checkpoint: llama a `PlayLayer::removeCheckpoint(false)`. Solo se llama (fase 6) |
+| GJBaseGameLayer::processCommands(float, bool, bool) | GeometryDash.exe | inicio de función, ver `kProcessCommands` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140342870. Hook del bot (un paso de física). De la firma se lee en +17 el offset del contador de ticks, `m_gameState.m_commandIndex` (+0x3E0) (fase 7) |
+| GJBaseGameLayer::handleButton(bool, int, bool) | GeometryDash.exe | inicio de función, ver `kHandleButton` | 2.2091, build Steam 26002420 | 0x14033C5B0. Hook del bot: aquí se graban los inputs y con el original se reproducen (fase 7) |
 
 ## Notas de ingeniería inversa
 
@@ -75,3 +77,9 @@
   copiar, 1 = copia libre, otro = pide contraseña.
 - **Campos de texto**: `onTextFieldInsertText` recibe el puntero al sub-objeto delegado (this+0x1A0); desde ahí
   `m_maxLabelLength` está en +0xC0.
+- **Inputs y ticks (2.2091)**: `processCommands` copia `m_commandIndex` (+0x3E0) a `m_stepCommandIndex` (+0x3EC), lo
+  incrementa (2 por paso normal, 1 por medio paso) y llama a `processQueuedButtons`, que pasa los inputs pendientes
+  a `handleButton`. `m_commandIndex` se pone a 0 en `PlayLayer::resetLevel` y se restaura al cargar un checkpoint.
+  El juego trae además un replay propio: con el byte +0x3280 activo, recorre un vector en +0x3478 de entradas de
+  16 bytes (botón, pulsado, jugador 2, tick) y llama a `handleButton` cuando el tick coincide con +0x3EC. El bot
+  hace lo mismo desde su hook, sin usar ese vector.

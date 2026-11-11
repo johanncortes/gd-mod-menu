@@ -2,6 +2,8 @@
 
 #include <windows.h>
 
+#include <cfloat>
+
 #include <imgui.h>
 
 #include "core/log.hpp"
@@ -24,7 +26,7 @@ const Window kWindows[] = {
     {"Level", features::drawLevel},
     {"Bypass", features::drawBypass},
     {"Player", features::drawPlayer},
-    {"Bot", nullptr},
+    {"Bot", features::drawBot},
     {"Creator", features::drawCreator},
     {"Labels", features::drawLabels},
     {"Shortcuts", features::drawShortcuts},
@@ -69,16 +71,18 @@ void draw() {
 }
 
 void drawWindows() {
-
-    // Posición inicial: rejilla de 5 columnas; el alto se ajusta al contenido
+    // Posición inicial: rejilla de 5 columnas. El tamaño se ajusta siempre al contenido
+    // (con un ancho mínimo): si no, una ventana que gana opciones se queda recortada con
+    // el tamaño que tenía guardado.
+    const float scale = ImGui::GetIO().FontGlobalScale;
     const float w = 250.f, h = 200.f, gap = 10.f;
     int i = 0;
     for (const Window& window : kWindows) {
         const float x = gap + (i % 5) * (w + gap);
         const float y = gap + (i / 5) * (h + gap);
         ImGui::SetNextWindowPos({x, y}, ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize({w, 0.f}, ImGuiCond_FirstUseEver);
-        if (ImGui::Begin(window.name)) {
+        ImGui::SetNextWindowSizeConstraints({w * scale, 0.f}, {FLT_MAX, FLT_MAX});
+        if (ImGui::Begin(window.name, nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             if (window.draw) window.draw();
             else ImGui::TextDisabled("(vacío)");
         }

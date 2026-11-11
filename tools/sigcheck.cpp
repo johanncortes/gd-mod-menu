@@ -59,6 +59,8 @@ int main(int argc, char** argv) {
         {"kUpdateAttempts", sig::kUpdateAttempts},
         {"kUiOnCheck", sig::kUiOnCheck},
         {"kUiOnDeleteCheck", sig::kUiOnDeleteCheck},
+        {"kProcessCommands", sig::kProcessCommands},
+        {"kHandleButton", sig::kHandleButton},
     };
 
     int failed = 0;
