@@ -1,24 +1,23 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 7 (Bot) con código completo, **pendiente de probar en el juego**, rama `fase-7`. Fases 1 a 6 probadas por
-  el usuario y mergeadas en `main` (de la 3 falta *Show trajectory*).
-- Último agente: Claude (Fable 5.2)
-- Próximo paso: que el usuario pruebe la fase 7. Después: merge de `fase-7` a `main`, la fase final de retoques y
-  luego las funciones de la "Lista ampliada" (segunda captura), por bloques.
+- Fase: 8 (Retoques) sin empezar. Fases 1 a 7 probadas por el usuario y mergeadas en `main` (de la 3 falta
+  *Show trajectory*).
+- Último agente: Claude
+- Próximo paso: fase 8, en una rama `fase-8`.
 - Pendientes para la fase final de retoques (pedidos por el usuario el 2026-11-11):
   - Rediseño visual del panel y de los labels (ahora es un diseño inicial).
   - Que el usuario pueda **mover los labels de sitio** dentro del juego.
   - *Instant complete*: teletransportar al jugador al final del nivel mientras sale la animación.
   - *Show trajectory* (fase 3).
 - Notas / bloqueos:
-  - **Fase 7 sin ejecutar en el juego.** El bot graba en el hook de `handleButton` con el tick de
-    `m_commandIndex` y reproduce desde el hook de `processCommands` (`src/features/bot/bot.cpp`). Si el tick
-    retrocede (reinicio o checkpoint) se descarta lo grabado desde ese tick. Dudas a mirar al probar: si la
-    reproducción es exacta en niveles largos, y qué pasa al reaparecer en práctica con el botón mantenido (el bot
-    apunta que se suelta; si el juego vuelve a saltar solo sin pasar por `handleButton`, ese salto no se graba).
-    Un replay solo vale con los mismos TPS con los que se grabó. Formato: JSON en `replays/` junto a la DLL,
-    `inputs` = lista de `[tick, botón, jugador, pulsado]`.
+  - **Bot**: graba en el hook de `handleButton` con el tick de `m_commandIndex` y reproduce desde el hook de
+    `processCommands` (`src/features/bot/bot.cpp`). Si el tick retrocede (reinicio o checkpoint) se descarta lo
+    grabado desde ese tick. Probado por el usuario en Future Funk (3 minutos idénticos). Un replay solo vale con los
+    mismos TPS con los que se grabó. Formato: JSON en `replays/` junto a la DLL, `inputs` = lista de
+    `[tick, botón, jugador, pulsado]`.
+  - **Ventanas del panel**: se ajustan siempre a su contenido (`AlwaysAutoResize`, ancho mínimo 250 x escala). Antes
+    se quedaban con el tamaño guardado en `gdmenu_layout.ini` y la del bot salía recortada.
   - **Keybinds**: clic derecho sobre cualquier casilla o botón (`gui/keybinds.cpp`). La opción se identifica por
     su texto: **no puede haber dos opciones con el mismo texto**. Con el panel cerrado, las opciones se dibujan un
     frame en una ventana invisible para que la tecla use el mismo código que el clic (`gui/menu.cpp`).
@@ -122,7 +121,7 @@
 - [x] Grabar inputs
 - [x] Reproducir inputs
 - [x] Guardar/cargar replays
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-11)
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[~]` = hecho sin probar,
@@ -154,7 +153,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] No Vehicle Particles · [x] Noclip · [ ] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
 [x] Mostrar hitboxes (no sale en la captura, se mantiene)
 
-**Bot**: [~] Disabled / Record / Playback · [~] Replays (New, Save, Load, Delete) · [~] Ignore Inputs
+**Bot**: [x] Disabled / Record / Playback · [x] Replays (New, Save, Load, Delete) · [x] Ignore Inputs
 
 **Creator**: [x] Custom Object Bypass · [ ] Default Song Bypass · [x] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
 [x] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [ ] Slider Limit ·
