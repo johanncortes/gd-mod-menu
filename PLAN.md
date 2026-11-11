@@ -11,8 +11,8 @@
   - Instant complete mejorado: teletransporta físicamente al jugador (y al segundo jugador en dual) a la meta y reproduce la animación de completado usando `playEndAnimationToPos` y el export `CCNode::setPosition` de `libcocos2d.dll`.
   - Outline nítido en el overlay del noclip y en el aviso del StartPos switcher.
   - Show trajectory: implementado con `CCDrawNode` nativo exportado por `libcocos2d.dll`, dibujando la parábola de trayectoria verde en tiempo real según la velocidad y gravedad del jugador.
-  - Fuente oficial de Geometry Dash (Pusab) embebida en la DLL y cargada en ImGui: utilizada para todos los labels del juego (FPS, CPS, tiempo, porcentaje, intentos, reloj), el aviso de StartPos switcher y el overlay de noclip, con contorno negro en 8 direcciones de alta definición.
-  - Opciones de personalización para el usuario en la ventana Labels: escala de tamaño (0.4x a 2.5x), grosor de contorno (0 a 3.5px), espaciado vertical entre líneas (0 a 12px), toggle para alternar entre fuente Pusab o la del menú, coordenadas manuales X e Y, y botón de restablecer posición.
+  - Rejilla del panel mod reorganizada en 2 filas limpias y espaciadas (fila 0: Global, Level, Bypass, Player, Bot; fila 1: Creator, Labels, Shortcuts, Interface) para eliminar por completo solapamientos entre ventanas, con botón "Reordenar ventanas del panel" en Interface.
+  - Labels unificados y consistentes en la fuente Segoe UI nativa con contorno limpio en 4 direcciones, arrastrables y con tamaño proporcionado y perfectamente alineado.
 - Pendientes para siguientes etapas:
   - Funciones opcionales de la lista final (audios, cosméticos, etc.).
 - Notas / bloqueos:

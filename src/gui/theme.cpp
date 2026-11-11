@@ -12,7 +12,8 @@
 
 #include "config/config.hpp"
 #include "core/log.hpp"
-#include "gui/fonts/pusab.hpp"
+#include "gui/menu.hpp"
+#include "gui/widgets.hpp"
 
 namespace gui::theme {
 
@@ -20,14 +21,13 @@ namespace {
 
 const char* const kThemes[] = {"Oscuro", "Claro", "Clásico"};
 
-// Fuentes: la de ImGui, Pusab (embebida) y algunas de Windows (archivo dentro de C:\Windows\Fonts)
+// Fuentes: la de ImGui y algunas de Windows (archivo dentro de C:\Windows\Fonts)
 struct FontChoice {
     const char* name;
-    const char* file; // nullptr = fuente incluida en ImGui, "pusab" = fuente de GD
+    const char* file; // nullptr = fuente incluida en ImGui
 };
 const FontChoice kFonts[] = {
     {"Segoe UI", "segoeui.ttf"},
-    {"Pusab (Geometry Dash)", "pusab"},
     {"ImGui (por defecto)", nullptr},
     {"Verdana", "verdana.ttf"},
     {"Tahoma", "tahoma.ttf"},
@@ -44,7 +44,6 @@ int g_font = 0; // 0 = Segoe UI
 float g_fontSize = 16.f;
 bool g_fontPending = true; // cargar la fuente al primer frame
 
-ImFont* g_pusabFont = nullptr;
 std::string g_layoutPath; // ImGui guarda el puntero, tiene que seguir vivo
 
 // Colores y escala: se pueden cambiar en cualquier momento
@@ -136,48 +135,26 @@ void applyPending() {
 
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
-    g_pusabFont = nullptr;
 
-    // 1. Cargar fuente de la interfaz del menú
-    ImFont* menuFont = nullptr;
+    ImFont* font = nullptr;
     const FontChoice& choice = kFonts[g_font];
-    if (choice.file && strcmp(choice.file, "pusab") == 0) {
-        ImFontConfig cfg;
-        cfg.FontDataOwnedByAtlas = false;
-        menuFont = io.Fonts->AddFontFromMemoryTTF(
-            const_cast<uint8_t*>(gui::fonts::kPusabData),
-            static_cast<int>(gui::fonts::kPusabDataSize),
-            g_fontSize, &cfg);
-    } else if (const char* file = choice.file) {
+    if (const char* file = choice.file) {
         wchar_t windows[MAX_PATH] = {};
         GetWindowsDirectoryW(windows, MAX_PATH);
         const std::filesystem::path path = std::filesystem::path(windows) / L"Fonts" / file;
         if (std::filesystem::exists(path))
-            menuFont = io.Fonts->AddFontFromFileTTF(path.string().c_str(), g_fontSize);
-        if (!menuFont) core::logMsg("Fuente %s no disponible: se usa la de ImGui", choice.name);
+            font = io.Fonts->AddFontFromFileTTF(path.string().c_str(), g_fontSize);
+        if (!font) core::logMsg("Fuente %s no disponible: se usa la de ImGui", choice.name);
     }
-    if (!menuFont) {
+    if (!font) {
         ImFontConfig config;
         config.SizePixels = (choice.file == nullptr) ? g_fontSize : 13.f;
-        menuFont = io.Fonts->AddFontDefault(&config);
+        io.Fonts->AddFontDefault(&config);
     }
-
-    // 2. Cargar siempre Pusab a tamaño 24px para overlays y labels del juego
-    ImFontConfig pusabCfg;
-    pusabCfg.FontDataOwnedByAtlas = false;
-    g_pusabFont = io.Fonts->AddFontFromMemoryTTF(
-        const_cast<uint8_t*>(gui::fonts::kPusabData),
-        static_cast<int>(gui::fonts::kPusabDataSize),
-        24.0f, &pusabCfg);
-
     io.Fonts->Build();
     // La textura de la fuente vive en el backend: hay que volver a subirla
     ImGui_ImplOpenGL3_DestroyFontsTexture();
     ImGui_ImplOpenGL3_CreateFontsTexture();
-}
-
-ImFont* getPusabFont() {
-    return g_pusabFont;
 }
 
 bool drawUI() {
@@ -214,6 +191,13 @@ bool drawUI() {
     }
 
     ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    if (gui::button("Reordenar ventanas del panel", true)) {
+        gui::resetWindowPositions();
+    }
+
     if (changed) applyStyle();
     return changed;
 }

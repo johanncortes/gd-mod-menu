@@ -153,24 +153,15 @@ void Noclip::drawOverlay() {
     snprintf(text, sizeof(text), "Noclip: %d muertes  %.2f%%", g_deaths,
              100.0 * (g_frames - g_hitFrames) / g_frames);
 
-    ImFont* font = gui::theme::getPusabFont();
-    if (!font) font = ImGui::GetFont();
-    const float fontSize = 18.f * ImGui::GetIO().FontGlobalScale;
-    const ImVec2 size = font->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, text);
-    const ImVec2 pos(10.f, ImGui::GetIO().DisplaySize.y - size.y - 10.f);
+    const ImVec2 pos(10.f, ImGui::GetIO().DisplaySize.y - ImGui::GetFontSize() - 10.f);
 
     ImDrawList* draw = ImGui::GetForegroundDrawList();
-    constexpr float o = 1.6f;
-    const ImU32 shadow = IM_COL32(0, 0, 0, 240);
-    draw->AddText(font, fontSize, {pos.x - o, pos.y - o}, shadow, text);
-    draw->AddText(font, fontSize, {pos.x,     pos.y - o}, shadow, text);
-    draw->AddText(font, fontSize, {pos.x + o, pos.y - o}, shadow, text);
-    draw->AddText(font, fontSize, {pos.x - o, pos.y},     shadow, text);
-    draw->AddText(font, fontSize, {pos.x + o, pos.y},     shadow, text);
-    draw->AddText(font, fontSize, {pos.x - o, pos.y + o}, shadow, text);
-    draw->AddText(font, fontSize, {pos.x,     pos.y + o}, shadow, text);
-    draw->AddText(font, fontSize, {pos.x + o, pos.y + o}, shadow, text);
-    draw->AddText(font, fontSize, pos, g_hitLastFrame ? IM_COL32(255, 90, 90, 255) : IM_COL32(255, 255, 255, 255), text);
+    const ImU32 shadow = IM_COL32(0, 0, 0, 230);
+    draw->AddText({pos.x - 1.f, pos.y}, shadow, text);
+    draw->AddText({pos.x + 1.f, pos.y}, shadow, text);
+    draw->AddText({pos.x, pos.y - 1.f}, shadow, text);
+    draw->AddText({pos.x, pos.y + 1.f}, shadow, text);
+    draw->AddText(pos, g_hitLastFrame ? IM_COL32(255, 90, 90, 255) : IM_COL32(255, 255, 255, 255), text);
 }
 
 void Noclip::load(const nlohmann::json& j) {

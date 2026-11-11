@@ -70,17 +70,37 @@ void draw() {
     }
 }
 
+static bool g_resetPositions = false;
+
+void resetWindowPositions() {
+    g_resetPositions = true;
+}
+
 void drawWindows() {
-    // Posición inicial: rejilla de 5 columnas. El tamaño se ajusta siempre al contenido
-    // (con un ancho mínimo): si no, una ventana que gana opciones se queda recortada con
-    // el tamaño que tenía guardado.
+    // Posición inicial: rejilla organizada en 2 filas limpias sin solapamiento.
+    // Fila 0 (y = 10): Global, Level, Bypass, Player, Bot (5 ventanas)
+    // Fila 1 (y = 275): Creator, Labels, Shortcuts, Interface (4 ventanas)
     const float scale = ImGui::GetIO().FontGlobalScale;
-    const float w = 250.f, h = 200.f, gap = 10.f;
+    const float w = 240.f;
+    const float gapX = 10.f;
+    const float row0_Y = 10.f;
+    const float row1_Y = 275.f;
+    const ImGuiCond cond = g_resetPositions ? ImGuiCond_Always : ImGuiCond_FirstUseEver;
+
     int i = 0;
     for (const Window& window : kWindows) {
-        const float x = gap + (i % 5) * (w + gap);
-        const float y = gap + (i / 5) * (h + gap);
-        ImGui::SetNextWindowPos({x, y}, ImGuiCond_FirstUseEver);
+        float x = 0.f;
+        float y = 0.f;
+        if (i < 5) {
+            x = gapX + i * (w + gapX);
+            y = row0_Y;
+        } else {
+            const int col = i - 5;
+            x = gapX + col * (w + gapX);
+            y = row1_Y;
+        }
+
+        ImGui::SetNextWindowPos({x, y}, cond);
         ImGui::SetNextWindowSizeConstraints({w * scale, 0.f}, {FLT_MAX, FLT_MAX});
         if (ImGui::Begin(window.name, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
             if (window.draw) window.draw();
@@ -89,6 +109,7 @@ void drawWindows() {
         ImGui::End();
         ++i;
     }
+    g_resetPositions = false;
 }
 
 } // namespace gui

@@ -1,8 +1,6 @@
 #pragma once
 #include <nlohmann/json_fwd.hpp>
 
-struct ImFont;
-
 // Aspecto del panel: tema, color de acento, escala y fuente. También guarda la posición
 // de las ventanas (gdmenu_layout.ini junto a la DLL).
 namespace gui::theme {
@@ -18,8 +16,5 @@ bool drawUI();
 
 void load(const nlohmann::json& j);
 void save(nlohmann::json& j);
-
-// Devuelve la fuente Pusab (Geometry Dash) cargada en el atlas
-ImFont* getPusabFont();
 
 } // namespace gui::theme
