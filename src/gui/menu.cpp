@@ -20,11 +20,11 @@ struct Window {
 };
 const Window kWindows[] = {
     {"Global", features::drawGlobal},
-    {"Level", nullptr},
-    {"Bypass", nullptr},
+    {"Level", features::drawLevel},
+    {"Bypass", features::drawBypass},
     {"Player", features::drawPlayer},
     {"Bot", nullptr},
-    {"Creator", nullptr},
+    {"Creator", features::drawCreator},
     {"Labels", nullptr},
     {"Shortcuts", nullptr},
     {"Interface", nullptr},

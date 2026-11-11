@@ -1,19 +1,32 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 2 (Global) con código completo, **pendiente de probar en el juego**. Fase 3 (Player) con código completo
-  salvo *Show trajectory*, también **pendiente de probar**. El usuario pidió hacer las dos seguidas (2026-11-11).
+- Fase: 4 (Level / Bypass / Creator) con código completo, **pendiente de probar en el juego** (primera prueba del
+  usuario: el StartPos switcher no hacía nada en niveles online; corregido, falta volver a probar).
+  Fases 1, 2 y 3 probadas (de la 3 falta *Show trajectory*). Rama de trabajo: `fase-4`.
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: que el usuario pruebe las fases 2 y 3. Después: *Show trajectory* (con el usuario presente, ver nota)
-  y Fase 4.
+- Próximo paso: que el usuario pruebe la fase 4. Después: merge de `fase-4` a `main`, *Show trajectory* y fase 5.
 - Notas / bloqueos:
-  - **Nada de las fases 2 y 3 se ha ejecutado dentro del juego.** Compila en Release sin warnings y las 9 firmas se
-    comprobaron contra el exe instalado con `build/Release/sigcheck.exe` (todas únicas, constantes y offsets correctos).
-  - **Show trajectory sin hacer**: hay que simular al jugador con funciones internas de `PlayerObject` y copiar
-    decenas de campos por offset. A ciegas, sin poder probar en un nivel, es muy probable que crashee el juego, así que
-    no se escribió. Hacerlo en una sesión con el usuario probando (o con permiso para manejar el juego).
-  - **Physics bypass**: solo se redirigen las dos constantes del bucle de física. Falta comprobar en el juego que el
-    porcentaje y el tiempo del nivel siguen bien con TPS distinto de 240 (no se encontró dónde se calculan).
+  - **Fase 4 sin ejecutar en el juego.** Compila en Release sin warnings y las 25 firmas coinciden con el exe
+    instalado (`sigcheck`). Dudas a mirar al probar: *Auto practice* llama a `togglePracticeMode(true)` justo después
+    de `setupHasCompleted` (puede sonar la música de práctica antes de que arranque el nivel); *StartPos switcher*
+    hace el cambio desde el hook de render, fuera de la pausa (el juego solo lo hace desde el menú de pausa).
+  - **Verify bypass e Instant complete**: el usuario pidió hacerlos (2026-11-11) aunque rozan la regla de
+    `AGENTS.md` sobre servidores; su argumento es que el anti-trampas del propio juego ya se ocupa. Por eso *Instant
+    complete* solo llama a `PlayLayer::levelComplete()` y **no** toca el anti-trampas del juego. No añadir bypass de
+    ese anti-trampas sin que el usuario lo pida.
+  - **StartPos switcher**: usa `m_startPosObjects` directamente. La función del juego
+    `getStartPosObjectsForCurrentMode` devuelve lista vacía en niveles online en modo normal (por eso falló la
+    primera prueba). Si no hay StartPos, al pulsar Q/E sale el aviso "Este nivel no tiene StartPos".
+  - **Object limit bypass**: en 2.2091 ya no existe ese límite en el editor; en su lugar se hizo *Custom object
+    bypass* (los dos límites de los objetos personalizados), que es lo que trae la lista final.
+  - **Show trajectory sin hacer**: hay que crear un PlayerObject falso, copiarle el estado del real y simular
+    `checkCollisions` + `update` cientos de ticks por frame, con hooks para que esa simulación no mate al jugador,
+    no active triggers ni suene. Son unos 10-15 hooks nuevos; hacerlo en pasos cortos con el usuario probando.
+  - **Physics bypass**: solo se redirigen las dos constantes del bucle de física (probado por el usuario; no se
+    comprobó a fondo el porcentaje con TPS distinto de 240).
+  - **Reversing**: lo más rápido es mirar la dirección en los bindings de Geode (ver `docs/firmas.md`) y decompilar
+    con Ghidra headless (`analyzeHeadless` + un script de `DecompInterface`); funciona con el Ghidra 12.1.4 instalado.
   - **REA/Ghidra**: REA exige Ghidra 12.1.x. El 2026-11-11 se instaló Ghidra 12.1.4 en
     `C:\Tools\ghidra_12.1.4_PUBLIC` (`GHIDRA_INSTALL_DIR` de usuario apunta ahí) y Temurin JDK 25; el modo headless
     arranca. **Falta comprobar REA** tras reiniciar VS Code (el servidor MCP lee la variable al arrancar).
@@ -66,10 +79,13 @@
 - [ ] Show trajectory (sin hacer, ver Estado actual)
 
 ## Fase 4 — Level / Bypass / Creator (parches de bytes)
-- [ ] Practice music sync, auto practice mode, hide pause menu
-- [ ] Unlock icons, character/text limit bypass
-- [ ] Object limit bypass, free scroll, copy level bypass, verify bypass
-- [ ] StartPos switcher
+- [x] Practice music sync, auto practice mode, hide pause menu
+- [x] Unlock icons, character limit bypass, character filter bypass
+- [x] Custom object bypass (sustituye a object limit bypass), free scroll, level copy bypass
+- [x] StartPos switcher (Q / E)
+- [x] Verify bypass
+- [x] Instant complete (botón)
+- [ ] Probado dentro del juego
 
 ## Fase 5 — Labels
 - [ ] FPS, CPS, porcentaje, intentos, tiempo, reloj
@@ -86,7 +102,7 @@
 - [ ] Guardar/cargar replays
 
 ## Lista final de funciones (objetivo)
-Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[~]` = hecho sin probar,
+Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
 de la fase 7.
 
@@ -96,16 +112,16 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] Transparent Lists
 
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [ ] All Modes in Platformer · [ ] All Passable ·
-[ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [ ] Auto Practice Mode · [ ] Auto Song Download ·
+[ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [`] Auto Practice Mode · [ ] Auto Song Download ·
 [ ] Checkpoint Delay · [ ] Confirm Full Restart · [ ] Confirm Practice Mode · [ ] Confirm Restart ·
-[ ] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [ ] Hide Pause Menu ·
+[ ] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [`] Hide Pause Menu ·
 [ ] Hitbox Multiplier · [ ] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
 [ ] Mute Level SFX · [ ] No Mirror · [ ] No Object Glow · [ ] No Particles · [ ] No Portal Lightning ·
 [ ] No Shaders · [ ] Pause Countdown · [ ] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
 
-**Bypass**: [ ] Allow Low Volume · [ ] Character Filter Bypass · [ ] Character Limit Bypass · [ ] Checkpoint Limit ·
-[ ] Comment History Bypass · [ ] Quick Chests · [ ] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
-[ ] Music Customizer · [ ] Pause Buffering · [ ] Practice Music Sync · [ ] Unlock Icons · [ ] Unlock Main Levels ·
+**Bypass**: [ ] Allow Low Volume · [`] Character Filter Bypass · [`] Character Limit Bypass · [ ] Checkpoint Limit ·
+[ ] Comment History Bypass · [ ] Quick Chests · [`] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
+[ ] Music Customizer · [ ] Pause Buffering · [`] Practice Music Sync · [`] Unlock Icons · [ ] Unlock Main Levels ·
 [ ] Unlock Paths · [ ] Unlock Shops · [ ] Unlock Vaults
 
 **Player**: [ ] Always Show Trail · [ ] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
@@ -117,15 +133,15 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 
 **Bot**: [ ] Disabled / Record / Playback · [ ] Replays (New, Save, Load, Delete) · [ ] Ignore Inputs
 
-**Creator**: [ ] Custom Object Bypass · [ ] Default Song Bypass · [ ] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
-[ ] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [ ] Slider Limit ·
-[ ] Smooth Editor Trail · [ ] Verify Bypass (*)
+**Creator**: [`] Custom Object Bypass · [ ] Default Song Bypass · [`] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
+[`] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [ ] Slider Limit ·
+[ ] Smooth Editor Trail · [`] Verify Bypass (*)
 
 **Labels**: [ ] Show Labels · [ ] Show in Editor · [ ] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
 [ ] Presets · [ ] FPS · [ ] Testmode · [ ] Run From · [ ] Attempt · [ ] Percentage · [ ] Level Time · [ ] Best Run ·
 [ ] Clock · [ ] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
 
-**Shortcuts**: [ ] P1 Jump · [ ] P2 Jump · [ ] Show Options · [ ] Uncomplete Level · [ ] Restart Level ·
+**Shortcuts**: [`] StartPos switcher (no sale en la captura, se mantiene) · [ ] P1 Jump · [ ] P2 Jump · [ ] Show Options · [ ] Uncomplete Level · [ ] Restart Level ·
 [ ] Toggle Practice Mode · [ ] Place Checkpoint · [ ] Remove Checkpoint · [ ] Inject DLL · [ ] Save Folder ·
 [ ] Reset BG Volume · [ ] Reset SFX Volume
 
@@ -135,8 +151,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] Enable Blur · [ ] Animate Windows · [ ] Accent Color · [ ] Background Color · [ ] Language · [ ] Search
 
 (*) Chocan con la regla de `AGENTS.md` "nada de funciones para subir completions ni interactuar con servidores de
-GD": *Instant Complete* da un completado falso y *Verify Bypass* sirve para subir niveles sin verificar. Decidir con
-el usuario antes de hacerlas; mientras tanto, cualquier trampa activa debe ir con Safe Mode.
+GD". El usuario decidió hacerlas igualmente (2026-11-11), ver Estado actual.
 
 ## Mantenimiento por actualización de GD
 1. Ver qué firmas fallan: `build/Release/sigcheck.exe "<ruta>/GeometryDash.exe"` (o el panel, que las marca "no disponible").

@@ -5,12 +5,17 @@
 #include <nlohmann/json.hpp>
 
 #include "config/config.hpp"
+#include "core/game.hpp"
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
+#include "features/bypass/instant_complete.hpp"
 #include "features/global/fps_bypass.hpp"
 #include "features/global/speedhack.hpp"
 #include "features/global/tps_bypass.hpp"
+#include "features/level/auto_practice.hpp"
+#include "features/level/hide_pause.hpp"
+#include "features/level/startpos_switcher.hpp"
 #include "features/patch_feature.hpp"
 #include "features/player/hitboxes.hpp"
 #include "features/player/noclip.hpp"
@@ -19,6 +24,8 @@
 namespace features {
 
 namespace {
+
+namespace sig = core::signatures;
 
 Speedhack g_speedhack;
 FpsBypass g_fpsBypass;
@@ -33,6 +40,40 @@ PatchFeature g_noDeathEffect("Sin efecto de muerte", "no_death_effect", core::si
 // ret al inicio de la función del parpadeo
 PatchFeature g_noRespawnFlash("Sin parpadeo al reaparecer", "no_respawn_flash", core::signatures::kSpawnEffect,
                               0, {0xC3});
+
+// --- Level ---
+AutoPractice g_autoPractice;
+HidePause g_hidePause;
+StartPosSwitcher g_startPosSwitcher;
+// m_practiceMusicSync = 1 siempre: en práctica suena la música normal del nivel
+PatchFeature g_practiceMusicSync("Practice music sync", "practice_music_sync", sig::kPracticeMusicSync,
+                                 sig::kPracticeMusicSyncValue, {0x01});
+
+// --- Bypass ---
+// "mov al,1; ret" al inicio de las dos comprobaciones
+PatchFeature g_unlockIcons("Unlock icons", "unlock_icons",
+                           {{sig::kIsIconUnlocked, 0, {0xB0, 0x01, 0xC3}}, {sig::kIsColorUnlocked, 0, {0xB0, 0x01, 0xC3}}});
+// Los campos de texto dejan de recortar al llegar al máximo de letras
+PatchFeature g_textLimit("Character limit bypass", "character_limit",
+                         {{sig::kTextLimitPaste, sig::kTextLimitPasteJump, {0x90, 0xE9}},
+                          {sig::kTextLimitType, sig::kTextLimitTypeJump, {0xEB}}});
+// Los campos de texto aceptan cualquier carácter
+PatchFeature g_textFilter("Character filter bypass", "character_filter", sig::kTextFilter, sig::kTextFilterJump, {0xEB});
+InstantComplete g_instantComplete;
+
+// --- Creator ---
+// El nivel se puede subir aunque no esté verificado
+PatchFeature g_verify("Verify bypass", "verify", sig::kVerify, sig::kVerifyJump, {0x90, 0xE9});
+// ret al inicio de la función que devuelve la cámara del editor a los límites del nivel
+PatchFeature g_freeScroll("Free scroll", "free_scroll", sig::kConstrainGameLayer, 0, {0xC3});
+// El botón de copiar sale siempre y nunca pide contraseña
+PatchFeature g_levelCopy("Level copy bypass", "level_copy",
+                         {{sig::kCloneButton, sig::kCloneButtonSetne, {0xB2, 0x01, 0x90}},
+                          {sig::kTryCloneLevel, sig::kTryCloneLevelJump, {0x90, 0x90}}});
+// jbe/jb -> jmp en los dos límites de los objetos personalizados
+PatchFeature g_customObjects("Custom object bypass", "custom_objects",
+                             {{sig::kCustomObjectSize, sig::kCustomObjectSizeJump, {0x90, 0xE9}},
+                              {sig::kCustomObjectCount, sig::kCustomObjectCountJump, {0x90, 0xE9}}});
 
 bool g_ready = false;
 bool g_dirty = false;      // hay cambios sin guardar
@@ -63,6 +104,23 @@ void loadConfig() {
         g_respawnDelay.load(section(player, "respawn_delay"));
         g_noDeathEffect.load(player);
         g_noRespawnFlash.load(player);
+
+        const nlohmann::json level = section(data, "level");
+        g_autoPractice.load(section(level, "auto_practice"));
+        g_hidePause.load(section(level, "hide_pause"));
+        g_startPosSwitcher.load(section(level, "startpos_switcher"));
+        g_practiceMusicSync.load(level);
+
+        const nlohmann::json bypass = section(data, "bypass");
+        g_unlockIcons.load(bypass);
+        g_textLimit.load(bypass);
+        g_textFilter.load(bypass);
+
+        const nlohmann::json creator = section(data, "creator");
+        g_freeScroll.load(creator);
+        g_levelCopy.load(creator);
+        g_customObjects.load(creator);
+        g_verify.load(creator);
     } catch (const nlohmann::json::exception& e) {
         // Un valor con el tipo equivocado: se queda lo cargado hasta ese punto
         core::logMsg("config.json con valores inválidos: %s", e.what());
@@ -82,6 +140,23 @@ void saveConfig() {
     g_respawnDelay.save(player["respawn_delay"]);
     g_noDeathEffect.save(player);
     g_noRespawnFlash.save(player);
+
+    nlohmann::json& level = data["level"];
+    g_autoPractice.save(level["auto_practice"]);
+    g_hidePause.save(level["hide_pause"]);
+    g_startPosSwitcher.save(level["startpos_switcher"]);
+    g_practiceMusicSync.save(level);
+
+    nlohmann::json& bypass = data["bypass"];
+    g_unlockIcons.save(bypass);
+    g_textLimit.save(bypass);
+    g_textFilter.save(bypass);
+
+    nlohmann::json& creator = data["creator"];
+    g_freeScroll.save(creator);
+    g_levelCopy.save(creator);
+    g_customObjects.save(creator);
+    g_verify.save(creator);
     config::save(data);
     g_dirty = false;
 }
@@ -99,6 +174,19 @@ void init() {
     uint8_t* destroyPlayer = core::memory::findPattern(GetModuleHandleW(nullptr), core::signatures::kDestroyPlayer);
     g_noDeathEffect.init();
     g_noRespawnFlash.init();
+    g_practiceMusicSync.init();
+    g_unlockIcons.init();
+    g_textLimit.init();
+    g_textFilter.init();
+    g_freeScroll.init();
+    g_levelCopy.init();
+    g_customObjects.init();
+    const bool gameAvailable = core::game::init();
+    g_startPosSwitcher.init(gameAvailable);
+    g_instantComplete.init(gameAvailable);
+    g_verify.init();
+    g_autoPractice.init();
+    g_hidePause.init();
     g_respawnDelay.init(destroyPlayer);
     g_hitboxes.init();
     g_noclip.init(destroyPlayer);
@@ -118,10 +206,22 @@ void shutdown() {
     g_respawnDelay.disable();
     g_noDeathEffect.disable();
     g_noRespawnFlash.disable();
+    g_autoPractice.disable();
+    g_hidePause.disable();
+    g_startPosSwitcher.disable();
+    g_practiceMusicSync.disable();
+    g_unlockIcons.disable();
+    g_textLimit.disable();
+    g_textFilter.disable();
+    g_freeScroll.disable();
+    g_levelCopy.disable();
+    g_customObjects.disable();
+    g_verify.disable();
     g_ready = false;
 }
 
 void update() {
+    if (g_ready) g_startPosSwitcher.update();
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
     if (g_ready && g_dirty && GetTickCount64() - g_dirtySince > 500) saveConfig();
 }
@@ -142,8 +242,34 @@ void drawPlayer() {
     if (changed) markDirty();
 }
 
+void drawLevel() {
+    bool changed = g_autoPractice.drawUI();
+    changed |= g_practiceMusicSync.drawUI();
+    changed |= g_hidePause.drawUI();
+    changed |= g_startPosSwitcher.drawUI();
+    if (changed) markDirty();
+}
+
+void drawBypass() {
+    bool changed = g_unlockIcons.drawUI();
+    changed |= g_textLimit.drawUI();
+    changed |= g_textFilter.drawUI();
+    if (changed) markDirty();
+    g_instantComplete.drawUI();
+}
+
+void drawCreator() {
+    bool changed = g_freeScroll.drawUI();
+    changed |= g_levelCopy.drawUI();
+    changed |= g_customObjects.drawUI();
+    changed |= g_verify.drawUI();
+    if (changed) markDirty();
+}
+
 void drawOverlay() {
-    if (g_ready) g_noclip.drawOverlay();
+    if (!g_ready) return;
+    g_noclip.drawOverlay();
+    g_startPosSwitcher.drawOverlay();
 }
 
 bool cheatsActive() {

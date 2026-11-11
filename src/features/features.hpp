@@ -9,12 +9,15 @@ void init();
 // Desactiva todo y deshace los parches (antes de quitar los hooks al descargar la DLL).
 void shutdown();
 
-// Una vez por frame: guarda la config si hay cambios pendientes.
+// Una vez por frame: teclas de las features y guardado de la config si hay cambios pendientes.
 void update();
 
 // Contenido de cada ventana del panel.
 void drawGlobal();
 void drawPlayer();
+void drawLevel();
+void drawBypass();
+void drawCreator();
 
 // Lo que se dibuja sobre el juego aunque el panel esté cerrado (contador de noclip...).
 void drawOverlay();
