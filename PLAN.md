@@ -1,17 +1,18 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 8 (Retoques) en curso en la rama `fase-8`.
+- Fase: 8 (Retoques) lista para probar en la rama `fase-8`.
 - Último agente: Antigravity
 - Próximo paso: probar en el juego los retoques de la fase 8.
 - Completado en fase 8:
-  - Rediseño visual del panel estilo Mega Hack: grafito refinado, bordes suaves, títulos y sliders pulidos.
+  - Rediseño visual del panel estilo Mega Hack: grafito refinado (#17171c), bordes suaves, títulos centrados sin flechas de colapso, fuente Segoe UI por defecto.
   - Rediseño de labels con outline de 4 direcciones para máxima legibilidad, y opción de fondo HUD translúcido.
   - Labels arrastrables libremente con el ratón cuando el menú está abierto (Tab), con coordenadas persistidas en `config.json` y botón para restablecer posición.
   - Instant complete mejorado: teletransporta físicamente al jugador (y al segundo jugador en dual) a la meta y reproduce la animación de completado usando `playEndAnimationToPos` y el export `CCNode::setPosition` de `libcocos2d.dll`.
   - Outline nítido en el overlay del noclip y en el aviso del StartPos switcher.
+  - Show trajectory: implementado con `CCDrawNode` nativo exportado por `libcocos2d.dll`, dibujando la parábola de trayectoria verde en tiempo real según la velocidad y gravedad del jugador.
 - Pendientes para siguientes etapas:
-  - *Show trajectory* (fase 3 / avanzada).
+  - Funciones opcionales de la lista final (audios, cosméticos, etc.).
 - Notas / bloqueos:
   - **Bot**: graba en el hook de `handleButton` con el tick de `m_commandIndex` y reproduce desde el hook de
     `processCommands` (`src/features/bot/bot.cpp`). Si el tick retrocede (reinicio o checkpoint) se descarta lo
@@ -130,6 +131,7 @@
 - [x] Rediseño visual de los labels (outline nítido de 4 direcciones para legibilidad total, opción de fondo HUD translúcido)
 - [x] Mover los labels de sitio dentro del juego (arrastrable libremente con el menú abierto, botón de reset y persistencia en config.json)
 - [x] Instant complete mejorado (teletransportar al jugador al final del nivel mientras se ejecuta la animación con `kPlayEndAnimation` y `CCNode::setPosition`)
+- [x] Show trajectory (predicción y renderizado de la trayectoria de salto y caída con CCDrawNode nativo)
 - [ ] Probado dentro del juego
 
 ## Lista final de funciones (objetivo)
@@ -159,7 +161,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] Custom Wave Trail · [ ] Frame Stepper · [ ] Jump Hack · [ ] Mute Level Audio on Death ·
 [ ] Mute Rewards SFX on Death · [x] No Death Effect · [ ] No Ghost Trail · [ ] No Hide Trigger ·
 [ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [ ] No Spider Dash · [ ] No Trail ·
-[ ] No Vehicle Particles · [x] Noclip · [ ] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
+[ ] No Vehicle Particles · [x] Noclip · [~] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
 [x] Mostrar hitboxes (no sale en la captura, se mantiene)
 
 **Bot**: [x] Disabled / Record / Playback · [x] Replays (New, Save, Load, Delete) · [x] Ignore Inputs

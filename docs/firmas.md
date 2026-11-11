@@ -47,6 +47,7 @@
 | GJBaseGameLayer::handleButton(bool, int, bool) | GeometryDash.exe | inicio de función, ver `kHandleButton` | 2.2091, build Steam 26002420 | 0x14033C5B0. Hook del bot: aquí se graban los inputs y con el original se reproducen (fase 7) |
 | PlayLayer::playEndAnimationToPos(CCPoint) | GeometryDash.exe | inicio de función, ver `kPlayEndAnimation` | 2.2091, build Steam 26002420 | 0x14050A2A0. Reproduce la animación de fin de nivel hacia una posición (fase 8) |
 | CCNode::setPosition | libcocos2d.dll | export `?setPosition@CCNode@cocos2d@@UEAAXAEBVCCPoint@2@@Z` | — | teletransporta al jugador a la meta en Instant complete (fase 8) |
+| CCDrawNode::create, clear, drawSegment; CCNode::addChild, removeChild | libcocos2d.dll | exports por nombre | — | renderizado nativo de la trayectoria de salto y caída (fase 8) |
 
 ## Notas de ingeniería inversa
 
