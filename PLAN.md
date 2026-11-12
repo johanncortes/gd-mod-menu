@@ -1,10 +1,17 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 11 (Bypass) **probada** y mergeada en `main`. Fases 1 a 11 terminadas.
+- Fase: 12 (Creator, tercer bloque de la lista ampliada) con código completo, **pendiente de probar en el juego**,
+  rama `fase-12`. Fases 1 a 11 probadas y mergeadas en `main`.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: fase 12, bloque Creator de la lista ampliada.
+- Próximo paso: que el usuario pruebe la fase 12. Después: merge a `main` y el siguiente bloque de la lista ampliada.
 - Notas / bloqueos:
+  - **Creator (fase 12)**: hechos Place over, Level edit, Default song bypass (temas 0..40) y Toolbox button bypass
+    (hasta 24 por fila y 6 filas). **No hechos**: *No (C) mark* (quita la marca de nivel copiado al subirlo: toca lo
+    que se sube a los servidores y sirve para ocultar copias); *Hide UI* (el juego ya tiene el botón de ocultar la
+    interfaz del editor y la opción de ocultarla al probar, game variable `0046`); *Smooth editor trail* (el rastro
+    del playtest añade un punto cada 1/30 s en `LevelEditorLayer::postUpdate`, pero `DrawGridLayer` guarda puntos
+    en arrays de 400: añadir más sin revisar cómo los recorta puede desbordar; queda para más adelante).
   - **Bypass (fase 11)**: los desbloqueos solo saltan la comprobación del botón que abre cada sitio (niveles
     principales, The Vault, Vault of Secrets, sótano del Keymaster, The Challenge, Treasure Room, tiendas). No escriben
     nada en la partida guardada; lo que el juego guarde al usar esos sitios (diálogos vistos, cofres abiertos) lo
@@ -169,6 +176,11 @@
 - [x] Slider limit bypass
 - [x] Probado dentro del juego (2026-11-11)
 
+## Fase 12 — Creator (lista ampliada, bloque 3)
+- [x] Place over, Level edit
+- [x] Default song bypass, Toolbox button bypass
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -201,8 +213,8 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 
 **Bot**: [x] Disabled / Record / Playback · [x] Replays (New, Save, Load, Delete) · [x] Ignore Inputs
 
-**Creator**: [x] Custom Object Bypass · [ ] Default Song Bypass · [x] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
-[x] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [x] Slider Limit ·
+**Creator**: [x] Custom Object Bypass · [`] Default Song Bypass · [x] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
+[x] Level Copy Bypass · [`] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [x] Slider Limit ·
 [ ] Smooth Editor Trail · [x] Verify Bypass (*)
 
 **Labels**: [x] Show Labels · [ ] Show in Editor · [x] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
@@ -230,9 +242,10 @@ proyecto. Lo que ya está hecho lleva `[x]`.
 - **Bypass** (F): Anti-Kick (no se hace, ver Estado actual) · [x] Challenge Level · [x] Keymaster ·
   [x] Main Levels · Music Customizer (M) · [x] Slider Limit · [x] Text Length · [x] Treasure Room ·
   [x] Unlock Icons · [x] Unlock Shops · [x] Unlock Vaults
-- **Creator**: Accurate Save (M) · [x] Copy Hack · [x] Custom Object Bypass · Default Song Bypass (F) ·
-  Editor Extension (D) · [x] Free Scroll · Hide UI (F) · Level Edit (F) · Multiple Editor Trails (M) · No C Mark (F) ·
-  Place Over (F) · Smooth Editor Trail (F) · Toolbox Button Bypass (F) · Trigger Value Bypass (M) · [x] Verify Hack
+- **Creator**: Accurate Save (M) · [x] Copy Hack · [x] Custom Object Bypass · [`] Default Song Bypass ·
+  Editor Extension (D) · [x] Free Scroll · Hide UI (ya lo trae el juego) · [`] Level Edit ·
+  Multiple Editor Trails (M) · No C Mark (no se hace) · [`] Place Over · Smooth Editor Trail (M, pendiente) ·
+  [`] Toolbox Button Bypass · Trigger Value Bypass (M) · [x] Verify Hack
 - **Cosmetic** (casi todo F, un parche por opción): Coin Shower (M) · Frozen Animations · Hide Pause Button ·
   [x] Hide Pause Menu · Hide Player · Icon Randomizer (M) · No Camera (M) · No Camera Zoom · [x] No Circle Effect ·
   No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · No Glow · [x] No Mirror ·

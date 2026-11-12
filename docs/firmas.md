@@ -76,6 +76,12 @@
 | SecretLayer2::onSecretLevel (The Challenge): 200 | GeometryDash.exe | ver `kChallengeLevelLock` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14057A190 (+24). `jl` -> 6 NOPs (fase 11) |
 | SecretRewardsLayer::onShop: UGV de las 4 tiendas con candado | GeometryDash.exe | ver `kShopLocks` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14056C1A6; `jne` en +0x15, +0x79 (largos, `90 E9`), +0xDD, +0x13D (cortos, `EB`) (fase 11) |
 | SliderTouchLogic::ccTouchMoved: límites del pulgar | GeometryDash.exe | ver `kSliderClamp` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1400845A3; `jbe` cortos en +33 y +65 -> `EB` (fase 11) |
+| EditorUI::onCreateObject: typeExistsAtPosition y bucle de objetos personalizados | GeometryDash.exe | ver `kPlaceOver` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1401B2B2D; `jne` en +31 -> 6 NOPs, `jns` en +43 -> `90 E9` (fase 12) |
+| PauseLayer::customSetup: botón de editar solo en niveles del editor | GeometryDash.exe | ver `kPauseEditButton` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404D6CEC; `je` corto en +28 -> `EB` (fase 12) |
+| PauseLayer::onEdit: misma comprobación | GeometryDash.exe | ver `kPauseOnEdit` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404DB299; `je` corto en +28 -> `EB` (fase 12) |
+| SongSelectNode::audioNext / audioPrevious: tema 0..21 | GeometryDash.exe | ver `kSongSelectArrows` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1401687E0; los tres `0x15` (+8, +21, +84) -> `0x28`. LevelTools::getAudioTitle conoce 0..40 (fase 12) |
+| EditorOptionsLayer: flechas de Buttons Per Row (6..12) | GeometryDash.exe | ver `kToolboxPerRow` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1402C6616; máximo en +28 y +32 -> 24 (fase 12) |
+| EditorOptionsLayer: flechas de Button Rows (2..3) | GeometryDash.exe | ver `kToolboxRows` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1402C66A6; máximo en +28 y +32 -> 6. EditorUI (0x1401CA831) solo impone el mínimo (fase 12) |
 
 ## Notas de ingeniería inversa
 
