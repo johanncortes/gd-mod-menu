@@ -92,6 +92,7 @@
 | PauseLayer/OptionsLayer::sfxSliderChanged (misma función) | GeometryDash.exe | ver `kSfxSlider` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140182390; `jbe` en +33 -> `EB` (fase 16) |
 | OptionsLayer::musicSliderChanged | GeometryDash.exe | ver `kMusicSliderOptions` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404CBB20; `jbe` en +45 -> `EB` (fase 16) |
 | CCTransitionFade::create(float, CCScene*) | libcocos2d.dll | export por nombre | — | No transition: hook que pasa duración 0 (fase 16) |
+| CCApplication::getVerticalSyncEnabled / toggleVerticalSync; CCEGLView::sharedOpenGLView, getIsFullscreen, getIsBorderless, getUseBorderlessFix, toggleFullScreen(bool, bool, bool) | libcocos2d.dll | exports por nombre | — | Display: VSync, pantalla completa y sin bordes, como los ajustes gráficos del juego (PlatformToolbox los llama inline) (fase 17) |
 
 ## Notas de ingeniería inversa
 

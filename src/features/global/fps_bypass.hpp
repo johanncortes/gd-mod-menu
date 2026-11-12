@@ -5,6 +5,7 @@ namespace features {
 
 // FPS bypass: fija el límite de FPS del juego a cualquier valor, a través de
 // cocos2d::CCApplication::setAnimationInterval. Solo tiene efecto con el VSync apagado.
+// Unlock FPS: sin límite (el juego dibuja tan rápido como pueda), aunque FPS bypass esté apagado.
 class FpsBypass {
 public:
     void init();
@@ -16,8 +17,11 @@ public:
     void save(nlohmann::json& j) const;
 
 private:
+    void apply(); // fija el intervalo según las dos opciones
+
     bool m_available = false;
     bool m_enabled = false;
+    bool m_unlock = false;
     float m_fps = 240.f;
 };
 

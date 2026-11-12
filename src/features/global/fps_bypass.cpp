@@ -18,6 +18,7 @@ namespace {
 
 constexpr float kMinFps = 15.f;
 constexpr float kMaxFps = 10000.f;
+constexpr double kUnlockedInterval = 1.0 / 100000.0; // "sin límite": el bucle no espera nunca
 
 using SharedFn = void* (*)();
 using SetIntervalFn = void (*)(void* app, double interval);
@@ -72,40 +73,45 @@ void FpsBypass::init() {
     core::logMsg("FPS bypass: %s", m_available ? "listo" : "no disponible (exports de libcocos2d)");
 }
 
+void FpsBypass::apply() {
+    if (!m_available) return;
+    g_forcedInterval = m_unlock ? kUnlockedInterval : m_enabled ? 1.0 / m_fps : 0.0;
+    applyNow();
+}
+
 void FpsBypass::enable() {
     m_enabled = true;
-    if (!m_available) return;
-    g_forcedInterval = 1.0 / m_fps;
-    applyNow();
+    apply();
 }
 
 void FpsBypass::disable() {
     m_enabled = false;
-    if (!m_available) return;
-    g_forcedInterval = 0.0;
-    applyNow();
+    apply();
 }
 
 bool FpsBypass::drawUI() {
     bool enabled = m_enabled;
     const bool changed = gui::toggleValue("FPS bypass", m_available, enabled, m_fps, kMinFps, kMaxFps, "%.0f");
     if (changed) enabled ? enable() : disable();
+    bool unlockChanged = gui::toggle("Unlock FPS", m_available, m_unlock);
+    if (unlockChanged) apply();
 
-    if (m_available && m_enabled && g_getVsync) {
+    if (m_available && (m_enabled || m_unlock) && g_getVsync) {
         const void* app = g_sharedApplication();
         if (app && g_getVsync(app))
             ImGui::TextDisabled("  VSync activo: apágalo en el juego");
     }
-    return changed;
+    return changed || unlockChanged;
 }
 
 void FpsBypass::load(const nlohmann::json& j) {
     m_fps = std::clamp(j.value("fps", m_fps), kMinFps, kMaxFps);
+    m_unlock = j.value("unlock", false);
     j.value("enabled", false) ? enable() : disable();
 }
 
 void FpsBypass::save(nlohmann::json& j) const {
-    j = {{"enabled", m_enabled}, {"fps", m_fps}};
+    j = {{"enabled", m_enabled}, {"fps", m_fps}, {"unlock", m_unlock}};
 }
 
 } // namespace features
