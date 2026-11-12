@@ -559,4 +559,24 @@ inline constexpr int kPushButtonModeFlags[5] = {2, 10, 18, 26, 34}; // bola, nav
 inline constexpr int kPushButtonHolding = 42;  // m_isHolding (+0x98D)
 inline constexpr int kPushButtonOnGround = 50; // m_isOnGround (+0x9C9)
 
+// --- Fase 20 (Cosmetic, 2). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// GameObject::addGlow: "if (!m_hasNoGlow) { ...crea el brillo }". No glow: jne (+18) -> jmp, como
+// si todos los objetos fueran "sin brillo". Se aplica a los objetos creados después (al entrar al nivel).
+inline constexpr char kAddGlow[] = "48 8B DA 48 8B F9 48 89 54 24 58 80 B9 ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ??";
+inline constexpr int kAddGlowJump = 18;
+
+// PlayerObject::updateStreakBlend(bool blend): mezcla aditiva de las estelas y "onda sólida" =
+// !blend. Solid wave trail: "test dl, dl" (+16) -> "xor edx, edx" (como si blend fuera false).
+inline constexpr char kStreakBlend[] =
+    "57 48 83 EC 20 48 8B F9 C7 44 24 30 02 03 00 00 84 D2 B8 03 03 00 00 B9 01 00 00 00 0F B6 DA 0F 45 C1";
+inline constexpr int kStreakBlendTest = 16;
+
+// GJBaseGameLayer::loadLevelSettings (la misma función que kLoadLevelSettings, más larga): copia el modo
+// plataformas a m_player1 (+20) y m_player2 (+39). De aquí se lee el desplazamiento del jugador 2.
+inline constexpr char kLevelSettingsPlayers[] =
+    "48 8B 81 ?? ?? ?? ?? 4C 8B C1 0F B6 90 ?? ?? ?? ?? 48 8B 81 ?? ?? ?? ?? 88 91 ?? ?? ?? ?? 88 90 ?? ?? ?? ?? "
+    "48 8B 89 ?? ?? ?? ??";
+inline constexpr int kLevelSettingsPlayer2 = 39;
+
 } // namespace core::signatures

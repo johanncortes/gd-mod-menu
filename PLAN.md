@@ -1,10 +1,17 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 19 (Search, Screenshot, Frame stepper, Auto clicker) **probada** y mergeada en `main`. Fases 1 a 19 terminadas.
-- Último agente: Claude (Opus 5.5)
-- Próximo paso: fase 20, más funciones medias (Show triggers, Hitbox multiplier, No glow / No pulse...).
+- Fase: 20 (Cosmetic 2) **probada** y mergeada en `main`. Fases 1 a 20 probadas.
+- Último agente: Claude (Fable 5.2)
+- Próximo paso: fase 21 (funciones difíciles y de riesgo, y revisar de nuevo las descartadas).
 - Notas / bloqueos:
+  - **Fase 20**: No glow (parche en `GameObject::addGlow`, se nota al entrar al nivel), Solid wave trail (parche en
+    `updateStreakBlend`: las dos estelas sin mezcla aditiva y la de la onda sólida; se aplica al crear el jugador) y
+    Hide player (oculta los dos iconos tras cada frame del nivel). **Descartadas tras mirarlas**: *Show triggers*
+    (ver `docs/firmas.md`), *Hitbox multiplier* (el juego guarda y reutiliza el rectángulo de cada objeto en
+    `GameObject::m_objectRect`; escalarlo bien exige tocar varias rutas de colisión), *No new best popup* (la misma
+    función crea la capa que suma orbs y diamantes), *Show total attempts* (los intentos del nivel se guardan
+    cifrados con semilla).
   - **Fase 19**: *Search* (ventana "Search": las casillas y botones que no coinciden no se dibujan pero sus teclas
     siguen funcionando; las ventanas sin coincidencias se dibujan fuera de la pantalla para recontarlas; filtro en
     `gui/widgets.cpp`). *Screenshot* (Shortcuts: PNG con WIC en `screenshots/` junto a la DLL + portapapeles CF_DIB;
@@ -255,6 +262,10 @@
 - [x] Frame stepper, Auto clicker
 - [x] Probado dentro del juego (2026-11-12)
 
+## Fase 20 — Cosmetic (2)
+- [x] No glow, Solid wave trail, Hide player
+- [x] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -270,7 +281,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Checkpoint Delay · [ ] Confirm Full Restart · [ ] Confirm Practice Mode · [ ] Confirm Restart ·
 [x] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
 [ ] Hitbox Multiplier · [ ] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
-[ ] Mute Level SFX · [x] No Mirror · [ ] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
+[ ] Mute Level SFX · [x] No Mirror · [x] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
 [ ] No Shaders · [ ] Pause Countdown · [x] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
 
 **Bypass**: [x] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [x] Checkpoint Limit ·
@@ -282,7 +293,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Custom Wave Trail · [x] Frame Stepper · [x] Jump Hack · [ ] Mute Level Audio on Death ·
 [ ] Mute Rewards SFX on Death · [x] No Death Effect · [x] No Ghost Trail · [ ] No Hide Trigger ·
 [ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [x] No Spider Dash · [x] No Trail ·
-[ ] No Vehicle Particles · [x] Noclip · [x] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
+[ ] No Vehicle Particles · [x] Noclip · [x] Show Trajectory · [x] Solid Wave Trail · [x] Respawn Delay ·
 [x] Mostrar hitboxes (no sale en la captura, se mantiene)
 
 **Bot**: [x] Disabled / Record / Playback · [x] Replays (New, Save, Load, Delete) · [x] Ignore Inputs
@@ -321,12 +332,12 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   Multiple Editor Trails (M) · No C Mark (no se hace) · [x] Place Over · Smooth Editor Trail (M, pendiente) ·
   [x] Toolbox Button Bypass · Trigger Value Bypass (M) · [x] Verify Hack
 - **Cosmetic** (casi todo F, un parche por opción): Coin Shower (M) · Frozen Animations · Hide Pause Button ·
-  [x] Hide Pause Menu · Hide Player · Icon Randomizer (M) · No Camera (M) · No Camera Zoom · [x] No Circle Effect ·
-  No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · No Glow · [x] No Mirror ·
+  [x] Hide Pause Menu · [x] Hide Player · Icon Randomizer (M) · No Camera (M) · No Camera Zoom · [x] No Circle Effect ·
+  No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · [x] No Glow · [x] No Mirror ·
   No New Best Popup · No Orb Ring · [x] No Particles · No Particles Classic · No Portal Circle · [x] No Portal Lightning ·
   No Pulse · [x] No Respawn Flash · No Robot Fire · No Shaders · [x] No Shake · [x] No Spider Dash · No Swing Fire ·
   [x] No Trail · No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
-  Show Total Attempts · Solid Wave Trail · StartPos Reset Camera (M) · Stop Triggers on Death (M) ·
+  Show Total Attempts · [x] Solid Wave Trail · StartPos Reset Camera (M) · Stop Triggers on Death (M) ·
   Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · All Modes Platformer (F) · [x] Auto Clicker ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · Auto Kill (F) · Auto Music Sync (M) ·

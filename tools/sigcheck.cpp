@@ -106,6 +106,9 @@ int main(int argc, char** argv) {
         {"kMusicSliderOptions", sig::kMusicSliderOptions},
         {"kEditorLayerStore", sig::kEditorLayerStore},
         {"kPushButtonModes", sig::kPushButtonModes},
+        {"kAddGlow", sig::kAddGlow},
+        {"kStreakBlend", sig::kStreakBlend},
+        {"kLevelSettingsPlayers", sig::kLevelSettingsPlayers},
     };
 
     int failed = 0;

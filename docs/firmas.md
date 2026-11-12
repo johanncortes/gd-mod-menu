@@ -99,6 +99,9 @@
 | GJBaseGameLayer::handleButton (`kHandleButton`) | GeometryDash.exe | ya registrada (fase 7) | — | Utility: P1/P2 jump, P1 izquierda/derecha llaman a la dirección original (pasan por el hook del bot) (fase 18) |
 | ChannelControl::setPaused | fmod.dll | export por nombre | — | Frame stepper: pausa el grupo maestro mientras congela el nivel (fase 19) |
 | glReadBuffer, glPixelStorei, glReadPixels | opengl32.dll | import normal | — | Screenshot: lee el back buffer antes de que ImGui dibuje (fase 19) |
+| GameObject::addGlow: if (!m_hasNoGlow) | GeometryDash.exe | ver `kAddGlow` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14028B0F9 (dentro de 0x14028B0D0); `jne` en +18 -> `90 E9`. No glow (fase 20) |
+| PlayerObject::updateStreakBlend(bool) | GeometryDash.exe | ver `kStreakBlend` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404E6EE5; `test dl,dl` en +16 -> `xor edx,edx` (`31 D2`). Solid wave trail (fase 20) |
+| GJBaseGameLayer::loadLevelSettings: copia a m_player1 / m_player2 | GeometryDash.exe | ver `kLevelSettingsPlayers` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140344C60; +39 -> `m_player2` (+0xDC0). `core::game::player2()` (Hide player) (fase 20) |
 
 ## Notas de ingeniería inversa
 
@@ -155,3 +158,6 @@
 - **Intentos que no cuentan (2.2091)**: además del modo práctica (+0x32E0) y del test mode por StartPos (+0x3328, que
   también usan la cámara y los checkpoints), PlayLayer tiene dos banderas propias para descartar un intento:
   +0x39F9 y +0x39FA. No afectan a la física; solo a guardar récord, completado, monedas, estrellas y tiempo jugado.
+- **Triggers en el nivel (2.2091)**: `PlayLayer::addObject` (0x14050C690) no mete en las secciones de dibujo a los
+  objetos de tipo 0x14 (triggers): les pone `+0x278 = -1`. Por eso *Show triggers* no se hizo: meterlos en las
+  secciones también los metería en el bucle de colisiones.
