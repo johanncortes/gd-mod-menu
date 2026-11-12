@@ -29,6 +29,7 @@ bool g_levelHooks = false;
 
 std::vector<ResetCallback> g_resetCallbacks;
 std::vector<UpdateCallback> g_updateCallbacks;
+UpdateFilter g_updateFilter = nullptr;
 
 double g_attemptTime = 0.0;
 ULONGLONG g_lastUpdate = 0;
@@ -41,6 +42,7 @@ void resetLevelHook(void* layer) {
 
 // GJBaseGameLayer::update corre una vez por frame mientras el nivel no está en pausa
 void updateHook(void* gameLayer, float dt) {
+    if (g_updateFilter && !g_updateFilter(gameLayer, dt)) return;
     g_origUpdate(gameLayer, dt);
     if (gameLayer == playLayer()) {
         g_attemptTime += dt;
@@ -117,6 +119,7 @@ void* player1(void* gameLayer) {
 bool levelHooksAvailable() { return g_levelHooks; }
 void onResetLevel(ResetCallback callback) { g_resetCallbacks.push_back(callback); }
 void onUpdate(UpdateCallback callback) { g_updateCallbacks.push_back(callback); }
+void setUpdateFilter(UpdateFilter filter) { g_updateFilter = filter; }
 double attemptTime() { return g_attemptTime; }
 bool levelRunning() { return GetTickCount64() - g_lastUpdate < 250; }
 

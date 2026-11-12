@@ -97,6 +97,8 @@
 | PlayerObject::pushButton: modos, manteniendo y en el suelo | GeometryDash.exe | ver `kPushButtonModes` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F62E3. +2 bola (0x9C3), +10 nave (0x9C1), +18 UFO (0x9C2), +26 onda (0x9C4), +34 swing (0x9CC), +42 `m_isHolding` (0x98D), +50 `m_isOnGround` (0x9C9). Jump hack (fase 18) |
 | System::createDSPByType, getVersion; ChannelControl::addDSP, removeDSP; DSP::setParameterFloat | fmod.dll | exports por nombre | — | Pitch shift: DSP `FMOD_DSP_TYPE_PITCHSHIFT` (13 en FMOD 2.x; se comprueba la versión) en el grupo maestro, parámetro 0 = tono (0.5-2) (fase 18) |
 | GJBaseGameLayer::handleButton (`kHandleButton`) | GeometryDash.exe | ya registrada (fase 7) | — | Utility: P1/P2 jump, P1 izquierda/derecha llaman a la dirección original (pasan por el hook del bot) (fase 18) |
+| ChannelControl::setPaused | fmod.dll | export por nombre | — | Frame stepper: pausa el grupo maestro mientras congela el nivel (fase 19) |
+| glReadBuffer, glPixelStorei, glReadPixels | opengl32.dll | import normal | — | Screenshot: lee el back buffer antes de que ImGui dibuje (fase 19) |
 
 ## Notas de ingeniería inversa
 

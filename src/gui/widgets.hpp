@@ -14,4 +14,14 @@ bool toggleValue(const char* label, bool available, bool& enabled, float& value,
 // Botón de acción. Devuelve true si se pulsó (clic o tecla asignada).
 bool button(const char* label, bool available);
 
+// --- Búsqueda del panel ---
+// Texto a buscar (sin distinguir mayúsculas); vacío = sin búsqueda.
+void setSearch(const char* text);
+bool searching();
+// Entre begin y end (al dibujar una ventana visible del panel), las opciones cuyo texto no
+// contiene la búsqueda no se dibujan, pero siguen atendiendo su tecla. end devuelve cuántas
+// coincidieron.
+void beginSearchFilter();
+int endSearchFilter();
+
 } // namespace gui

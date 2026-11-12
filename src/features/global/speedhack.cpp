@@ -35,6 +35,10 @@ void schedulerUpdateHook(void* self, float dt) {
 using FmodUpdateFn = int (*)(void* system);
 using FmodGetMasterFn = int (*)(void* system, void** group);
 using FmodSetPitchFn = int (*)(void* channelControl, float pitch);
+using FmodSetPausedFn = int (*)(void* channelControl, bool paused);
+FmodSetPausedFn g_fmodSetPaused = nullptr;
+std::atomic<bool> g_audioPaused{false};
+bool g_appliedPaused = false;
 FmodUpdateFn g_origFmodUpdate = nullptr;
 FmodGetMasterFn g_fmodGetMaster = nullptr;
 FmodSetPitchFn g_fmodSetPitch = nullptr;
@@ -99,6 +103,11 @@ int fmodUpdateHook(void* system) {
     g_fmodSystem = system;
     applyPitch(system);
     applyShift(system);
+    if (g_fmodSetPaused && g_audioPaused != g_appliedPaused) {
+        void* master = nullptr;
+        if (g_fmodGetMaster(system, &master) == 0 && master && g_fmodSetPaused(master, g_audioPaused) == 0)
+            g_appliedPaused = g_audioPaused;
+    }
     return g_origFmodUpdate(system);
 }
 
@@ -109,6 +118,10 @@ bool hookExport(const wchar_t* module, const char* name, void* hook, void** orig
 }
 
 } // namespace
+
+void setGameAudioPaused(bool paused) {
+    g_audioPaused = paused;
+}
 
 void Speedhack::init() {
     m_available = hookExport(L"libcocos2d.dll", "?update@CCScheduler@cocos2d@@UEAAXM@Z",
@@ -126,6 +139,8 @@ void Speedhack::init() {
             GetProcAddress(fmod, "?addDSP@ChannelControl@FMOD@@QEAA?AW4FMOD_RESULT@@HPEAVDSP@2@@Z"));
         g_fmodRemoveDsp = reinterpret_cast<FmodRemoveDspFn>(
             GetProcAddress(fmod, "?removeDSP@ChannelControl@FMOD@@QEAA?AW4FMOD_RESULT@@PEAVDSP@2@@Z"));
+        g_fmodSetPaused = reinterpret_cast<FmodSetPausedFn>(
+            GetProcAddress(fmod, "?setPaused@ChannelControl@FMOD@@QEAA?AW4FMOD_RESULT@@_N@Z"));
         g_fmodGetVersion = reinterpret_cast<FmodGetVersionFn>(
             GetProcAddress(fmod, "?getVersion@System@FMOD@@QEAA?AW4FMOD_RESULT@@PEAI@Z"));
         g_fmodSetParam = reinterpret_cast<FmodSetParamFn>(
@@ -165,6 +180,10 @@ void Speedhack::shutdown() {
     m_shift = false;
     apply();
     if (m_shiftAvailable) applyShift(g_fmodSystem); // quita el DSP antes de descargar la DLL
+    // Por si el frame stepper dejó el audio en pausa
+    void* master = nullptr;
+    if (g_fmodSetPaused && g_appliedPaused && g_fmodSystem && g_fmodGetMaster(g_fmodSystem, &master) == 0 && master)
+        g_fmodSetPaused(master, false);
 }
 
 bool Speedhack::drawUI() {

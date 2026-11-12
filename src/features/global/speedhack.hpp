@@ -33,4 +33,8 @@ private:
     float m_shiftPitch = 1.f;
 };
 
+// Pausa (o reanuda) todo el audio del juego: grupo maestro de FMOD. Lo usa el frame stepper.
+// Se aplica en el siguiente FMOD::System::update.
+void setGameAudioPaused(bool paused);
+
 } // namespace features
