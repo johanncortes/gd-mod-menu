@@ -18,6 +18,7 @@ namespace {
 
 void** g_gameManager = nullptr; // variable global del exe con el puntero a GameManager
 int32_t g_playLayerOffset = 0;  // GameManager::m_playLayer
+int32_t g_editorLayerOffset = 0; // GameManager::m_levelEditorLayer (leído de kEditorLayerStore)
 int32_t g_player1Offset = 0;    // GJBaseGameLayer::m_player1 (leído de kCheckForEnd)
 
 using ResetLevelFn = void (*)(void* playLayer);
@@ -65,6 +66,11 @@ bool init() {
         memcpy(&offset, checkForEnd + signatures::kCheckForEndPlayer, 4);
         if (offset > 0 && offset < 0x10000) g_player1Offset = offset;
     }
+    if (const uint8_t* editorStore = memory::findPattern(exe, signatures::kEditorLayerStore)) {
+        int32_t offset;
+        memcpy(&offset, editorStore + signatures::kEditorLayerStoreOffset, 4);
+        if (offset > 0 && offset < 0x10000) g_editorLayerOffset = offset;
+    }
 
     g_levelHooks = hookAt(resetLevel, &resetLevelHook, reinterpret_cast<void**>(&g_origResetLevel)) &&
                    hookAt(update, &updateHook, reinterpret_cast<void**>(&g_origUpdate));
@@ -91,6 +97,13 @@ void* playLayer() {
     if (!g_gameManager || !*g_gameManager) return nullptr;
     void* layer;
     memcpy(&layer, static_cast<uint8_t*>(*g_gameManager) + g_playLayerOffset, sizeof(layer));
+    return layer;
+}
+
+void* editorLayer() {
+    if (!g_gameManager || !*g_gameManager || g_editorLayerOffset == 0) return nullptr;
+    void* layer;
+    memcpy(&layer, static_cast<uint8_t*>(*g_gameManager) + g_editorLayerOffset, sizeof(layer));
     return layer;
 }
 

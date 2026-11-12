@@ -11,6 +11,9 @@ bool init();
 // PlayLayer del nivel que se está jugando, o nullptr si no hay ninguno (menús, editor).
 void* playLayer();
 
+// LevelEditorLayer abierto (el editor, también al probar el nivel en él), o nullptr.
+void* editorLayer();
+
 // Jugador 1 (PlayerObject*) de un nivel, o nullptr si no se pudo localizar.
 void* player1(void* gameLayer);
 

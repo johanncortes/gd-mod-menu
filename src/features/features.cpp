@@ -475,6 +475,7 @@ void update() {
     if (gui::keybinds::takeChanged() || g_labels.takePositionChanged()) markDirty();
     g_startPosSwitcher.update();
     g_safeMode.update(cheatsActive());
+    g_shortcuts.update();
     g_lockCursor.update(gui::isMenuOpen());
     g_display.update();
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
@@ -583,6 +584,8 @@ void drawBot() {
 
 void drawShortcuts() {
     g_shortcuts.drawUI();
+    ImGui::SeparatorText("Keybinds");
+    if (gui::keybinds::drawUI()) markDirty();
 }
 
 void drawInterface() {

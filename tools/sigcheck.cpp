@@ -104,6 +104,7 @@ int main(int argc, char** argv) {
         {"kMusicSliderPause", sig::kMusicSliderPause},
         {"kSfxSlider", sig::kSfxSlider},
         {"kMusicSliderOptions", sig::kMusicSliderOptions},
+        {"kEditorLayerStore", sig::kEditorLayerStore},
     };
 
     int failed = 0;

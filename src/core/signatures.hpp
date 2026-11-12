@@ -543,4 +543,11 @@ inline constexpr char kMusicSliderOptions[] =
     "F3 0F 10 0D ?? ?? ?? ?? 0F 57 FF 0F 2F C8 76 03";
 inline constexpr int kMusicSliderOptionsJump = 45;
 
+// --- Fase 18 (Keybinds y Utility). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// LevelEditorLayer::init: "GameManager->m_levelEditorLayer = this". De la firma (+17) se lee el
+// desplazamiento de m_levelEditorLayer en GameManager.
+inline constexpr char kEditorLayerStore[] = "48 8B 05 ?? ?? ?? ?? C6 80 ?? ?? ?? ?? 01 48 89 B0 ?? ?? ?? ??";
+inline constexpr int kEditorLayerStoreOffset = 17;
+
 } // namespace core::signatures
