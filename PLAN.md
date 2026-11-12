@@ -1,19 +1,17 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 9 (Show trajectory) con código completo, **pendiente de probar en el juego**, rama `fase-9`. Fases 1 a 8
-  probadas y mergeadas en `main`.
+- Fase: 9 (Show trajectory) **probada** y mergeada en `main`. Fases 1 a 9 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: que el usuario pruebe la fase 9. Después: merge a `main` y la "Lista ampliada" (segunda captura) por
-  bloques.
+- Próximo paso: la "Lista ampliada" (segunda captura) por bloques, una fase por bloque.
 - Notas / bloqueos:
   - **Show trajectory** (`src/features/player/trajectory.cpp`): un PlayerObject propio, invisible, dentro de una capa
     invisible añadida al nivel. Cada frame copia al jugador 1 (`copyAttributes`) y simula "manteniendo" (verde) y
     "soltando" (rojo) con `update` + `checkCollisions(..., ignorar daño)` + `updateRotation`. Para no tocar la partida
     real: a `collisionCheckObjects` solo le llegan sólidos, peligros y rampas, y mientras se simula no hacen nada
     `gameEventTriggered`, `destroyObject` ni `playSpiderDashEffect`. **Limitaciones**: la predicción no sigue
-    portales, pads, anillos ni teletransportes; solo jugador 1; desactivado en niveles de plataformas. Dudas a mirar
-    al probar: rendimiento con Longitud alta, y que nada del nivel reaccione al jugador simulado.
+    portales, pads, anillos ni teletransportes; solo jugador 1; desactivado en niveles de plataformas. Probado por el
+    usuario (2026-11-11).
   - **Lo que pidió el usuario para la fase 8** (2026-11-11): panel en **Segoe UI** por defecto (le gustó); labels y
     aviso del StartPos switcher con la **fuente de Geometry Dash**, ajustable, bien alineados; labels movibles dentro
     del juego; Instant complete que lleve al jugador al final mientras sale la animación de completar.
@@ -53,9 +51,6 @@
     primera prueba; ya probado y funciona). Si no hay StartPos, al pulsar Q/E sale el aviso "Este nivel no tiene StartPos".
   - **Object limit bypass**: en 2.2091 ya no existe ese límite en el editor; en su lugar se hizo *Custom object
     bypass* (los dos límites de los objetos personalizados), que es lo que trae la lista final.
-  - **Show trajectory sin hacer**: hay que crear un PlayerObject falso, copiarle el estado del real y simular
-    `checkCollisions` + `update` cientos de ticks por frame, con hooks para que esa simulación no mate al jugador,
-    no active triggers ni suene. Son unos 10-15 hooks nuevos; hacerlo en pasos cortos con el usuario probando.
   - **Physics bypass**: solo se redirigen las dos constantes del bucle de física (probado por el usuario; no se
     comprobó a fondo el porcentaje con TPS distinto de 240).
   - **Reversing**: lo más rápido es mirar la dirección en los bindings de Geode (ver `docs/firmas.md`) y decompilar
@@ -110,7 +105,7 @@
 - [x] No death effect / no respawn flash
 - [x] Respawn delay
 - [x] Probado dentro del juego (todo lo anterior, 2026-11-11)
-- [ ] Show trajectory (sin hacer, ver Estado actual)
+- [x] Show trajectory (hecho en la fase 9)
 
 ## Fase 4 — Level / Bypass / Creator (parches de bytes)
 - [x] Practice music sync, auto practice mode, hide pause menu
@@ -149,7 +144,7 @@
 
 ## Fase 9 — Show trajectory
 - [x] Simular al jugador con la física real del juego (PlayerObject de prueba + checkCollisions) y dibujar el camino
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-11)
 - [ ] Más adelante: seguir portales, pads y anillos en la predicción (hay que gestionar su activación por jugador)
 
 ## Lista final de funciones (objetivo)
@@ -179,7 +174,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] Custom Wave Trail · [ ] Frame Stepper · [ ] Jump Hack · [ ] Mute Level Audio on Death ·
 [ ] Mute Rewards SFX on Death · [x] No Death Effect · [ ] No Ghost Trail · [ ] No Hide Trigger ·
 [ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [ ] No Spider Dash · [ ] No Trail ·
-[ ] No Vehicle Particles · [x] Noclip · [`] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
+[ ] No Vehicle Particles · [x] Noclip · [x] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
 [x] Mostrar hitboxes (no sale en la captura, se mantiene)
 
 **Bot**: [x] Disabled / Record / Playback · [x] Replays (New, Save, Load, Delete) · [x] Ignore Inputs
@@ -231,7 +226,7 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [x] Instant Complete · Jumpscare (M) · Jump Hack (F) · [x] Noclip · Noclip Limits (F) · No Collision (F) ·
   Pause During Complete (F) · Practice Bug Fix (D) · [x] Practice Music · Random Seed (M) ·
   Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · Show Hitboxes on Death (F) ·
-  Show Hitboxes Trail (F, el juego ya guarda el rastro) · Show Layout (D) · Show Trajectory (D) · Show Triggers (M) ·
+  Show Hitboxes Trail (F, el juego ya guarda el rastro) · Show Layout (D) · [x] Show Trajectory · Show Triggers (M) ·
   [x] Smart StartPos (lo que hay es el StartPos switcher; el "smart" que ajusta velocidad y modo es D)
 - **Status** (labels): Field Formatting (M) · Font · Scale · Opacity · Hide Status (F) · [x] Noclip Accuracy ·
   [x] Noclip Deaths · [x] Attempts · Jumps (F) · [x] Percentage · [x] Level Time · Session Time (F) · [x] Clock ·

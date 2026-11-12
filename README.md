@@ -12,7 +12,7 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Global | Speedhack (con opción de acelerar el audio), FPS bypass, Physics bypass (TPS) | Probado |
 | Player | Noclip con contador de muertes y precisión, mostrar hitboxes | Probado |
 | Player | Sin efecto de muerte, sin parpadeo al reaparecer, respawn delay | Probado |
-| Player | Show trajectory (manteniendo en verde, soltando en rojo) | Hecho, falta probar en el juego |
+| Player | Show trajectory (manteniendo en verde, soltando en rojo) | Hecho |
 | Level | Auto practice mode, practice music sync, hide pause menu | Probado |
 | Level | StartPos switcher (Q = anterior, E = siguiente) | Probado |
 | Bypass | Unlock icons, character limit bypass, character filter bypass, instant complete | Probado |
