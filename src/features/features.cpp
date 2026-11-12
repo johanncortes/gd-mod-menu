@@ -12,6 +12,7 @@
 #include "core/signatures.hpp"
 #include "features/bot/bot.hpp"
 #include "features/bypass/instant_complete.hpp"
+#include "features/cosmetic/hide_player.hpp"
 #include "features/cosmetic/no_mirror.hpp"
 #include "features/cosmetic/no_particles.hpp"
 #include "features/global/display.hpp"
@@ -164,6 +165,12 @@ PatchFeature g_toolboxButtons("Toolbox button bypass", "toolbox_buttons",
 // (Sin efecto de muerte y Sin parpadeo al reaparecer, arriba, también salen en esta ventana)
 NoMirror g_noMirror;
 NoParticles g_noParticles;
+HidePlayer g_hidePlayer;
+// jne -> jmp en GameObject::addGlow: ningún objeto crea su brillo (al entrar al nivel)
+PatchFeature g_noGlow("No glow", "no_glow", sig::kAddGlow, sig::kAddGlowJump, {0x90, 0xE9});
+// "test dl,dl" -> "xor edx,edx" en updateStreakBlend: estelas sin mezcla aditiva y onda sólida
+PatchFeature g_solidWaveTrail("Solid wave trail", "solid_wave_trail", sig::kStreakBlend, sig::kStreakBlendTest,
+                              {0x31, 0xD2});
 // ret al inicio: la cámara no tiembla (portales, final del nivel, triggers de shake)
 PatchFeature g_noShake("No shake", "no_shake", sig::kShakeCamera, 0, {0xC3});
 // ret al inicio: sin los rayos de los portales y del final del nivel
@@ -271,6 +278,9 @@ void loadConfig() {
         g_noSpiderDash.load(cosmetic);
         g_noMirror.load(cosmetic);
         g_noParticles.load(cosmetic);
+        g_hidePlayer.load(cosmetic);
+        g_noGlow.load(cosmetic);
+        g_solidWaveTrail.load(cosmetic);
 
         g_labels.load(section(data, "labels"));
 
@@ -349,6 +359,9 @@ void saveConfig() {
     g_noSpiderDash.save(cosmetic);
     g_noMirror.save(cosmetic);
     g_noParticles.save(cosmetic);
+    g_hidePlayer.save(cosmetic);
+    g_noGlow.save(cosmetic);
+    g_solidWaveTrail.save(cosmetic);
 
     g_labels.save(data["labels"]);
 
@@ -386,6 +399,9 @@ void init() {
     g_noSpiderDash.init(); // antes que g_trajectory, que hookea el inicio de esa función
     g_noMirror.init();
     g_noParticles.init();
+    g_hidePlayer.init(gameAvailable);
+    g_noGlow.init();
+    g_solidWaveTrail.init();
     g_noRespawnFlash.init();
     g_practiceMusicSync.init();
     g_pauseDuringComplete.init();
@@ -457,6 +473,9 @@ void shutdown() {
     g_noSpiderDash.disable();
     g_noMirror.disable();
     g_noParticles.disable();
+    g_hidePlayer.disable();
+    g_noGlow.disable();
+    g_solidWaveTrail.disable();
     g_autoPractice.disable();
     g_hidePause.disable();
     g_startPosSwitcher.disable();
@@ -560,6 +579,9 @@ void drawCosmetic() {
     changed |= g_noWaveTrail.drawUI();
     changed |= g_noGhostTrail.drawUI();
     changed |= g_noSpiderDash.drawUI();
+    changed |= g_noGlow.drawUI();
+    changed |= g_solidWaveTrail.drawUI();
+    changed |= g_hidePlayer.drawUI();
     if (changed) markDirty();
 }
 

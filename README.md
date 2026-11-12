@@ -20,6 +20,7 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Cosmetic | Sin efecto de muerte, sin parpadeo al reaparecer | Probado |
 | Cosmetic | No shake, no portal lightning, no circle effect, no particles, no mirror | Probado |
 | Cosmetic | No trail, no wave trail, no ghost trail, no spider dash | Probado |
+| Cosmetic | No glow, solid wave trail, hide player | Hecho, falta probar |
 | Level | Auto practice mode, practice music sync, hide pause menu | Probado |
 | Level | StartPos switcher (Q = anterior, E = siguiente) | Probado |
 | Level | Pause during complete, checkpoint limit bypass, force platformer | Probado |

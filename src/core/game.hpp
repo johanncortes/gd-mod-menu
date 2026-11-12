@@ -17,6 +17,9 @@ void* editorLayer();
 // Jugador 1 (PlayerObject*) de un nivel, o nullptr si no se pudo localizar.
 void* player1(void* gameLayer);
 
+// Jugador 2 (existe siempre, aunque el nivel no sea dual), o nullptr si no se pudo localizar.
+void* player2(void* gameLayer);
+
 // --- Hooks de nivel (false si sus firmas no aparecieron: los avisos no llegan nunca) ---
 bool levelHooksAvailable();
 

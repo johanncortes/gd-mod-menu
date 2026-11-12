@@ -87,6 +87,7 @@ add_library(gdmenu SHARED
     src/features/player/auto_clicker.cpp
     src/features/cosmetic/no_mirror.cpp
     src/features/cosmetic/no_particles.cpp
+    src/features/cosmetic/hide_player.cpp
     src/features/global/safe_mode.cpp
     src/features/global/universal.cpp
     src/features/global/display.cpp
