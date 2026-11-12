@@ -1,10 +1,9 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 19 (funciones medias: Search, Screenshot, Frame stepper, Auto clicker) con código completo, **pendiente de
-  probar en el juego**, rama `fase-19`. Fases 1 a 18 probadas y mergeadas en `main`.
+- Fase: 19 (Search, Screenshot, Frame stepper, Auto clicker) **probada** y mergeada en `main`. Fases 1 a 19 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: que el usuario pruebe la fase 19. Después: merge a `main` y más funciones medias/altas.
+- Próximo paso: fase 20, más funciones medias (Show triggers, Hitbox multiplier, No glow / No pulse...).
 - Notas / bloqueos:
   - **Fase 19**: *Search* (ventana "Search": las casillas y botones que no coinciden no se dibujan pero sus teclas
     siguen funcionando; las ventanas sin coincidencias se dibujan fuera de la pantalla para recontarlas; filtro en
@@ -254,7 +253,7 @@
 ## Fase 19 — Funciones medias (1)
 - [x] Search en el panel, Screenshot
 - [x] Frame stepper, Auto clicker
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-12)
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
@@ -279,8 +278,8 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
 
-**Player**: [ ] Always Show Trail · [`] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
-[ ] Custom Wave Trail · [`] Frame Stepper · [x] Jump Hack · [ ] Mute Level Audio on Death ·
+**Player**: [ ] Always Show Trail · [x] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
+[ ] Custom Wave Trail · [x] Frame Stepper · [x] Jump Hack · [ ] Mute Level Audio on Death ·
 [ ] Mute Rewards SFX on Death · [x] No Death Effect · [x] No Ghost Trail · [ ] No Hide Trigger ·
 [ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [x] No Spider Dash · [x] No Trail ·
 [ ] No Vehicle Particles · [x] Noclip · [x] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
@@ -303,7 +302,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 **Keybinds**: [x] Open Menu (Tab) · [x] In-game only · [x] Clic derecho en cualquier opción para asignarle una tecla
 
 **Interface**: [x] Theme · [x] UI Scale · [x] Font · [x] Font Size · [ ] Reload Fonts · [ ] Layout Type · [ ] Style ·
-[ ] Enable Blur · [ ] Animate Windows · [x] Accent Color · [ ] Background Color · [ ] Language · [`] Search
+[ ] Enable Blur · [ ] Animate Windows · [x] Accent Color · [ ] Background Color · [ ] Language · [x] Search
 
 (*) Chocan con la regla de `AGENTS.md` "nada de funciones para subir completions ni interactuar con servidores de
 GD". El usuario decidió hacerlas igualmente (2026-11-11), ver Estado actual.
@@ -329,11 +328,11 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [x] No Trail · No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
   Show Total Attempts · Solid Wave Trail · StartPos Reset Camera (M) · Stop Triggers on Death (M) ·
   Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
-- **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · All Modes Platformer (F) · [`] Auto Clicker ·
+- **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · All Modes Platformer (F) · [x] Auto Clicker ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · Auto Kill (F) · Auto Music Sync (M) ·
   Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames (D) · Click Between Steps (D) ·
   Click on Steps (D) · [x] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
-  Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · [`] Frame Stepper · Hitbox Multiplier (M) ·
+  Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · [x] Frame Stepper · Hitbox Multiplier (M) ·
   [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · Noclip Limits (F) · No Collision (F) ·
   [x] Pause During Complete · Practice Bug Fix (D) · [x] Practice Music · Random Seed (M) ·
   Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · [x] Show Hitboxes on Death ·
@@ -354,10 +353,10 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [x] Practice Mode · Settings (F) · [x] Resources / AppData · Toggle DevTools (N/A) · Crash Game (N/A)
 - **Replay**: es la fase 7 (Record, Play, guardar y cargar). Convert (.json, .gdr) es M.
 - **Keybinds**: [x] asignar tecla a una opción · [x] View Keybinds · [x] Remove Keybinds · [x] Disable in Editor
-- **Mega Hack / Interface**: [`] Search · [x] Theme · [x] Interface Scale · Animations (M) · Sort Interface (F) ·
+- **Mega Hack / Interface**: [x] Search · [x] Theme · [x] Interface Scale · Animations (M) · Sort Interface (F) ·
   Language (M) · Hide Endscreen Cheats / Extras (F) · Hide Menu Snow (F) · Auto-Update, Contribute Translations,
   Hide Iconic on Pause, Hide RobsVault Shortcut (N/A: son cosas del propio Mega Hack)
-- **Screenshot**: [`] captura a archivo y al portapapeles.
+- **Screenshot**: [x] captura a archivo y al portapapeles.
 
 ## Mantenimiento por actualización de GD
 1. Ver qué firmas fallan: `build/Release/sigcheck.exe "<ruta>/GeometryDash.exe"` (o el panel, que las marca "no disponible").
