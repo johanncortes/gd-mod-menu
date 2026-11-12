@@ -1,11 +1,9 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 15 (Status, labels nuevos) con código completo, **pendiente de probar**, rama `fase-15` (sale de `fase-14`).
-  **La fase 14 (Cheat Safety) tampoco está confirmada todavía**: el usuario pidió seguir sin decir si funciona; no
-  está mergeada en `main`. Fases 1 a 13 probadas y mergeadas.
+- Fase: 15 (Status) **probada**; fases 14 y 15 mergeadas en `main`. Fases 1 a 15 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: que el usuario pruebe las fases 14 y 15. Después: merge de las dos a `main` y el siguiente bloque.
+- Próximo paso: fase 16, bloque Universal de la lista ampliada.
 - Notas / bloqueos:
   - **Status (fase 15)**: labels Jumps (saltos del intento), Session time (desde que se entró al nivel), Frame
     counter (ticks de física del intento, el mismo contador que usa el bot), Position y Velocity del jugador 1
@@ -205,11 +203,11 @@
 ## Fase 14 — Cheat Safety (lista ampliada, bloque 5)
 - [x] Safe mode y Auto safe mode (banderas del propio juego para descartar un intento)
 - [x] Botón "Desactivar trampas"
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-12)
 
 ## Fase 15 — Status (lista ampliada, bloque 6)
 - [x] Labels: Jumps, Session time, Frame counter, Position, Velocity, Dead
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-12)
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
@@ -217,8 +215,8 @@ Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y
 de la fase 7.
 
 **Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [ ] Pitch Shift · [x] Audio Speed (opción del
-speedhack) · [ ] Sync with Speedhack · [`] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
-[ ] Discord RPC · [ ] Lock Cursor · [ ] No Short Numbers · [`] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
+speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
+[ ] Discord RPC · [ ] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
 [ ] Transparent Lists
 
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [ ] All Modes in Platformer · [ ] All Passable ·
@@ -295,15 +293,15 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   Show Hitboxes Trail (F, el juego ya guarda el rastro) · Show Layout (D) · [x] Show Trajectory · Show Triggers (M) ·
   [x] Smart StartPos (lo que hay es el StartPos switcher; el "smart" que ajusta velocidad y modo es D)
 - **Status** (labels): Field Formatting (M) · Font · Scale · Opacity · Hide Status (F) · [x] Noclip Accuracy ·
-  [x] Noclip Deaths · [x] Attempts · [`] Jumps · [x] Percentage · [x] Level Time · [`] Session Time · [x] Clock ·
-  [`] Frame Counter · [`] Position · [`] Velocity · [`] Dead · Replay State (con el bot)
+  [x] Noclip Deaths · [x] Attempts · [x] Jumps · [x] Percentage · [x] Level Time · [x] Session Time · [x] Clock ·
+  [x] Frame Counter · [x] Position · [x] Velocity · [x] Dead · Replay State (con el bot)
 - **Universal**: Allow Low Volume (F) · Compact Lists (M) · Custom Background (M) · Fast Chests (F) ·
   Load Audio to Memory (M) · Lock Cursor (F) · Main Menu Play (D) · No Music Fade Out (F) · No Transition (F) ·
   Pitch Shifter (F) · Thread Priority (F) · Transition Customizer (M) · Transparent Lists (M)
 - **Display**: [x] FPS · Unlock FPS (F) · [x] Physics TPS · Frame Extrapolation (D) · Vertical Sync (F) ·
   Lock Delta (M) · Real Time (M) · Borderless (M) · Fullscreen (F)
 - **Speedhack**: [x] Speed · [x] Speedhack Audio · Classic Mode (F)
-- **Cheat Safety**: [`] Safe Mode · [`] Auto Safe Mode · Safe Mode Popup (texto en el panel) · [`] Disable Cheats ·
+- **Cheat Safety**: [x] Safe Mode · [x] Auto Safe Mode · Safe Mode Popup (texto en el panel) · [x] Disable Cheats ·
   Ruleset (N/A, es propio de Mega Hack)
 - **Utility**: P1 Click / P2 Click / Left / Right (M) · Uncomplete Level (M) · [x] Restart Level ·
   [x] Practice Mode · Settings (F) · Resources / AppData (F, abrir carpeta) · Toggle DevTools (N/A) · Crash Game (N/A)
