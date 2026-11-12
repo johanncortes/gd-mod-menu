@@ -1,10 +1,15 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 15 (Status) **probada**; fases 14 y 15 mergeadas en `main`. Fases 1 a 15 terminadas.
+- Fase: 16 (Universal) **probada** y mergeada en `main`. Fases 1 a 16 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: fase 16, bloque Universal de la lista ampliada.
+- Próximo paso: fase 17, bloque Display de la lista ampliada.
 - Notas / bloqueos:
+  - **Universal (fase 16)**: sección "Universal" de la ventana Global. Lock cursor (ClipCursor mientras el nivel corre,
+    sin pausa, con el panel cerrado y el juego en primer plano), No transition (fundidos de 0 s), Allow low volume
+    (los deslizadores no saltan a 0 bajo 0.03) y High priority (prioridad alta del proceso; al desactivar vuelve la
+    anterior). **Pendientes**: Fast chests (animación de RewardUnlockLayer, hay que estudiar sus pasos), Pitch
+    shifter, No music fade out, Fullscreen/Borderless y Vertical sync.
   - **Status (fase 15)**: labels Jumps (saltos del intento), Session time (desde que se entró al nivel), Frame
     counter (ticks de física del intento, el mismo contador que usa el bot), Position y Velocity del jugador 1
     (velocidad = cambio de posición entre frames / tiempo de juego, en unidades por segundo) y Dead. Las firmas de
@@ -209,6 +214,10 @@
 - [x] Labels: Jumps, Session time, Frame counter, Position, Velocity, Dead
 - [x] Probado dentro del juego (2026-11-12)
 
+## Fase 16 — Universal (lista ampliada, bloque 7)
+- [x] Lock cursor, No transition, Allow low volume, High priority (Thread Priority)
+- [x] Probado dentro del juego (2026-11-12)
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -216,7 +225,7 @@ de la fase 7.
 
 **Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [ ] Pitch Shift · [x] Audio Speed (opción del
 speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
-[ ] Discord RPC · [ ] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
+[ ] Discord RPC · [x] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
 [ ] Transparent Lists
 
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [ ] All Modes in Platformer · [ ] All Passable ·
@@ -227,7 +236,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Mute Level SFX · [x] No Mirror · [ ] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
 [ ] No Shaders · [ ] Pause Countdown · [x] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
 
-**Bypass**: [ ] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [x] Checkpoint Limit ·
+**Bypass**: [x] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [x] Checkpoint Limit ·
 [ ] Comment History Bypass · [ ] Quick Chests · [x] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
 [ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
@@ -295,9 +304,9 @@ proyecto. Lo que ya está hecho lleva `[x]`.
 - **Status** (labels): Field Formatting (M) · Font · Scale · Opacity · Hide Status (F) · [x] Noclip Accuracy ·
   [x] Noclip Deaths · [x] Attempts · [x] Jumps · [x] Percentage · [x] Level Time · [x] Session Time · [x] Clock ·
   [x] Frame Counter · [x] Position · [x] Velocity · [x] Dead · Replay State (con el bot)
-- **Universal**: Allow Low Volume (F) · Compact Lists (M) · Custom Background (M) · Fast Chests (F) ·
-  Load Audio to Memory (M) · Lock Cursor (F) · Main Menu Play (D) · No Music Fade Out (F) · No Transition (F) ·
-  Pitch Shifter (F) · Thread Priority (F) · Transition Customizer (M) · Transparent Lists (M)
+- **Universal**: [x] Allow Low Volume · Compact Lists (M) · Custom Background (M) · Fast Chests (F) ·
+  Load Audio to Memory (M) · [x] Lock Cursor · Main Menu Play (D) · No Music Fade Out (F) · [x] No Transition ·
+  Pitch Shifter (F) · [x] Thread Priority · Transition Customizer (M) · Transparent Lists (M)
 - **Display**: [x] FPS · Unlock FPS (F) · [x] Physics TPS · Frame Extrapolation (D) · Vertical Sync (F) ·
   Lock Delta (M) · Real Time (M) · Borderless (M) · Fullscreen (F)
 - **Speedhack**: [x] Speed · [x] Speedhack Audio · Classic Mode (F)
