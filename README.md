@@ -19,7 +19,7 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Level | Auto practice mode, practice music sync, hide pause menu | Probado |
 | Level | StartPos switcher (Q = anterior, E = siguiente) | Probado |
 | Bypass | Unlock icons, character limit bypass, character filter bypass, instant complete | Probado |
-| Bypass | Slider limit, unlock main levels, vaults, basement (Keymaster), challenge level, treasure room, shops | Hecho, falta probar |
+| Bypass | Slider limit, unlock main levels, vaults, basement (Keymaster), challenge level, treasure room, shops | Probado |
 | Creator | Free scroll, level copy bypass, custom object bypass, verify bypass | Probado |
 | Labels | Cheat indicator, FPS, CPS, noclip, porcentaje, intento, tiempo, reloj | Probado |
 | Labels | Fuente de GD, tamaño, opacidad y mover los labels arrastrándolos | Probado |

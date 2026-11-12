@@ -1,10 +1,9 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 11 (Bypass, segundo bloque de la lista ampliada) con código completo, **pendiente de probar en el juego**,
-  rama `fase-11`. Fases 1 a 10 probadas y mergeadas en `main`.
+- Fase: 11 (Bypass) **probada** y mergeada en `main`. Fases 1 a 11 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: que el usuario pruebe la fase 11. Después: merge a `main` y el siguiente bloque de la lista ampliada.
+- Próximo paso: fase 12, bloque Creator de la lista ampliada.
 - Notas / bloqueos:
   - **Bypass (fase 11)**: los desbloqueos solo saltan la comprobación del botón que abre cada sitio (niveles
     principales, The Vault, Vault of Secrets, sótano del Keymaster, The Challenge, Treasure Room, tiendas). No escriben
@@ -168,7 +167,7 @@
 - [x] Unlock main levels, Unlock vaults (The Vault y Vault of Secrets), Unlock basement (Keymaster)
 - [x] Unlock challenge level, Unlock treasure room, Unlock shops
 - [x] Slider limit bypass
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-11)
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
@@ -190,8 +189,8 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 
 **Bypass**: [ ] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [ ] Checkpoint Limit ·
 [ ] Comment History Bypass · [ ] Quick Chests · [x] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
-[ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [`] Unlock Main Levels ·
-[ ] Unlock Paths · [`] Unlock Shops · [`] Unlock Vaults
+[ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
+[ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
 
 **Player**: [ ] Always Show Trail · [ ] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
 [ ] Custom Wave Trail · [ ] Frame Stepper · [ ] Jump Hack · [ ] Mute Level Audio on Death ·
@@ -203,7 +202,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 **Bot**: [x] Disabled / Record / Playback · [x] Replays (New, Save, Load, Delete) · [x] Ignore Inputs
 
 **Creator**: [x] Custom Object Bypass · [ ] Default Song Bypass · [x] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
-[x] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [`] Slider Limit ·
+[x] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [x] Slider Limit ·
 [ ] Smooth Editor Trail · [x] Verify Bypass (*)
 
 **Labels**: [x] Show Labels · [ ] Show in Editor · [x] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
@@ -228,9 +227,9 @@ dejar algo terminado y luego ir añadiendo esto por bloques. Dificultad estimada
 como los de la fase 4), **M** media, **D** difícil (días de trabajo y muchas pruebas), **N/A** no aplica a este
 proyecto. Lo que ya está hecho lleva `[x]`.
 
-- **Bypass** (F): Anti-Kick (no se hace, ver Estado actual) · [`] Challenge Level · [`] Keymaster ·
-  [`] Main Levels · Music Customizer (M) · [`] Slider Limit · [x] Text Length · [`] Treasure Room ·
-  [x] Unlock Icons · [`] Unlock Shops · [`] Unlock Vaults
+- **Bypass** (F): Anti-Kick (no se hace, ver Estado actual) · [x] Challenge Level · [x] Keymaster ·
+  [x] Main Levels · Music Customizer (M) · [x] Slider Limit · [x] Text Length · [x] Treasure Room ·
+  [x] Unlock Icons · [x] Unlock Shops · [x] Unlock Vaults
 - **Creator**: Accurate Save (M) · [x] Copy Hack · [x] Custom Object Bypass · Default Song Bypass (F) ·
   Editor Extension (D) · [x] Free Scroll · Hide UI (F) · Level Edit (F) · Multiple Editor Trails (M) · No C Mark (F) ·
   Place Over (F) · Smooth Editor Trail (F) · Toolbox Button Bypass (F) · Trigger Value Bypass (M) · [x] Verify Hack
