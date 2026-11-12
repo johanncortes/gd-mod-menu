@@ -1,11 +1,16 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 14 (Cheat Safety, quinto bloque de la lista ampliada) con código completo, **pendiente de probar en el
-  juego**, rama `fase-14`. Fases 1 a 13 probadas y mergeadas en `main`.
+- Fase: 15 (Status, labels nuevos) con código completo, **pendiente de probar**, rama `fase-15` (sale de `fase-14`).
+  **La fase 14 (Cheat Safety) tampoco está confirmada todavía**: el usuario pidió seguir sin decir si funciona; no
+  está mergeada en `main`. Fases 1 a 13 probadas y mergeadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: que el usuario pruebe la fase 14. Después: merge a `main` y el bloque Status (más labels).
+- Próximo paso: que el usuario pruebe las fases 14 y 15. Después: merge de las dos a `main` y el siguiente bloque.
 - Notas / bloqueos:
+  - **Status (fase 15)**: labels Jumps (saltos del intento), Session time (desde que se entró al nivel), Frame
+    counter (ticks de física del intento, el mismo contador que usa el bot), Position y Velocity del jugador 1
+    (velocidad = cambio de posición entre frames / tiempo de juego, en unidades por segundo) y Dead. Las firmas de
+    hitboxes y del bot se leen en `Labels::init`, que va antes de que esas features pongan sus hooks.
   - **Cheat Safety (fase 14)**: en la ventana Global. *Safe mode* y *Auto safe mode* (activado por defecto: con
     cualquier trampa de `cheatsActive()` el intento no guarda) ponen a 1 las dos banderas con las que el juego descarta
     un intento (ver `docs/firmas.md`), tras cada frame del nivel (callback de `core::game::onUpdate`). *Desactivar
@@ -202,6 +207,10 @@
 - [x] Botón "Desactivar trampas"
 - [ ] Probado dentro del juego
 
+## Fase 15 — Status (lista ampliada, bloque 6)
+- [x] Labels: Jumps, Session time, Frame counter, Position, Velocity, Dead
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -286,8 +295,8 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   Show Hitboxes Trail (F, el juego ya guarda el rastro) · Show Layout (D) · [x] Show Trajectory · Show Triggers (M) ·
   [x] Smart StartPos (lo que hay es el StartPos switcher; el "smart" que ajusta velocidad y modo es D)
 - **Status** (labels): Field Formatting (M) · Font · Scale · Opacity · Hide Status (F) · [x] Noclip Accuracy ·
-  [x] Noclip Deaths · [x] Attempts · Jumps (F) · [x] Percentage · [x] Level Time · Session Time (F) · [x] Clock ·
-  Frame Counter (F) · Position (F) · Velocity (F) · Dead (F) · Replay State (con el bot)
+  [x] Noclip Deaths · [x] Attempts · [`] Jumps · [x] Percentage · [x] Level Time · [`] Session Time · [x] Clock ·
+  [`] Frame Counter · [`] Position · [`] Velocity · [`] Dead · Replay State (con el bot)
 - **Universal**: Allow Low Volume (F) · Compact Lists (M) · Custom Background (M) · Fast Chests (F) ·
   Load Audio to Memory (M) · Lock Cursor (F) · Main Menu Play (D) · No Music Fade Out (F) · No Transition (F) ·
   Pitch Shifter (F) · Thread Priority (F) · Transition Customizer (M) · Transparent Lists (M)

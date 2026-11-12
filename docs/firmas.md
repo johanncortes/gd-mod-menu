@@ -87,6 +87,7 @@
 | PlayLayer::storeCheckpoint: máximo de checkpoints | GeometryDash.exe | ver `kCheckpointLimit` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140516545; `mov esi, 500` con el imm32 en +24 -> 100000 (fase 13) |
 | GJBaseGameLayer::loadLevelSettings: modo plataformas del nivel | GeometryDash.exe | ver `kLoadLevelSettings` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140344C60; `movzx edx, byte [settings+0x155]` en +10 -> `B2 01` + 5 NOPs (fase 13) |
 | PlayLayer::destroyPlayer: banderas que descartan el intento | GeometryDash.exe | ver `kAttemptDiscardFlags` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1405128A5. De la firma: +25 -> `PlayLayer+0x39F9` ("se usaron herramientas"; resetLevel la copia de +0x8A2, PauseLayer::onSideButtonPressed la pone) y +38 -> `+0x39FA` ("se cambió la velocidad"; TimeSpeedControl). Las miran destroyPlayer, levelComplete, EndLevelLayer::customSetup y dtCommitPlaytime. Safe mode las pone a 1 tras cada frame (fase 14) |
+| EndLevelLayer::customSetup: "Jumps: %i" | GeometryDash.exe | ver `kEndLevelJumps` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1402042F6. De la firma (+26): `PlayLayer::m_jumps` (+0x3BC8), saltos del intento. Label Jumps (fase 15). Los labels Frame counter y Dead reutilizan los offsets de `kProcessCommands` y `kShowHitboxes`; Position usa el export `CCNode::getPosition` |
 
 ## Notas de ingeniería inversa
 

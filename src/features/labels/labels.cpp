@@ -30,8 +30,57 @@ namespace sig = core::signatures;
 namespace gf = gui::gamefont;
 
 using PercentFn = float (*)(void* playLayer);
+using GetPositionFn = const float* (*)(void* node); // devuelve const CCPoint&
 PercentFn g_currentPercent = nullptr; // PlayLayer::getCurrentPercent
+GetPositionFn g_getPosition = nullptr; // cocos2d::CCNode::getPosition (export)
 int32_t g_attemptsOffset = 0;         // PlayLayer::m_attempts, leído de kUpdateAttempts
+int32_t g_jumpsOffset = 0;            // PlayLayer::m_jumps, leído de kEndLevelJumps
+int32_t g_tickOffset = 0;             // GJBaseGameLayer: ticks de física, leído de kProcessCommands
+int32_t g_deadOffset = 0;             // PlayLayer: jugador muerto, leído de kShowHitboxes
+
+// Velocidad del jugador 1: diferencia de posición entre dos frames / tiempo de juego
+bool g_hasLastPos = false;
+float g_lastPos[2] = {0.f, 0.f};
+float g_velocity[2] = {0.f, 0.f};
+
+// Tiempo de sesión: desde que se entró al nivel actual
+void* g_sessionLayer = nullptr;
+ULONGLONG g_sessionStart = 0;
+
+int32_t readOffset(const uint8_t* at) {
+    int32_t value = 0;
+    if (at) memcpy(&value, at, sizeof(value));
+    return value;
+}
+
+bool plausible(int32_t offset) {
+    return offset > 0 && offset < 0x10000;
+}
+
+int32_t fieldInt(void* object, int32_t offset) {
+    int32_t value = 0;
+    memcpy(&value, static_cast<const uint8_t*>(object) + offset, sizeof(value));
+    return value;
+}
+
+void onLevelUpdate(void* gameLayer, float dt) {
+    if (gameLayer != core::game::playLayer() || dt <= 0.f) return;
+    void* player = core::game::player1(gameLayer);
+    if (!player) return;
+    const float* pos = g_getPosition(player);
+    if (g_hasLastPos) {
+        g_velocity[0] = (pos[0] - g_lastPos[0]) / dt;
+        g_velocity[1] = (pos[1] - g_lastPos[1]) / dt;
+    }
+    g_lastPos[0] = pos[0];
+    g_lastPos[1] = pos[1];
+    g_hasLastPos = true;
+}
+
+void onLevelReset(void*) {
+    g_hasLastPos = false; // el salto al punto de inicio no es velocidad
+    g_velocity[0] = g_velocity[1] = 0.f;
+}
 
 constexpr float kMinScale = 0.2f, kMaxScale = 1.5f;
 constexpr float kMinOpacity = 0.1f;
@@ -63,6 +112,27 @@ void Labels::init(bool gameAvailable) {
         memcpy(&g_attemptsOffset, updateAttempts + sig::kUpdateAttemptsOffset, 4);
     m_levelInfo = gameAvailable && g_currentPercent && g_attemptsOffset > 0 && g_attemptsOffset < 0x10000;
     m_time = gameAvailable && core::game::levelHooksAvailable();
+
+    // Las firmas de hitboxes y del bot se buscan aquí antes de que esas features instalen sus hooks
+    const uint8_t* endJumps = core::memory::findPattern(exe, sig::kEndLevelJumps);
+    g_jumpsOffset = readOffset(endJumps ? endJumps + sig::kEndLevelJumpsOffset : nullptr);
+    const uint8_t* commands = core::memory::findPattern(exe, sig::kProcessCommands);
+    g_tickOffset = readOffset(commands ? commands + sig::kProcessCommandsTick : nullptr);
+    const uint8_t* hitboxes = core::memory::findPattern(exe, sig::kShowHitboxes);
+    g_deadOffset = readOffset(hitboxes ? hitboxes + sig::kShowHitboxesDead : nullptr);
+    HMODULE cocos = GetModuleHandleW(L"libcocos2d.dll");
+    g_getPosition = cocos ? reinterpret_cast<GetPositionFn>(
+                                GetProcAddress(cocos, "?getPosition@CCNode@cocos2d@@UEAAAEBVCCPoint@2@XZ"))
+                          : nullptr;
+    m_jumps = gameAvailable && plausible(g_jumpsOffset);
+    m_frames = gameAvailable && plausible(g_tickOffset);
+    m_dead = gameAvailable && plausible(g_deadOffset);
+    m_position = gameAvailable && g_getPosition;
+    m_velocity = m_position && m_time;
+    if (m_velocity) {
+        core::game::onUpdate(&onLevelUpdate);
+        core::game::onResetLevel(&onLevelReset);
+    }
     core::logMsg("Labels: porcentaje e intentos %s, tiempo %s", m_levelInfo ? "listos" : "no disponibles",
                  m_time ? "listo" : "no disponible");
 }
@@ -78,6 +148,12 @@ bool Labels::drawUI() {
     changed |= gui::toggle("Attempt", m_levelInfo, m_showAttempt);
     changed |= gui::toggle("Level time", m_time, m_showTime);
     changed |= gui::toggle("Clock", true, m_showClock);
+    changed |= gui::toggle("Jumps", m_jumps, m_showJumps);
+    changed |= gui::toggle("Session time", true, m_showSession);
+    changed |= gui::toggle("Frame counter", m_frames, m_showFrames);
+    changed |= gui::toggle("Position", m_position, m_showPosition);
+    changed |= gui::toggle("Velocity", m_velocity, m_showVelocity);
+    changed |= gui::toggle("Dead", m_dead, m_showDead);
 
     // Aspecto (también lo usa el aviso del StartPos switcher)
     ImGui::Separator();
@@ -112,6 +188,10 @@ bool Labels::drawUI() {
 void Labels::drawOverlay(bool cheatsActive) {
     // Solo dentro de un nivel
     void* playLayer = core::game::playLayer();
+    if (playLayer != g_sessionLayer) { // nivel nuevo (o se salió): empieza otra sesión
+        g_sessionLayer = playLayer;
+        g_sessionStart = GetTickCount64();
+    }
     if (!m_show || !playLayer) {
         g_dragging = false;
         return;
@@ -161,6 +241,33 @@ void Labels::drawOverlay(bool cheatsActive) {
         GetLocalTime(&now);
         snprintf(text, sizeof(text), "%02d:%02d:%02d", now.wHour, now.wMinute, now.wSecond);
         lines.push_back({text, kWhite});
+    }
+    if (m_showJumps && m_jumps) {
+        snprintf(text, sizeof(text), "%d Jumps", fieldInt(playLayer, g_jumpsOffset));
+        lines.push_back({text, kWhite});
+    }
+    if (m_showSession) {
+        const ULONGLONG seconds = (GetTickCount64() - g_sessionStart) / 1000;
+        snprintf(text, sizeof(text), "Session %llu:%02llu:%02llu", seconds / 3600, seconds / 60 % 60, seconds % 60);
+        lines.push_back({text, kWhite});
+    }
+    if (m_showFrames && m_frames) {
+        snprintf(text, sizeof(text), "Frame %d", fieldInt(playLayer, g_tickOffset));
+        lines.push_back({text, kWhite});
+    }
+    void* player = (m_showPosition && m_position) ? core::game::player1(playLayer) : nullptr;
+    if (player) {
+        const float* pos = g_getPosition(player);
+        snprintf(text, sizeof(text), "X %.1f  Y %.1f", pos[0], pos[1]);
+        lines.push_back({text, kWhite});
+    }
+    if (m_showVelocity && m_velocity) {
+        snprintf(text, sizeof(text), "Vel %.1f  %.1f", g_velocity[0], g_velocity[1]);
+        lines.push_back({text, kWhite});
+    }
+    if (m_showDead && m_dead) {
+        const bool dead = *(static_cast<const uint8_t*>(playLayer) + g_deadOffset) != 0;
+        lines.push_back({dead ? "Dead" : "Alive", dead ? kRed : kWhite});
     }
     if (lines.empty()) {
         g_dragging = false;
@@ -265,6 +372,12 @@ void Labels::load(const nlohmann::json& j) {
     m_showAttempt = j.value("attempt", m_showAttempt);
     m_showTime = j.value("level_time", m_showTime);
     m_showClock = j.value("clock", m_showClock);
+    m_showJumps = j.value("jumps", m_showJumps);
+    m_showSession = j.value("session_time", m_showSession);
+    m_showFrames = j.value("frame_counter", m_showFrames);
+    m_showPosition = j.value("position", m_showPosition);
+    m_showVelocity = j.value("velocity", m_showVelocity);
+    m_showDead = j.value("dead", m_showDead);
     m_x = std::clamp(j.value("x", m_x), 0.f, 1.f);
     m_y = std::clamp(j.value("y", m_y), 0.f, 1.f);
     m_alignRight = j.value("align_right", m_alignRight);
@@ -289,6 +402,12 @@ void Labels::save(nlohmann::json& j) const {
          {"attempt", m_showAttempt},
          {"level_time", m_showTime},
          {"clock", m_showClock},
+         {"jumps", m_showJumps},
+         {"session_time", m_showSession},
+         {"frame_counter", m_showFrames},
+         {"position", m_showPosition},
+         {"velocity", m_showVelocity},
+         {"dead", m_showDead},
          {"x", m_x},
          {"y", m_y},
          {"align_right", m_alignRight},

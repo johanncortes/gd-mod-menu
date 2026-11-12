@@ -514,4 +514,13 @@ inline constexpr char kAttemptDiscardFlags[] =
 inline constexpr int kAttemptDiscardToolsUsed = 25;
 inline constexpr int kAttemptDiscardSpeedChanged = 38;
 
+// --- Fase 15 (Status, labels nuevos). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// EndLevelLayer::customSetup: "Jumps: %i" con m_playLayer->m_jumps. De la firma (+26) se lee el
+// desplazamiento de los saltos del intento en PlayLayer.
+inline constexpr char kEndLevelJumps[] =
+    "F3 0F 10 44 24 74 F3 41 0F 58 C0 F3 0F 11 44 24 74 49 8B 97 ?? ?? ?? ?? 8B 92 ?? ?? ?? ?? "
+    "48 8D 0D ?? ?? ?? ??";
+inline constexpr int kEndLevelJumpsOffset = 26;
+
 } // namespace core::signatures
