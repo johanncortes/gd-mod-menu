@@ -18,6 +18,7 @@ namespace {
 
 void** g_gameManager = nullptr; // variable global del exe con el puntero a GameManager
 int32_t g_playLayerOffset = 0;  // GameManager::m_playLayer
+int32_t g_player1Offset = 0;    // GJBaseGameLayer::m_player1 (leído de kCheckForEnd)
 
 using ResetLevelFn = void (*)(void* playLayer);
 using UpdateFn = void (*)(void* gameLayer, float dt);
@@ -59,6 +60,11 @@ bool init() {
     uint8_t* code = memory::findPattern(exe, signatures::kSwitchStartPos);
     uint8_t* resetLevel = memory::findPattern(exe, signatures::kResetLevel);
     uint8_t* update = memory::findPattern(exe, signatures::kGameLayerUpdate);
+    if (const uint8_t* checkForEnd = memory::findPattern(exe, signatures::kCheckForEnd)) {
+        int32_t offset;
+        memcpy(&offset, checkForEnd + signatures::kCheckForEndPlayer, 4);
+        if (offset > 0 && offset < 0x10000) g_player1Offset = offset;
+    }
 
     g_levelHooks = hookAt(resetLevel, &resetLevelHook, reinterpret_cast<void**>(&g_origResetLevel)) &&
                    hookAt(update, &updateHook, reinterpret_cast<void**>(&g_origUpdate));
@@ -86,6 +92,13 @@ void* playLayer() {
     void* layer;
     memcpy(&layer, static_cast<uint8_t*>(*g_gameManager) + g_playLayerOffset, sizeof(layer));
     return layer;
+}
+
+void* player1(void* gameLayer) {
+    if (!gameLayer || g_player1Offset == 0) return nullptr;
+    void* player;
+    memcpy(&player, static_cast<uint8_t*>(gameLayer) + g_player1Offset, sizeof(player));
+    return player;
 }
 
 bool levelHooksAvailable() { return g_levelHooks; }

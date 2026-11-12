@@ -11,6 +11,9 @@ bool init();
 // PlayLayer del nivel que se está jugando, o nullptr si no hay ninguno (menús, editor).
 void* playLayer();
 
+// Jugador 1 (PlayerObject*) de un nivel, o nullptr si no se pudo localizar.
+void* player1(void* gameLayer);
+
 // --- Hooks de nivel (false si sus firmas no aparecieron: los avisos no llegan nunca) ---
 bool levelHooksAvailable();
 

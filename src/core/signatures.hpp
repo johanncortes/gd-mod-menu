@@ -253,4 +253,85 @@ inline constexpr int kCheckForEndSpawnPos = 57;    // rel32 de EndPortalObject::
 inline constexpr int kCheckForEndPlayer = 67;      // GJBaseGameLayer::m_player1
 inline constexpr int kCheckForEndGetPosition = 76; // posición de getPosition() en el vtable
 
+// --- Fase 9 (Show trajectory). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+// Un PlayerObject propio, invisible, copia el estado del jugador real y avanza tick a tick
+// con las mismas funciones que usa GJBaseGameLayer::update.
+
+// PlayerObject::create(int, int, GJBaseGameLayer*, CCLayer*, bool playLayer), inicio de la función.
+inline constexpr char kPlayerCreate[] =
+    "48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 48 89 7C 24 20 41 56 48 83 EC 40 49 8B F9 49 8B F0 "
+    "8B EA 44 8B F1 B9 50 0C 00 00";
+
+// PlayerObject::copyAttributes(PlayerObject*), inicio de la función. De la firma se lee el offset
+// de la "posición anterior" del jugador, que el juego actualiza al final de cada tick.
+inline constexpr char kCopyAttributes[] =
+    "48 89 5C 24 10 48 89 74 24 18 57 48 83 EC 20 C6 81 ?? ?? ?? ?? 01 48 8B F2 48 8B 82 ?? ?? ?? ?? "
+    "48 8B F9 48 89 81 ?? ?? ?? ?? 48 81 C2 ?? ?? ?? ?? 48 8D 4C 24 30 FF 15 ?? ?? ?? ?? 48 8D 8F ?? ?? ?? ?? "
+    "48 8D 54 24 30 FF 15 ?? ?? ?? ?? 48 8B 06 48 8B CE 48 8B 1F FF 90 ?? ?? ?? ?? 48 8B D0 48 8B CF "
+    "FF 93 ?? ?? ?? ?? 48 8D 96 ?? ?? ?? ?? 48 8D 4C 24 30 FF 15 ?? ?? ?? ?? 48 8D 8F ?? ?? ?? ??";
+inline constexpr int kCopyAttributesLastPos = 108;
+
+// PlayerObject::updateRotation(float), inicio de la función.
+inline constexpr char kUpdateRotation[] =
+    "40 57 48 83 EC 50 80 B9 ?? ?? ?? ?? 00 48 8B F9 0F 29 74 24 40 0F 28 F1 0F 85 ?? ?? ?? ?? "
+    "80 B9 ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ??";
+
+// PlayerObject::pushButton(PlayerButton) y releaseButton(PlayerButton), inicio de cada función.
+inline constexpr char kPushButton[] =
+    "40 53 57 48 83 EC 28 80 B9 ?? ?? ?? ?? 00 8B FA 48 8B D9 75 18 89 54 24 40 48 81 C1 ?? ?? ?? ?? "
+    "48 8D 54 24 40 E8 ?? ?? ?? ??";
+inline constexpr char kReleaseButton[] =
+    "48 89 5C 24 08 57 48 83 EC 20 8B FA 48 8B D9 83 FA 05 75 2C BA 02 00 00 00 E8 ?? ?? ?? ?? "
+    "BA 03 00 00 00 48 8B CB E8 ?? ?? ?? ??";
+
+// GJBaseGameLayer::checkCollisions(PlayerObject*, float, bool ignoreDamage), inicio de la función.
+// Con ignoreDamage, al tocar un peligro devuelve 1 sin llamar a destroyPlayer.
+inline constexpr char kCheckCollisions[] =
+    "48 8B C4 44 88 48 20 F3 0F 11 50 18 55 53 56 57 41 54 41 55 41 56 41 57 48 8D 68 B8 48 81 EC 08 01 00 00 "
+    "0F 29 70 A8 0F 29 78 98 44 0F 29 40 88";
+
+// GJBaseGameLayer::collisionCheckObjects(PlayerObject*, vector<GameObject*>*, int, float), inicio.
+// Recorre los objetos cerca del jugador: sólidos y peligros los apunta para checkCollisions, y
+// los especiales (portales, anillos, monedas, triggers) los activa. Hook: para el jugador simulado
+// solo le llegan sólidos, peligros y rampas.
+inline constexpr char kCollisionCheckObjects[] =
+    "48 8B C4 48 89 58 08 4C 89 40 18 55 56 57 41 54 41 55 41 56 41 57 48 8D A8 F8 FE FF FF "
+    "48 81 EC D0 01 00 00 0F 29 70 B8 0F 29 78 A8 44 0F 29 40 98 44 0F 29 48 88 44 0F 29 90 78 FF FF FF";
+
+// Dentro de collisionCheckObjects: lectura del tipo de objeto (GameObject::m_objectType).
+inline constexpr char kObjectTypeRead[] =
+    "48 8B 07 4A 8B 3C E0 48 89 7C 24 58 8B 87 ?? ?? ?? ?? 83 F8 07 0F 84 ?? ?? ?? ??";
+inline constexpr int kObjectTypeOffset = 14;
+
+// PlayerObject::playSpiderDashEffect(CCPoint, CCPoint), inicio. Hook: nada para el jugador simulado.
+inline constexpr char kSpiderDashEffect[] =
+    "48 89 5C 24 10 48 89 6C 24 18 48 89 74 24 20 57 41 54 41 55 41 56 41 57 48 83 EC 50 0F 29 74 24 40 "
+    "0F 29 7C 24 30 4D 8B F8 48 8B EA 48 8B F9 44 0F B6 A9 ?? ?? ?? ??";
+
+// GJBaseGameLayer::update: al empezar cada tick vacía los 4 registros de colisiones del jugador 1
+// (CCDictionary) y mueve dos pares de campos. El simulador repite eso; de la firma se leen:
+inline constexpr char kCollisionLogReset[] =
+    "E8 ?? ?? ?? ?? 48 8B 9E ?? ?? ?? ?? 48 8B 8B ?? ?? ?? ?? FF 15 ?? ?? ?? ?? 48 8B 8B ?? ?? ?? ?? "
+    "FF 15 ?? ?? ?? ?? 48 8B 8B ?? ?? ?? ?? FF 15 ?? ?? ?? ?? 48 8B 8B ?? ?? ?? ?? FF 15 ?? ?? ?? ?? "
+    "8B 83 ?? ?? ?? ?? 89 83 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? 89 83 ?? ?? ?? ?? "
+    "48 C7 83 ?? ?? ?? ?? FF FF FF FF 48 C7 83 ?? ?? ?? ?? FF FF FF FF";
+inline constexpr int kCollisionLogDicts[4] = {15, 28, 41, 54};       // los 4 CCDictionary
+inline constexpr int kCollisionLogCopy[4] = {66, 72, 78, 84};        // origen, destino, origen, destino
+inline constexpr int kCollisionLogClear[2] = {91, 102};              // dos int64 que pasan a -1
+
+// GJBaseGameLayer::gameEventTriggered(GJGameEvent, int, int), inicio. Lo llaman el salto, el
+// aterrizaje y los choques del jugador (triggers de evento del nivel). Hook: nada mientras se simula.
+inline constexpr char kGameEventTriggered[] =
+    "4C 8B DC 49 89 5B 10 49 89 6B 18 49 89 73 20 57 41 56 41 57 48 83 EC 60 41 8B E9 45 8B F0 44 8B FA "
+    "48 8B F1 41 89 53 08";
+
+// GJBaseGameLayer::destroyObject(GameObject*), inicio. Lo llama el jugador al chocar con un bloque
+// rompible. Hook: nada mientras se simula (si no, el jugador simulado rompería bloques de verdad).
+inline constexpr char kDestroyObject[] =
+    "40 57 48 83 EC 30 48 8B 02 48 8B F9 48 89 5C 24 40 48 8B CA 48 8B DA FF 90 ?? ?? ?? ?? 83 F8 1E "
+    "0F 85 ?? ?? ?? ?? 80 BB ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ??";
+
+// En kCurrentPercent: "cmp byte [rcx+X],0" con X = GJBaseGameLayer::m_isPlatformer.
+inline constexpr int kCurrentPercentPlatformer = 8;
+
 } // namespace core::signatures
