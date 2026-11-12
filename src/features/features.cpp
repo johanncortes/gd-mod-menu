@@ -18,6 +18,7 @@
 #include "features/global/safe_mode.hpp"
 #include "features/global/speedhack.hpp"
 #include "features/global/tps_bypass.hpp"
+#include "features/global/universal.hpp"
 #include "features/labels/labels.hpp"
 #include "features/level/auto_practice.hpp"
 #include "features/level/hide_pause.hpp"
@@ -31,6 +32,7 @@
 #include "gui/game_font.hpp"
 #include "gui/widgets.hpp"
 #include "gui/keybinds.hpp"
+#include "gui/menu.hpp"
 #include "gui/theme.hpp"
 
 namespace features {
@@ -43,6 +45,14 @@ Speedhack g_speedhack;
 FpsBypass g_fpsBypass;
 TpsBypass g_tpsBypass;
 SafeMode g_safeMode;
+LockCursor g_lockCursor;
+NoTransition g_noTransition;
+HighPriority g_highPriority;
+// Los deslizadores de volumen ya no saltan a 0 por debajo de 0.03
+PatchFeature g_allowLowVolume("Allow low volume", "allow_low_volume",
+                              {{sig::kMusicSliderPause, sig::kMusicSliderPauseJump, {0xEB}},
+                               {sig::kSfxSlider, sig::kSfxSliderJump, {0xEB}},
+                               {sig::kMusicSliderOptions, sig::kMusicSliderOptionsJump, {0xEB}}});
 
 Noclip g_noclip;
 Hitboxes g_hitboxes;
@@ -194,6 +204,11 @@ void loadConfig() {
         g_fpsBypass.load(section(global, "fps_bypass"));
         g_tpsBypass.load(section(global, "tps_bypass"));
         g_safeMode.load(section(global, "cheat_safety"));
+        const nlohmann::json universal = section(global, "universal");
+        g_lockCursor.load(universal);
+        g_noTransition.load(universal);
+        g_highPriority.load(universal);
+        g_allowLowVolume.load(universal);
 
         const nlohmann::json player = section(data, "player");
         g_noclip.load(section(player, "noclip"));
@@ -265,6 +280,11 @@ void saveConfig() {
     g_fpsBypass.save(global["fps_bypass"]);
     g_tpsBypass.save(global["tps_bypass"]);
     g_safeMode.save(global["cheat_safety"]);
+    nlohmann::json& universal = global["universal"];
+    g_lockCursor.save(universal);
+    g_noTransition.save(universal);
+    g_highPriority.save(universal);
+    g_allowLowVolume.save(universal);
 
     nlohmann::json& player = data["player"];
     g_noclip.save(player["noclip"]);
@@ -339,6 +359,8 @@ void init() {
     uint8_t* destroyPlayer = core::memory::findPattern(GetModuleHandleW(nullptr), core::signatures::kDestroyPlayer);
     const bool gameAvailable = core::game::init(); // GameManager y hooks de nivel compartidos
     g_safeMode.init(gameAvailable);
+    g_noTransition.init();
+    g_allowLowVolume.init();
     g_noDeathEffect.init();
     g_noShake.init();
     g_noLightning.init();
@@ -395,6 +417,10 @@ void shutdown() {
     g_fpsBypass.disable();
     g_tpsBypass.shutdown();
     g_safeMode.disable();
+    g_lockCursor.disable();
+    g_noTransition.disable();
+    g_highPriority.disable();
+    g_allowLowVolume.disable();
     g_noclip.disable();
     g_hitboxes.disable();
     g_trajectory.disable();
@@ -446,6 +472,7 @@ void update() {
     if (gui::keybinds::takeChanged() || g_labels.takePositionChanged()) markDirty();
     g_startPosSwitcher.update();
     g_safeMode.update(cheatsActive());
+    g_lockCursor.update(gui::isMenuOpen());
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
     if (g_dirty && GetTickCount64() - g_dirtySince > 500) saveConfig();
 }
@@ -464,6 +491,12 @@ void drawGlobal() {
     bool changed = g_speedhack.drawUI();
     changed |= g_fpsBypass.drawUI();
     changed |= g_tpsBypass.drawUI();
+
+    ImGui::SeparatorText("Universal");
+    changed |= g_lockCursor.drawUI();
+    changed |= g_noTransition.drawUI();
+    changed |= g_allowLowVolume.drawUI();
+    changed |= g_highPriority.drawUI();
 
     ImGui::SeparatorText("Cheat safety");
     changed |= g_safeMode.drawUI();

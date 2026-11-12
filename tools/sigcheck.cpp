@@ -101,6 +101,9 @@ int main(int argc, char** argv) {
         {"kLoadLevelSettings", sig::kLoadLevelSettings},
         {"kAttemptDiscardFlags", sig::kAttemptDiscardFlags},
         {"kEndLevelJumps", sig::kEndLevelJumps},
+        {"kMusicSliderPause", sig::kMusicSliderPause},
+        {"kSfxSlider", sig::kSfxSlider},
+        {"kMusicSliderOptions", sig::kMusicSliderOptions},
     };
 
     int failed = 0;

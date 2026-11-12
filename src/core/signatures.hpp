@@ -523,4 +523,24 @@ inline constexpr char kEndLevelJumps[] =
     "48 8D 0D ?? ?? ?? ??";
 inline constexpr int kEndLevelJumpsOffset = 26;
 
+// --- Fase 16 (Universal). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+// Deslizadores de volumen: "if (valor < 0.03) valor = 0". Allow low volume: el jbe corto del final
+// de cada firma pasa a jmp (no se pone a 0).
+
+// PauseLayer::musicSliderChanged, inicio.
+inline constexpr char kMusicSliderPause[] =
+    "48 83 EC 38 0F 29 74 24 20 48 8B CA E8 ?? ?? ?? ?? 0F 28 F0 F3 0F 10 0D ?? ?? ?? ?? 0F 2F C8 76 03";
+inline constexpr int kMusicSliderPauseJump = 31;
+
+// PauseLayer::sfxSliderChanged (OptionsLayer usa la misma función), inicio.
+inline constexpr char kSfxSlider[] =
+    "40 53 48 83 EC 30 0F 29 74 24 20 48 8B CA E8 ?? ?? ?? ?? 0F 28 F0 F3 0F 10 0D ?? ?? ?? ?? 0F 2F C8 76 03";
+inline constexpr int kSfxSliderJump = 33;
+
+// OptionsLayer::musicSliderChanged, inicio.
+inline constexpr char kMusicSliderOptions[] =
+    "48 83 EC 58 0F 29 74 24 40 0F 29 7C 24 30 44 0F 29 44 24 20 48 8B CA E8 ?? ?? ?? ?? 0F 28 F0 "
+    "F3 0F 10 0D ?? ?? ?? ?? 0F 57 FF 0F 2F C8 76 03";
+inline constexpr int kMusicSliderOptionsJump = 45;
+
 } // namespace core::signatures
