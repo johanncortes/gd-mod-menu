@@ -82,6 +82,7 @@ add_library(gdmenu SHARED
     src/features/player/hitboxes.cpp
     src/features/player/respawn_delay.cpp
     src/features/player/trajectory.cpp
+    src/features/player/jump_hack.cpp
     src/features/cosmetic/no_mirror.cpp
     src/features/cosmetic/no_particles.cpp
     src/features/global/safe_mode.cpp

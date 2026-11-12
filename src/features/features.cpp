@@ -26,6 +26,7 @@
 #include "features/level/startpos_switcher.hpp"
 #include "features/patch_feature.hpp"
 #include "features/player/hitboxes.hpp"
+#include "features/player/jump_hack.hpp"
 #include "features/player/noclip.hpp"
 #include "features/player/respawn_delay.hpp"
 #include "features/player/trajectory.hpp"
@@ -60,6 +61,7 @@ Noclip g_noclip;
 Hitboxes g_hitboxes;
 RespawnDelay g_respawnDelay;
 Trajectory g_trajectory;
+JumpHack g_jumpHack;
 // je -> jmp: playerDestroyed siempre toma el camino "ocultar al jugador sin efecto"
 PatchFeature g_noDeathEffect("Sin efecto de muerte", "no_death_effect", core::signatures::kDeathEffect,
                              core::signatures::kDeathEffectJump, {0xEB});
@@ -216,6 +218,7 @@ void loadConfig() {
         g_noclip.load(section(player, "noclip"));
         g_hitboxes.load(section(player, "hitboxes"));
         g_trajectory.load(section(player, "trajectory"));
+        g_jumpHack.load(section(player, "jump_hack"));
         g_respawnDelay.load(section(player, "respawn_delay"));
         g_noDeathEffect.load(player);
         g_noRespawnFlash.load(player);
@@ -292,6 +295,7 @@ void saveConfig() {
     g_noclip.save(player["noclip"]);
     g_hitboxes.save(player["hitboxes"]);
     g_trajectory.save(player["trajectory"]);
+    g_jumpHack.save(player["jump_hack"]);
     g_respawnDelay.save(player["respawn_delay"]);
     g_noDeathEffect.save(player);
     g_noRespawnFlash.save(player);
@@ -407,6 +411,7 @@ void init() {
     g_respawnDelay.init(destroyPlayer);
     g_hitboxes.init();
     g_trajectory.init(gameAvailable);
+    g_jumpHack.init(gameAvailable);
     g_noclip.init(destroyPlayer);
 
     loadConfig();
@@ -416,7 +421,7 @@ void init() {
 void shutdown() {
     if (!g_ready) return;
     if (g_dirty) saveConfig(); // antes de desactivar: se guarda el estado que eligió el usuario
-    g_speedhack.disable();
+    g_speedhack.shutdown();
     g_fpsBypass.disable();
     g_tpsBypass.shutdown();
     g_safeMode.disable();
@@ -427,6 +432,7 @@ void shutdown() {
     g_noclip.disable();
     g_hitboxes.disable();
     g_trajectory.disable();
+    g_jumpHack.disable();
     g_respawnDelay.disable();
     g_noDeathEffect.disable();
     g_noRespawnFlash.disable();
@@ -489,6 +495,7 @@ void disableCheats() {
     g_noclip.disable();
     g_bot.disable();
     g_forcePlatformer.disable();
+    g_jumpHack.disable();
     markDirty();
 }
 
@@ -517,6 +524,7 @@ void drawPlayer() {
     bool changed = g_noclip.drawUI();
     changed |= g_hitboxes.drawUI();
     changed |= g_trajectory.drawUI();
+    changed |= g_jumpHack.drawUI();
     changed |= g_respawnDelay.drawUI();
     if (changed) markDirty();
 }
@@ -601,7 +609,7 @@ void drawOverlay() {
 
 bool cheatsActive() {
     return g_speedhack.active() || g_tpsBypass.active() || g_noclip.active() || g_bot.active() ||
-           g_forcePlatformer.cheatActive();
+           g_forcePlatformer.cheatActive() || g_jumpHack.active();
 }
 
 } // namespace features

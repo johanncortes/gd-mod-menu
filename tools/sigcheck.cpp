@@ -105,6 +105,7 @@ int main(int argc, char** argv) {
         {"kSfxSlider", sig::kSfxSlider},
         {"kMusicSliderOptions", sig::kMusicSliderOptions},
         {"kEditorLayerStore", sig::kEditorLayerStore},
+        {"kPushButtonModes", sig::kPushButtonModes},
     };
 
     int failed = 0;
