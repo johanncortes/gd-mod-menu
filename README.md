@@ -31,6 +31,10 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Labels | Fuente de GD, tamaño, opacidad y mover los labels arrastrándolos | Probado |
 | Labels | Jumps, session time, frame counter, posición, velocidad y muerto | Probado |
 | Shortcuts | Reiniciar nivel, alternar modo práctica, poner y quitar checkpoint | Probado |
+| Shortcuts | P1/P2 jump, P1 izquierda/derecha, abrir carpetas Resources y de partidas | Probado |
+| Keybinds | Lista de teclas con quitar, desactivar en el editor, solo dentro de un nivel | Probado |
+| Global | Pitch shift | Probado |
+| Player | Jump hack | Probado |
 | Interface | Tema, color de acento, escala, fuente y tamaño | Probado |
 | Keybinds | Clic derecho sobre cualquier opción para asignarle una tecla | Probado |
 | Bot | Grabar y reproducir inputs, guardar y cargar replays | Probado |

@@ -1,14 +1,20 @@
 #include "shortcuts.hpp"
 
 #include <windows.h>
+#include <shellapi.h>
+#include <shlobj.h>
 
 #include <cstdint>
 #include <cstring>
+#include <string>
+
+#include <imgui.h>
 
 #include "core/game.hpp"
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
+#include "gui/keybinds.hpp"
 #include "gui/widgets.hpp"
 
 namespace features {
@@ -28,6 +34,47 @@ TogglePracticeFn g_togglePractice = nullptr;
 // sus dos argumentos (sacan el PlayLayer de GameManager) y solo actúan en modo práctica.
 UiHandlerFn g_placeCheckpoint = nullptr;
 UiHandlerFn g_removeCheckpoint = nullptr;
+
+// GJBaseGameLayer::handleButton(down, botón, jugador 1). Se llama a la dirección original: si el
+// bot la tiene hookeada, la pulsación pasa por él (y se graba) como una del teclado.
+using HandleButtonFn = void (*)(void* gameLayer, bool down, int button, bool isPlayer1);
+HandleButtonFn g_handleButton = nullptr;
+
+// Acciones de Utility: texto del botón (y de su tecla), botón de GD (1 salto, 2 izq., 3 der.), jugador
+struct PlayerAction {
+    const char* label;
+    int button;
+    bool player1;
+    bool down = false; // ya enviamos "pulsado" al juego
+    bool tap = false;  // clic en el panel: pulsar ahora y soltar en el frame siguiente
+};
+PlayerAction g_actions[] = {
+    {"P1 jump", 1, true}, {"P2 jump", 1, false}, {"P1 left", 2, true}, {"P1 right", 3, true}};
+
+void openFolder(const wchar_t* path) {
+    ShellExecuteW(nullptr, L"open", path, nullptr, nullptr, SW_SHOWNORMAL);
+}
+
+// Carpeta del exe + "\Resources"
+void openResources() {
+    wchar_t path[MAX_PATH];
+    const DWORD length = GetModuleFileNameW(nullptr, path, MAX_PATH);
+    if (length == 0 || length >= MAX_PATH) return;
+    wchar_t* slash = wcsrchr(path, L'\\');
+    if (!slash) return;
+    wcscpy_s(slash, static_cast<size_t>(MAX_PATH - (slash - path)), L"\\Resources");
+    openFolder(path);
+}
+
+// %LOCALAPPDATA%\GeometryDash (partidas guardadas)
+void openSaveFolder() {
+    PWSTR local = nullptr;
+    if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &local))) {
+        std::wstring path = std::wstring(local) + L"\\GeometryDash";
+        openFolder(path.c_str());
+    }
+    CoTaskMemFree(local);
+}
 
 int32_t readInt(const uint8_t* at) {
     int32_t value;
@@ -59,8 +106,25 @@ void Shortcuts::init(bool gameAvailable) {
     g_placeCheckpoint = reinterpret_cast<UiHandlerFn>(core::memory::findPattern(exe, sig::kUiOnCheck));
     g_removeCheckpoint = reinterpret_cast<UiHandlerFn>(core::memory::findPattern(exe, sig::kUiOnDeleteCheck));
     m_checkpoints = g_placeCheckpoint && g_removeCheckpoint;
+    // Antes que el bot instale su hook (la firma dejaría de coincidir)
+    g_handleButton = reinterpret_cast<HandleButtonFn>(core::memory::findPattern(exe, sig::kHandleButton));
+    m_buttons = g_handleButton != nullptr;
     core::logMsg("Shortcuts: reiniciar %s, práctica %s, checkpoints %s", m_restart ? "listo" : "no disponible",
                  m_practice ? "listo" : "no disponible", m_checkpoints ? "listos" : "no disponibles");
+}
+
+void Shortcuts::update() {
+    void* playLayer = m_buttons ? core::game::playLayer() : nullptr;
+    for (PlayerAction& action : g_actions) {
+        bool want = playLayer && (gui::keybinds::held(action.label) || action.tap);
+        if (action.tap && action.down) { // la pulsación corta ya se envió: ahora se suelta
+            action.tap = false;
+            want = playLayer && gui::keybinds::held(action.label);
+        }
+        if (want == action.down) continue;
+        action.down = want;
+        if (playLayer) g_handleButton(playLayer, want, action.button, action.player1);
+    }
 }
 
 void Shortcuts::drawUI() {
@@ -78,6 +142,14 @@ void Shortcuts::drawUI() {
         g_togglePractice(playLayer, bytes[g_practiceOffset] == 0);
     if (gui::button("Place checkpoint", m_checkpoints) && playLayer) g_placeCheckpoint(nullptr, nullptr);
     if (gui::button("Remove checkpoint", m_checkpoints) && playLayer) g_removeCheckpoint(nullptr, nullptr);
+
+    ImGui::SeparatorText("Utility");
+    // Con la tecla asignada la acción dura lo que se mantenga pulsada (Shortcuts::update); el
+    // clic hace una pulsación corta. gui::button también devuelve true al pulsar la tecla: se ignora.
+    for (PlayerAction& action : g_actions)
+        if (gui::button(action.label, m_buttons) && !gui::keybinds::held(action.label) && playLayer) action.tap = true;
+    if (gui::button("Abrir carpeta Resources", true)) openResources();
+    if (gui::button("Abrir carpeta de partidas (AppData)", true)) openSaveFolder();
 }
 
 } // namespace features

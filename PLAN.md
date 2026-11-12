@@ -1,10 +1,18 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 17 (Display) **probada** y mergeada en `main`. Fases 1 a 17 terminadas.
+- Fase: 18 (Keybinds, Utility y pendientes) **probada** y mergeada en `main`. Fases 1 a 18 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: fase 18, pendientes de bloques anteriores + Keybinds + Utility.
+- Próximo paso: fase 19, funciones de dificultad media y alta que quedan.
 - Notas / bloqueos:
+  - **Fase 18**: *Keybinds* (ventana Shortcuts): lista de teclas con "Quitar", "Quitar todas", "Desactivar en el
+    editor" (usa `core::game::editorLayer()`) y "Solo dentro de un nivel". La config de keybinds pasó a
+    `{"binds": {...}, "disable_in_editor", "level_only"}` (se sigue leyendo el formato antiguo). *Utility*: P1 jump,
+    P2 jump, P1 left, P1 right (tecla mantenida = botón mantenido, vía `handleButton`; clic = pulsación corta) y
+    abrir las carpetas Resources y de partidas. *Pitch shift* (junto al speedhack, DSP de FMOD). *Jump hack*
+    (Player, trampa). **Siguen pendientes**: Fast chests (hay que estudiar los pasos de RewardUnlockLayer), Smooth
+    editor trail (riesgo con los arrays de 400 puntos de DrawGridLayer), Uncomplete level (tocaría estrellas,
+    monedas y estadísticas guardadas: no se hace sin un plan claro).
   - **Display (fase 17)**: sección "Display" de la ventana Global con Vertical sync, Fullscreen y Borderless (exports
     de libcocos2d; las casillas leen el estado real; el cambio se aplica en `features::update`, fuera del dibujado del
     panel, y vale para la sesión: el juego solo guarda su opción si se cambia en sus ajustes). *Unlock FPS* va junto a
@@ -227,12 +235,19 @@
 - [x] Vertical sync, Fullscreen, Borderless
 - [x] Probado dentro del juego (2026-11-12)
 
+## Fase 18 — Keybinds, Utility y pendientes
+- [x] Keybinds: ver la lista, quitar teclas, desactivar en el editor, solo dentro de un nivel
+- [x] Utility: P1/P2 jump, P1 izquierda/derecha, abrir carpetas Resources y de partidas
+- [x] Pitch shift, Jump hack
+- [x] Probado dentro del juego (2026-11-12)
+- [ ] Más adelante: Fast chests, Smooth editor trail
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
 de la fase 7.
 
-**Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [ ] Pitch Shift · [x] Audio Speed (opción del
+**Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [x] Pitch Shift · [x] Audio Speed (opción del
 speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
 [ ] Discord RPC · [x] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
 [ ] Transparent Lists
@@ -251,7 +266,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
 
 **Player**: [ ] Always Show Trail · [ ] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
-[ ] Custom Wave Trail · [ ] Frame Stepper · [ ] Jump Hack · [ ] Mute Level Audio on Death ·
+[ ] Custom Wave Trail · [ ] Frame Stepper · [x] Jump Hack · [ ] Mute Level Audio on Death ·
 [ ] Mute Rewards SFX on Death · [x] No Death Effect · [x] No Ghost Trail · [ ] No Hide Trigger ·
 [ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [x] No Spider Dash · [x] No Trail ·
 [ ] No Vehicle Particles · [x] Noclip · [x] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
@@ -267,11 +282,11 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Presets · [x] FPS · [ ] Testmode · [ ] Run From · [x] Attempt · [x] Percentage · [x] Level Time · [ ] Best Run ·
 [x] Clock · [x] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
 
-**Shortcuts**: [x] StartPos switcher (no sale en la captura, se mantiene) · [ ] P1 Jump · [ ] P2 Jump · [ ] Show Options · [ ] Uncomplete Level · [x] Restart Level ·
-[x] Toggle Practice Mode · [x] Place Checkpoint · [x] Remove Checkpoint · [ ] Inject DLL · [ ] Save Folder ·
+**Shortcuts**: [x] StartPos switcher (no sale en la captura, se mantiene) · [x] P1 Jump · [x] P2 Jump · [ ] Show Options · [ ] Uncomplete Level · [x] Restart Level ·
+[x] Toggle Practice Mode · [x] Place Checkpoint · [x] Remove Checkpoint · [ ] Inject DLL · [x] Save Folder ·
 [ ] Reset BG Volume · [ ] Reset SFX Volume
 
-**Keybinds**: [x] Open Menu (Tab) · [ ] In-game only · [x] Clic derecho en cualquier opción para asignarle una tecla
+**Keybinds**: [x] Open Menu (Tab) · [x] In-game only · [x] Clic derecho en cualquier opción para asignarle una tecla
 
 **Interface**: [x] Theme · [x] UI Scale · [x] Font · [x] Font Size · [ ] Reload Fonts · [ ] Layout Type · [ ] Style ·
 [ ] Enable Blur · [ ] Animate Windows · [x] Accent Color · [ ] Background Color · [ ] Language · [ ] Search
@@ -305,7 +320,7 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames (D) · Click Between Steps (D) ·
   Click on Steps (D) · [x] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
   Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · Frame Stepper (M) · Hitbox Multiplier (M) ·
-  [x] Instant Complete · Jumpscare (M) · Jump Hack (F) · [x] Noclip · Noclip Limits (F) · No Collision (F) ·
+  [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · Noclip Limits (F) · No Collision (F) ·
   [x] Pause During Complete · Practice Bug Fix (D) · [x] Practice Music · Random Seed (M) ·
   Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · [x] Show Hitboxes on Death ·
   Show Hitboxes Trail (F, el juego ya guarda el rastro) · Show Layout (D) · [x] Show Trajectory · Show Triggers (M) ·
@@ -315,16 +330,16 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [x] Frame Counter · [x] Position · [x] Velocity · [x] Dead · Replay State (con el bot)
 - **Universal**: [x] Allow Low Volume · Compact Lists (M) · Custom Background (M) · Fast Chests (F) ·
   Load Audio to Memory (M) · [x] Lock Cursor · Main Menu Play (D) · No Music Fade Out (F) · [x] No Transition ·
-  Pitch Shifter (F) · [x] Thread Priority · Transition Customizer (M) · Transparent Lists (M)
+  [x] Pitch Shifter · [x] Thread Priority · Transition Customizer (M) · Transparent Lists (M)
 - **Display**: [x] FPS · [x] Unlock FPS · [x] Physics TPS · Frame Extrapolation (D) · [x] Vertical Sync ·
   Lock Delta (M) · Real Time (M) · [x] Borderless · [x] Fullscreen
 - **Speedhack**: [x] Speed · [x] Speedhack Audio · Classic Mode (F)
 - **Cheat Safety**: [x] Safe Mode · [x] Auto Safe Mode · Safe Mode Popup (texto en el panel) · [x] Disable Cheats ·
   Ruleset (N/A, es propio de Mega Hack)
-- **Utility**: P1 Click / P2 Click / Left / Right (M) · Uncomplete Level (M) · [x] Restart Level ·
-  [x] Practice Mode · Settings (F) · Resources / AppData (F, abrir carpeta) · Toggle DevTools (N/A) · Crash Game (N/A)
+- **Utility**: [x] P1 Click / P2 Click / Left / Right · Uncomplete Level (M) · [x] Restart Level ·
+  [x] Practice Mode · Settings (F) · [x] Resources / AppData · Toggle DevTools (N/A) · Crash Game (N/A)
 - **Replay**: es la fase 7 (Record, Play, guardar y cargar). Convert (.json, .gdr) es M.
-- **Keybinds**: [x] asignar tecla a una opción · View Keybinds (F) · Remove Keybinds (F) · Disable in Editor (F)
+- **Keybinds**: [x] asignar tecla a una opción · [x] View Keybinds · [x] Remove Keybinds · [x] Disable in Editor
 - **Mega Hack / Interface**: Search (M) · [x] Theme · [x] Interface Scale · Animations (M) · Sort Interface (F) ·
   Language (M) · Hide Endscreen Cheats / Extras (F) · Hide Menu Snow (F) · Auto-Update, Contribute Translations,
   Hide Iconic on Pause, Hide RobsVault Shortcut (N/A: son cosas del propio Mega Hack)

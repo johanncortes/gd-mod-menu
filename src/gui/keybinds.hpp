@@ -15,6 +15,13 @@ bool anyFired();
 // true (una sola vez) si se pulsó la tecla asignada a esta opción.
 bool consume(const char* label);
 
+// true mientras la tecla asignada a esta opción está pulsada (para acciones que se mantienen).
+bool held(const char* label);
+
+// Sección "Keybinds" (en la ventana Shortcuts): opciones y lista de teclas con botón para
+// quitarlas. Devuelve true si cambió algo.
+bool drawUI();
+
 // Llamar justo después de dibujar la opción: menú de clic derecho para asignar la tecla
 // y, si ya tiene una, su nombre al lado.
 void contextMenu(const char* label);

@@ -11,6 +11,8 @@
 #include <imgui.h>
 #include <nlohmann/json.hpp>
 
+#include "core/game.hpp"
+
 namespace gui::keybinds {
 
 namespace {
@@ -21,6 +23,8 @@ std::bitset<256> g_down;            // estado de las teclas en el frame anterior
 bool g_changed = false;
 bool g_capturing = false;           // hay un menú de asignación abierto: no disparar nada
 bool g_capturingThisFrame = false;
+bool g_disableInEditor = false;     // en el editor las teclas no hacen nada
+bool g_levelOnly = false;           // solo dentro de un nivel (ni menús ni editor)
 
 bool isDown(int vk) {
     return (GetAsyncKeyState(vk) & 0x8000) != 0;
@@ -57,7 +61,9 @@ void update() {
     g_fired.clear();
 
     // Solo con el juego en primer plano y sin estar escribiendo en un campo del panel
-    const bool listen = gameFocused() && !ImGui::GetIO().WantTextInput && !g_capturing;
+    bool listen = gameFocused() && !ImGui::GetIO().WantTextInput && !g_capturing;
+    if (g_disableInEditor && core::game::editorLayer()) listen = false;
+    if (g_levelOnly && !core::game::playLayer()) listen = false;
     std::bitset<256> down;
     for (const auto& [label, vk] : g_binds) {
         down[vk] = listen && isDown(vk);
@@ -67,6 +73,45 @@ void update() {
 }
 
 bool anyFired() { return !g_fired.empty(); }
+
+bool held(const char* label) {
+    const auto bound = g_binds.find(label);
+    return bound != g_binds.end() && g_down[bound->second];
+}
+
+bool drawUI() {
+    bool changed = ImGui::Checkbox("Desactivar en el editor", &g_disableInEditor);
+    changed |= ImGui::Checkbox("Solo dentro de un nivel", &g_levelOnly);
+    if (g_binds.empty()) {
+        ImGui::TextDisabled("Sin teclas asignadas.\nClic derecho sobre una opción para asignar una.");
+        return changed;
+    }
+    std::string removeLabel;
+    if (ImGui::BeginTable("##binds", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg)) {
+        for (const auto& [label, vk] : g_binds) {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted(label.c_str());
+            ImGui::TableNextColumn();
+            ImGui::TextDisabled("%s", keyName(vk).c_str());
+            ImGui::TableNextColumn();
+            ImGui::PushID(label.c_str());
+            if (ImGui::SmallButton("Quitar")) removeLabel = label;
+            ImGui::PopID();
+        }
+        ImGui::EndTable();
+    }
+    if (!removeLabel.empty()) {
+        g_binds.erase(removeLabel);
+        changed = true;
+    }
+    if (ImGui::Button("Quitar todas las teclas")) {
+        g_binds.clear();
+        changed = true;
+    }
+    if (changed) g_changed = true;
+    return changed;
+}
 
 bool consume(const char* label) {
     return !g_fired.empty() && g_fired.erase(label) > 0;
@@ -123,14 +168,20 @@ bool takeChanged() {
 }
 
 void load(const nlohmann::json& j) {
+    // Formato nuevo: {"binds": {...}, opciones}. El antiguo era solo el mapa de teclas.
+    const auto binds = j.find("binds");
+    const nlohmann::json& map = binds != j.end() && binds->is_object() ? *binds : j;
     g_binds.clear();
-    for (const auto& [label, vk] : j.items())
+    for (const auto& [label, vk] : map.items())
         if (vk.is_number_integer() && bindable(vk.get<int>())) g_binds[label] = vk.get<int>();
+    g_disableInEditor = j.value("disable_in_editor", false);
+    g_levelOnly = j.value("level_only", false);
 }
 
 void save(nlohmann::json& j) {
-    j = nlohmann::json::object();
-    for (const auto& [label, vk] : g_binds) j[label] = vk;
+    nlohmann::json map = nlohmann::json::object();
+    for (const auto& [label, vk] : g_binds) map[label] = vk;
+    j = {{"binds", map}, {"disable_in_editor", g_disableInEditor}, {"level_only", g_levelOnly}};
 }
 
 } // namespace gui::keybinds

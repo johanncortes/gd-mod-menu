@@ -543,4 +543,20 @@ inline constexpr char kMusicSliderOptions[] =
     "F3 0F 10 0D ?? ?? ?? ?? 0F 57 FF 0F 2F C8 76 03";
 inline constexpr int kMusicSliderOptionsJump = 45;
 
+// --- Fase 18 (Keybinds y Utility). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// LevelEditorLayer::init: "GameManager->m_levelEditorLayer = this". De la firma (+17) se lee el
+// desplazamiento de m_levelEditorLayer en GameManager.
+inline constexpr char kEditorLayerStore[] = "48 8B 05 ?? ?? ?? ?? C6 80 ?? ?? ?? ?? 01 48 89 B0 ?? ?? ?? ??";
+inline constexpr int kEditorLayerStoreOffset = 17;
+
+// PlayerObject::pushButton: con el botón de salto, si no es bola, nave, UFO, onda ni swing, está
+// manteniendo y está en el suelo, salta ya. De la firma se leen esos desplazamientos (Jump hack).
+inline constexpr char kPushButtonModes[] =
+    "38 83 ?? ?? ?? ?? 75 4D 38 83 ?? ?? ?? ?? 75 28 38 83 ?? ?? ?? ?? 75 20 38 83 ?? ?? ?? ?? 75 18 "
+    "38 83 ?? ?? ?? ?? 75 10 38 83 ?? ?? ?? ?? 74 08 38 83 ?? ?? ?? ?? 75 26";
+inline constexpr int kPushButtonModeFlags[5] = {2, 10, 18, 26, 34}; // bola, nave, UFO, onda, swing
+inline constexpr int kPushButtonHolding = 42;  // m_isHolding (+0x98D)
+inline constexpr int kPushButtonOnGround = 50; // m_isOnGround (+0x9C9)
+
 } // namespace core::signatures

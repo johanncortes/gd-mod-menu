@@ -93,6 +93,10 @@
 | OptionsLayer::musicSliderChanged | GeometryDash.exe | ver `kMusicSliderOptions` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404CBB20; `jbe` en +45 -> `EB` (fase 16) |
 | CCTransitionFade::create(float, CCScene*) | libcocos2d.dll | export por nombre | — | No transition: hook que pasa duración 0 (fase 16) |
 | CCApplication::getVerticalSyncEnabled / toggleVerticalSync; CCEGLView::sharedOpenGLView, getIsFullscreen, getIsBorderless, getUseBorderlessFix, toggleFullScreen(bool, bool, bool) | libcocos2d.dll | exports por nombre | — | Display: VSync, pantalla completa y sin bordes, como los ajustes gráficos del juego (PlatformToolbox los llama inline) (fase 17) |
+| LevelEditorLayer::init: GameManager->m_levelEditorLayer = this | GeometryDash.exe | ver `kEditorLayerStore` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1403EDCFE; +17 -> `GameManager+0x238`. `core::game::editorLayer()` (keybinds: desactivar en el editor) (fase 18) |
+| PlayerObject::pushButton: modos, manteniendo y en el suelo | GeometryDash.exe | ver `kPushButtonModes` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F62E3. +2 bola (0x9C3), +10 nave (0x9C1), +18 UFO (0x9C2), +26 onda (0x9C4), +34 swing (0x9CC), +42 `m_isHolding` (0x98D), +50 `m_isOnGround` (0x9C9). Jump hack (fase 18) |
+| System::createDSPByType, getVersion; ChannelControl::addDSP, removeDSP; DSP::setParameterFloat | fmod.dll | exports por nombre | — | Pitch shift: DSP `FMOD_DSP_TYPE_PITCHSHIFT` (13 en FMOD 2.x; se comprueba la versión) en el grupo maestro, parámetro 0 = tono (0.5-2) (fase 18) |
+| GJBaseGameLayer::handleButton (`kHandleButton`) | GeometryDash.exe | ya registrada (fase 7) | — | Utility: P1/P2 jump, P1 izquierda/derecha llaman a la dirección original (pasan por el hook del bot) (fase 18) |
 
 ## Notas de ingeniería inversa
 
