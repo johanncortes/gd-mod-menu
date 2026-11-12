@@ -1,10 +1,9 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 10 (Cosmetic, primer bloque de la lista ampliada) con código completo, **pendiente de probar en el juego**,
-  rama `fase-10`. Fases 1 a 9 probadas y mergeadas en `main`.
+- Fase: 10 (Cosmetic) **probada** y mergeada en `main`. Fases 1 a 10 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: que el usuario pruebe la fase 10. Después: merge a `main` y el siguiente bloque de la lista ampliada.
+- Próximo paso: siguiente bloque de la lista ampliada.
 - Notas / bloqueos:
   - **Cosmetic (fase 10)**: ventana nueva "Cosmetic" (`features::drawCosmetic`). Sin efecto de muerte y Sin parpadeo
     pasaron ahí desde Player, pero su config sigue en `player`. Las nuevas guardan en la sección `cosmetic`. Casi
@@ -157,7 +156,7 @@
 - [x] Ventana "Cosmetic" (con Sin efecto de muerte y Sin parpadeo, que estaban en Player)
 - [x] No shake, No portal lightning, No circle effect, No particles
 - [x] No mirror, No trail, No wave trail, No ghost trail, No spider dash
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-11)
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
@@ -174,7 +173,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] Checkpoint Delay · [ ] Confirm Full Restart · [ ] Confirm Practice Mode · [ ] Confirm Restart ·
 [ ] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
 [ ] Hitbox Multiplier · [ ] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
-[ ] Mute Level SFX · [`] No Mirror · [ ] No Object Glow · [`] No Particles · [`] No Portal Lightning ·
+[ ] Mute Level SFX · [x] No Mirror · [ ] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
 [ ] No Shaders · [ ] Pause Countdown · [ ] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
 
 **Bypass**: [ ] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [ ] Checkpoint Limit ·
@@ -184,8 +183,8 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 
 **Player**: [ ] Always Show Trail · [ ] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
 [ ] Custom Wave Trail · [ ] Frame Stepper · [ ] Jump Hack · [ ] Mute Level Audio on Death ·
-[ ] Mute Rewards SFX on Death · [x] No Death Effect · [`] No Ghost Trail · [ ] No Hide Trigger ·
-[ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [`] No Spider Dash · [`] No Trail ·
+[ ] Mute Rewards SFX on Death · [x] No Death Effect · [x] No Ghost Trail · [ ] No Hide Trigger ·
+[ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [x] No Spider Dash · [x] No Trail ·
 [ ] No Vehicle Particles · [x] Noclip · [x] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
 [x] Mostrar hitboxes (no sale en la captura, se mantiene)
 
@@ -223,11 +222,11 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   Editor Extension (D) · [x] Free Scroll · Hide UI (F) · Level Edit (F) · Multiple Editor Trails (M) · No C Mark (F) ·
   Place Over (F) · Smooth Editor Trail (F) · Toolbox Button Bypass (F) · Trigger Value Bypass (M) · [x] Verify Hack
 - **Cosmetic** (casi todo F, un parche por opción): Coin Shower (M) · Frozen Animations · Hide Pause Button ·
-  [x] Hide Pause Menu · Hide Player · Icon Randomizer (M) · No Camera (M) · No Camera Zoom · [`] No Circle Effect ·
-  No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [`] No Ghost Trail · No Glow · [`] No Mirror ·
-  No New Best Popup · No Orb Ring · [`] No Particles · No Particles Classic · No Portal Circle · [`] No Portal Lightning ·
-  No Pulse · [x] No Respawn Flash · No Robot Fire · No Shaders · [`] No Shake · [`] No Spider Dash · No Swing Fire ·
-  [`] No Trail · No Wave Pulse · [`] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
+  [x] Hide Pause Menu · Hide Player · Icon Randomizer (M) · No Camera (M) · No Camera Zoom · [x] No Circle Effect ·
+  No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · No Glow · [x] No Mirror ·
+  No New Best Popup · No Orb Ring · [x] No Particles · No Particles Classic · No Portal Circle · [x] No Portal Lightning ·
+  No Pulse · [x] No Respawn Flash · No Robot Fire · No Shaders · [x] No Shake · [x] No Spider Dash · No Swing Fire ·
+  [x] No Trail · No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
   Show Total Attempts · Solid Wave Trail · StartPos Reset Camera (M) · Stop Triggers on Death (M) ·
   Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · All Modes Platformer (F) · Auto Clicker (M) ·
