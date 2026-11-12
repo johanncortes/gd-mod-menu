@@ -68,6 +68,14 @@
 | PlayerObject::playSpiderDashEffect: primer if | GeometryDash.exe | inicio de función, ver `kSpiderDashSkip` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F33AE (+62 en la firma). No spider dash: `90 E9`. Convive con el hook de Show trajectory al inicio de la función (fase 10) |
 | GJBaseGameLayer::toggleFlipped(bool flip, bool noEffects) | GeometryDash.exe | inicio de función, ver `kToggleFlipped` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140350B00. No mirror: hook que pasa flip = false (fase 10) |
 | CCParticleSystem::addParticle | libcocos2d.dll | export por nombre | — | No particles: hook que devuelve false (fase 10) |
+| LevelPage::onPlay: monedas secretas necesarias | GeometryDash.exe | ver `kMainLevelLock` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140446E11 (+8). `jle` -> `90 E9` (fase 11) |
+| OptionsLayer::onSecretVault (The Vault): 10 monedas | GeometryDash.exe | ver `kVaultLock` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404CBDB1 (+22). `jl` -> 6 NOPs (fase 11) |
+| CreatorLayer::onSecretVault (Vault of Secrets): 50 | GeometryDash.exe | ver `kVaultOfSecretsLock` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140138521 (+22). `jl` corto -> NOPs (fase 11) |
+| CreatorLayer::onTreasureRoom: 5 llaves o UGV | GeometryDash.exe | ver `kTreasureRoomLock` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140138D97 (+14). `je` corto -> NOPs: entra directo (fase 11) |
+| SecretLayer2::onDoor (sótano del Keymaster): UGV | GeometryDash.exe | ver `kBasementLock` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14057A460 (+21). `je` -> 6 NOPs (fase 11) |
+| SecretLayer2::onSecretLevel (The Challenge): 200 | GeometryDash.exe | ver `kChallengeLevelLock` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14057A190 (+24). `jl` -> 6 NOPs (fase 11) |
+| SecretRewardsLayer::onShop: UGV de las 4 tiendas con candado | GeometryDash.exe | ver `kShopLocks` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14056C1A6; `jne` en +0x15, +0x79 (largos, `90 E9`), +0xDD, +0x13D (cortos, `EB`) (fase 11) |
+| SliderTouchLogic::ccTouchMoved: límites del pulgar | GeometryDash.exe | ver `kSliderClamp` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1400845A3; `jbe` cortos en +33 y +65 -> `EB` (fase 11) |
 
 ## Notas de ingeniería inversa
 
