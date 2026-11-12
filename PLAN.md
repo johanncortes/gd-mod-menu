@@ -1,10 +1,14 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 16 (Universal) **probada** y mergeada en `main`. Fases 1 a 16 terminadas.
+- Fase: 17 (Display) **probada** y mergeada en `main`. Fases 1 a 17 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: fase 17, bloque Display de la lista ampliada.
+- Próximo paso: fase 18, pendientes de bloques anteriores + Keybinds + Utility.
 - Notas / bloqueos:
+  - **Display (fase 17)**: sección "Display" de la ventana Global con Vertical sync, Fullscreen y Borderless (exports
+    de libcocos2d; las casillas leen el estado real; el cambio se aplica en `features::update`, fuera del dibujado del
+    panel, y vale para la sesión: el juego solo guarda su opción si se cambia en sus ajustes). *Unlock FPS* va junto a
+    FPS bypass (intervalo de 1/100000 s). **No hechos**: Frame Extrapolation (D), Lock Delta y Real Time (M).
   - **Universal (fase 16)**: sección "Universal" de la ventana Global. Lock cursor (ClipCursor mientras el nivel corre,
     sin pausa, con el panel cerrado y el juego en primer plano), No transition (fundidos de 0 s), Allow low volume
     (los deslizadores no saltan a 0 bajo 0.03) y High priority (prioridad alta del proceso; al desactivar vuelve la
@@ -218,6 +222,11 @@
 - [x] Lock cursor, No transition, Allow low volume, High priority (Thread Priority)
 - [x] Probado dentro del juego (2026-11-12)
 
+## Fase 17 — Display (lista ampliada, bloque 8)
+- [x] Unlock FPS (junto a FPS bypass)
+- [x] Vertical sync, Fullscreen, Borderless
+- [x] Probado dentro del juego (2026-11-12)
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -307,8 +316,8 @@ proyecto. Lo que ya está hecho lleva `[x]`.
 - **Universal**: [x] Allow Low Volume · Compact Lists (M) · Custom Background (M) · Fast Chests (F) ·
   Load Audio to Memory (M) · [x] Lock Cursor · Main Menu Play (D) · No Music Fade Out (F) · [x] No Transition ·
   Pitch Shifter (F) · [x] Thread Priority · Transition Customizer (M) · Transparent Lists (M)
-- **Display**: [x] FPS · Unlock FPS (F) · [x] Physics TPS · Frame Extrapolation (D) · Vertical Sync (F) ·
-  Lock Delta (M) · Real Time (M) · Borderless (M) · Fullscreen (F)
+- **Display**: [x] FPS · [x] Unlock FPS · [x] Physics TPS · Frame Extrapolation (D) · [x] Vertical Sync ·
+  Lock Delta (M) · Real Time (M) · [x] Borderless · [x] Fullscreen
 - **Speedhack**: [x] Speed · [x] Speedhack Audio · Classic Mode (F)
 - **Cheat Safety**: [x] Safe Mode · [x] Auto Safe Mode · Safe Mode Popup (texto en el panel) · [x] Disable Cheats ·
   Ruleset (N/A, es propio de Mega Hack)

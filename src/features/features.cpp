@@ -14,6 +14,7 @@
 #include "features/bypass/instant_complete.hpp"
 #include "features/cosmetic/no_mirror.hpp"
 #include "features/cosmetic/no_particles.hpp"
+#include "features/global/display.hpp"
 #include "features/global/fps_bypass.hpp"
 #include "features/global/safe_mode.hpp"
 #include "features/global/speedhack.hpp"
@@ -46,6 +47,7 @@ FpsBypass g_fpsBypass;
 TpsBypass g_tpsBypass;
 SafeMode g_safeMode;
 LockCursor g_lockCursor;
+Display g_display;
 NoTransition g_noTransition;
 HighPriority g_highPriority;
 // Los deslizadores de volumen ya no saltan a 0 por debajo de 0.03
@@ -360,6 +362,7 @@ void init() {
     const bool gameAvailable = core::game::init(); // GameManager y hooks de nivel compartidos
     g_safeMode.init(gameAvailable);
     g_noTransition.init();
+    g_display.init();
     g_allowLowVolume.init();
     g_noDeathEffect.init();
     g_noShake.init();
@@ -473,6 +476,7 @@ void update() {
     g_startPosSwitcher.update();
     g_safeMode.update(cheatsActive());
     g_lockCursor.update(gui::isMenuOpen());
+    g_display.update();
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
     if (g_dirty && GetTickCount64() - g_dirtySince > 500) saveConfig();
 }
@@ -491,6 +495,9 @@ void drawGlobal() {
     bool changed = g_speedhack.drawUI();
     changed |= g_fpsBypass.drawUI();
     changed |= g_tpsBypass.drawUI();
+
+    ImGui::SeparatorText("Display");
+    g_display.drawUI();
 
     ImGui::SeparatorText("Universal");
     changed |= g_lockCursor.drawUI();
