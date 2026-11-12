@@ -48,6 +48,17 @@
 | PlayLayer::checkForEnd() | GeometryDash.exe | inicio de función, ver `kCheckForEnd` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140513E60. Solo se llama (Instant complete, tras llevar al jugador al portal). De la firma se leen `m_endPortal` (+0x3320), `m_levelEndAnimationStarted` (+0x3A28), `m_player1` (+0xDB8), el slot de `getPosition()` (0xC8) y la dirección de `EndPortalObject::getSpawnPos` (0x140209330) (fase 8) |
 | CCNode vtable + CCNode::setPosition(const CCPoint&) | libcocos2d.dll | exports `??_7CCNode@cocos2d@@6B@` y `?setPosition@CCNode@cocos2d@@UEAAXAEBVCCPoint@2@@Z` | — | se busca el export dentro del vtable para saber su slot (0xB8) y llamar por el vtable a `PlayerObject::setPosition` (fase 8) |
 | CCTextureCache::sharedTextureCache, addImage; CCTexture2D::getName, hasPremultipliedAlpha; CCDirector::sharedDirector, getContentScaleFactor | libcocos2d.dll | exports por nombre | — | fuentes de GD en los labels: la textura de `bigFont`/`goldFont`/`chatFont` sale del caché de texturas del juego (fase 8) |
+| PlayerObject::create(int, int, GJBaseGameLayer*, CCLayer*, bool) | GeometryDash.exe | inicio de función, ver `kPlayerCreate` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404E4940. Crea el jugador simulado con playLayer = false (así no cuenta saltos en las estadísticas) (fase 9) |
+| PlayerObject::copyAttributes(PlayerObject*) | GeometryDash.exe | inicio de función, ver `kCopyAttributes` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404FEA30. Copia posición, modo, gravedad, escala y velocidad. De la firma (+108) se lee la posición del tick anterior (+0xA00) (fase 9) |
+| PlayerObject::updateRotation(float) | GeometryDash.exe | inicio de función, ver `kUpdateRotation` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404EF390 (fase 9) |
+| PlayerObject::pushButton / releaseButton(PlayerButton) | GeometryDash.exe | inicio de función, ver `kPushButton`, `kReleaseButton` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F6200 y 0x1404F64C0 (fase 9) |
+| GJBaseGameLayer::checkCollisions(PlayerObject*, float, bool) | GeometryDash.exe | inicio de función, ver `kCheckCollisions` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14031AAE0. Con el último argumento a true, al tocar un peligro devuelve 1 sin llamar a destroyPlayer (fase 9) |
+| GJBaseGameLayer::collisionCheckObjects | GeometryDash.exe | inicio de función, ver `kCollisionCheckObjects` y `kObjectTypeRead` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14031BCE0. Hook: al jugador simulado solo le pasa objetos de tipo 0, 2, 0x15, 0x19 y 0x2F (sólidos, peligros, rampas). Tipo en `GameObject+0x3A0` (fase 9) |
+| PlayerObject::playSpiderDashEffect | GeometryDash.exe | inicio de función, ver `kSpiderDashEffect` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F3370. Hook: nada para el jugador simulado (fase 9) |
+| GJBaseGameLayer::update: reinicio de los registros de colisión del jugador | GeometryDash.exe | inicio de función, ver `kCollisionLogReset` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140340D9A. No se toca: de la firma salen los 4 CCDictionary (+0x5B0..+0x5C8) y los campos +0x5D0..+0x5E4 (fase 9) |
+| GJBaseGameLayer::gameEventTriggered(GJGameEvent, int, int) | GeometryDash.exe | inicio de función, ver `kGameEventTriggered` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14033AC80. Hook: nada mientras se simula (saltos y aterrizajes activan triggers de evento) (fase 9) |
+| GJBaseGameLayer::destroyObject(GameObject*) | GeometryDash.exe | inicio de función, ver `kDestroyObject` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14031D460. Hook: nada mientras se simula (bloques rompibles) (fase 9) |
+| CCLayer::create; CCNode::addChild, setVisible, getParent, removeFromParentAndCleanup, convertToWorldSpace; CCDictionary::removeAllObjects; vtable de CCNode (slots de update y getPosition) | libcocos2d.dll | exports por nombre | — | contenedor invisible del jugador simulado y paso de coordenadas a pantalla (fase 9) |
 
 ## Notas de ingeniería inversa
 
@@ -94,3 +105,10 @@
 - **Fuentes de GD**: `Resources/bigFont-uhd.fnt` (BMFont de texto, cara "Pusab", 1024x1024) y sus versiones `-hd` y
   normal; el juego elige según `CCDirector::getContentScaleFactor` (4, 2 o 1). Las texturas de cocos llevan el alfa
   premultiplicado.
+- **Un tick del jugador (2.2091)**: `GJBaseGameLayer::update` divide el frame en pasos de `60*dt/pasos` (0.25 a 240 TPS)
+  y en cada uno, para el jugador 1: vacía sus registros de colisión, `updateInternalActions`, `update(dt)` (vtable),
+  `checkCollisions(jugador, dt, ...)`, `updateRotation(dt)` y guarda la posición en +0xA00. Show trajectory repite eso
+  sin `updateInternalActions`.
+- **collisionCheckObjects**: los objetos de tipo 0 y 0x15 los apunta como sólidos y los de tipo 2 y 0x2F como
+  peligros (listas en el nivel que `checkCollisions` vacía al empezar); el resto (portales, pads, anillos, monedas,
+  triggers, portal dual, espejo) los activa directamente, casi todos tras `canBeActivatedByPlayer`.

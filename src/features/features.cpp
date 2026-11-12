@@ -22,6 +22,7 @@
 #include "features/player/hitboxes.hpp"
 #include "features/player/noclip.hpp"
 #include "features/player/respawn_delay.hpp"
+#include "features/player/trajectory.hpp"
 #include "features/shortcuts/shortcuts.hpp"
 #include "gui/game_font.hpp"
 #include "gui/keybinds.hpp"
@@ -40,6 +41,7 @@ TpsBypass g_tpsBypass;
 Noclip g_noclip;
 Hitboxes g_hitboxes;
 RespawnDelay g_respawnDelay;
+Trajectory g_trajectory;
 // je -> jmp: playerDestroyed siempre toma el camino "ocultar al jugador sin efecto"
 PatchFeature g_noDeathEffect("Sin efecto de muerte", "no_death_effect", core::signatures::kDeathEffect,
                              core::signatures::kDeathEffectJump, {0xEB});
@@ -116,6 +118,7 @@ void loadConfig() {
         const nlohmann::json player = section(data, "player");
         g_noclip.load(section(player, "noclip"));
         g_hitboxes.load(section(player, "hitboxes"));
+        g_trajectory.load(section(player, "trajectory"));
         g_respawnDelay.load(section(player, "respawn_delay"));
         g_noDeathEffect.load(player);
         g_noRespawnFlash.load(player);
@@ -160,6 +163,7 @@ void saveConfig() {
     nlohmann::json& player = data["player"];
     g_noclip.save(player["noclip"]);
     g_hitboxes.save(player["hitboxes"]);
+    g_trajectory.save(player["trajectory"]);
     g_respawnDelay.save(player["respawn_delay"]);
     g_noDeathEffect.save(player);
     g_noRespawnFlash.save(player);
@@ -222,6 +226,7 @@ void init() {
     g_hidePause.init();
     g_respawnDelay.init(destroyPlayer);
     g_hitboxes.init();
+    g_trajectory.init(gameAvailable);
     g_noclip.init(destroyPlayer);
 
     loadConfig();
@@ -236,6 +241,7 @@ void shutdown() {
     g_tpsBypass.shutdown();
     g_noclip.disable();
     g_hitboxes.disable();
+    g_trajectory.disable();
     g_respawnDelay.disable();
     g_noDeathEffect.disable();
     g_noRespawnFlash.disable();
@@ -274,6 +280,7 @@ void drawGlobal() {
 void drawPlayer() {
     bool changed = g_noclip.drawUI();
     changed |= g_hitboxes.drawUI();
+    changed |= g_trajectory.drawUI();
     changed |= g_noDeathEffect.drawUI();
     changed |= g_noRespawnFlash.drawUI();
     changed |= g_respawnDelay.drawUI();
@@ -322,6 +329,7 @@ void drawInterface() {
 
 void drawOverlay() {
     if (!g_ready) return;
+    g_trajectory.drawOverlay();
     g_labels.drawOverlay(cheatsActive());
     g_startPosSwitcher.drawOverlay();
 }

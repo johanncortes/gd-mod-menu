@@ -62,6 +62,18 @@ int main(int argc, char** argv) {
         {"kProcessCommands", sig::kProcessCommands},
         {"kHandleButton", sig::kHandleButton},
         {"kCheckForEnd", sig::kCheckForEnd},
+        {"kPlayerCreate", sig::kPlayerCreate},
+        {"kCopyAttributes", sig::kCopyAttributes},
+        {"kUpdateRotation", sig::kUpdateRotation},
+        {"kPushButton", sig::kPushButton},
+        {"kReleaseButton", sig::kReleaseButton},
+        {"kCheckCollisions", sig::kCheckCollisions},
+        {"kCollisionCheckObjects", sig::kCollisionCheckObjects},
+        {"kObjectTypeRead", sig::kObjectTypeRead},
+        {"kSpiderDashEffect", sig::kSpiderDashEffect},
+        {"kCollisionLogReset", sig::kCollisionLogReset},
+        {"kGameEventTriggered", sig::kGameEventTriggered},
+        {"kDestroyObject", sig::kDestroyObject},
     };
 
     int failed = 0;

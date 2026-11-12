@@ -1,10 +1,19 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 9 (Show trajectory) en curso, rama `fase-9`. Fases 1 a 8 probadas por el usuario y mergeadas en `main`.
+- Fase: 9 (Show trajectory) con código completo, **pendiente de probar en el juego**, rama `fase-9`. Fases 1 a 8
+  probadas y mergeadas en `main`.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: terminar y probar la fase 9. Después, la "Lista ampliada" (segunda captura) por bloques.
+- Próximo paso: que el usuario pruebe la fase 9. Después: merge a `main` y la "Lista ampliada" (segunda captura) por
+  bloques.
 - Notas / bloqueos:
+  - **Show trajectory** (`src/features/player/trajectory.cpp`): un PlayerObject propio, invisible, dentro de una capa
+    invisible añadida al nivel. Cada frame copia al jugador 1 (`copyAttributes`) y simula "manteniendo" (verde) y
+    "soltando" (rojo) con `update` + `checkCollisions(..., ignorar daño)` + `updateRotation`. Para no tocar la partida
+    real: a `collisionCheckObjects` solo le llegan sólidos, peligros y rampas, y mientras se simula no hacen nada
+    `gameEventTriggered`, `destroyObject` ni `playSpiderDashEffect`. **Limitaciones**: la predicción no sigue
+    portales, pads, anillos ni teletransportes; solo jugador 1; desactivado en niveles de plataformas. Dudas a mirar
+    al probar: rendimiento con Longitud alta, y que nada del nivel reaccione al jugador simulado.
   - **Lo que pidió el usuario para la fase 8** (2026-11-11): panel en **Segoe UI** por defecto (le gustó); labels y
     aviso del StartPos switcher con la **fuente de Geometry Dash**, ajustable, bien alineados; labels movibles dentro
     del juego; Instant complete que lleve al jugador al final mientras sale la animación de completar.
@@ -139,8 +148,9 @@
 - [x] Probado dentro del juego (2026-11-11)
 
 ## Fase 9 — Show trajectory
-- [ ] Simular al jugador con la física real del juego (PlayerObject de prueba + checkCollisions) y dibujar el camino
+- [x] Simular al jugador con la física real del juego (PlayerObject de prueba + checkCollisions) y dibujar el camino
 - [ ] Probado dentro del juego
+- [ ] Más adelante: seguir portales, pads y anillos en la predicción (hay que gestionar su activación por jugador)
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
@@ -169,7 +179,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 [ ] Custom Wave Trail · [ ] Frame Stepper · [ ] Jump Hack · [ ] Mute Level Audio on Death ·
 [ ] Mute Rewards SFX on Death · [x] No Death Effect · [ ] No Ghost Trail · [ ] No Hide Trigger ·
 [ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [ ] No Spider Dash · [ ] No Trail ·
-[ ] No Vehicle Particles · [x] Noclip · [ ] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
+[ ] No Vehicle Particles · [x] Noclip · [`] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
 [x] Mostrar hitboxes (no sale en la captura, se mantiene)
 
 **Bot**: [x] Disabled / Record / Playback · [x] Replays (New, Save, Load, Delete) · [x] Ignore Inputs
