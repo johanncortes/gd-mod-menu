@@ -1,10 +1,9 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 17 (Display, octavo bloque de la lista ampliada) con código completo, **pendiente de probar en el juego**,
-  rama `fase-17`. Fases 1 a 16 probadas y mergeadas en `main`.
+- Fase: 17 (Display) **probada** y mergeada en `main`. Fases 1 a 17 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: que el usuario pruebe la fase 17. Después: merge a `main` y el siguiente bloque.
+- Próximo paso: fase 18, pendientes de bloques anteriores + Keybinds + Utility.
 - Notas / bloqueos:
   - **Display (fase 17)**: sección "Display" de la ventana Global con Vertical sync, Fullscreen y Borderless (exports
     de libcocos2d; las casillas leen el estado real; el cambio se aplica en `features::update`, fuera del dibujado del
@@ -226,7 +225,7 @@
 ## Fase 17 — Display (lista ampliada, bloque 8)
 - [x] Unlock FPS (junto a FPS bypass)
 - [x] Vertical sync, Fullscreen, Borderless
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-12)
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
@@ -317,8 +316,8 @@ proyecto. Lo que ya está hecho lleva `[x]`.
 - **Universal**: [x] Allow Low Volume · Compact Lists (M) · Custom Background (M) · Fast Chests (F) ·
   Load Audio to Memory (M) · [x] Lock Cursor · Main Menu Play (D) · No Music Fade Out (F) · [x] No Transition ·
   Pitch Shifter (F) · [x] Thread Priority · Transition Customizer (M) · Transparent Lists (M)
-- **Display**: [x] FPS · [`] Unlock FPS · [x] Physics TPS · Frame Extrapolation (D) · [`] Vertical Sync ·
-  Lock Delta (M) · Real Time (M) · [`] Borderless · [`] Fullscreen
+- **Display**: [x] FPS · [x] Unlock FPS · [x] Physics TPS · Frame Extrapolation (D) · [x] Vertical Sync ·
+  Lock Delta (M) · Real Time (M) · [x] Borderless · [x] Fullscreen
 - **Speedhack**: [x] Speed · [x] Speedhack Audio · Classic Mode (F)
 - **Cheat Safety**: [x] Safe Mode · [x] Auto Safe Mode · Safe Mode Popup (texto en el panel) · [x] Disable Cheats ·
   Ruleset (N/A, es propio de Mega Hack)
