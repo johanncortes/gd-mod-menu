@@ -90,6 +90,12 @@ int main(int argc, char** argv) {
         {"kChallengeLevelLock", sig::kChallengeLevelLock},
         {"kShopLocks", sig::kShopLocks},
         {"kSliderClamp", sig::kSliderClamp},
+        {"kPlaceOver", sig::kPlaceOver},
+        {"kPauseEditButton", sig::kPauseEditButton},
+        {"kPauseOnEdit", sig::kPauseOnEdit},
+        {"kSongSelectArrows", sig::kSongSelectArrows},
+        {"kToolboxPerRow", sig::kToolboxPerRow},
+        {"kToolboxRows", sig::kToolboxRows},
     };
 
     int failed = 0;

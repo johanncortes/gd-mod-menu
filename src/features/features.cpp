@@ -105,6 +105,25 @@ PatchFeature g_levelCopy("Level copy bypass", "level_copy",
 PatchFeature g_customObjects("Custom object bypass", "custom_objects",
                              {{sig::kCustomObjectSize, sig::kCustomObjectSizeJump, {0x90, 0xE9}},
                               {sig::kCustomObjectCount, sig::kCustomObjectCountJump, {0x90, 0xE9}}});
+// Se puede poner un objeto encima de otro igual en la misma posición
+PatchFeature g_placeOver("Place over", "place_over",
+                         {{sig::kPlaceOver, sig::kPlaceOverExists, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90}},
+                          {sig::kPlaceOver, sig::kPlaceOverCustom, {0x90, 0xE9}}});
+// Botón de editar en el menú de pausa de cualquier nivel (el juego pide confirmación antes de abrirlo)
+PatchFeature g_levelEdit("Level edit", "level_edit",
+                         {{sig::kPauseEditButton, sig::kPauseEditButtonJump, {0xEB}},
+                          {sig::kPauseOnEdit, sig::kPauseOnEditJump, {0xEB}}});
+// Las flechas de temas por defecto llegan a los ocultos (hasta el 40)
+PatchFeature g_defaultSongs("Default song bypass", "default_song_bypass",
+                            {{sig::kSongSelectArrows, sig::kSongSelectArrowsLimits[0], {0x28}},
+                             {sig::kSongSelectArrows, sig::kSongSelectArrowsLimits[1], {0x28}},
+                             {sig::kSongSelectArrows, sig::kSongSelectArrowsLimits[2], {0x28}}});
+// Opciones del editor: hasta 24 botones por fila y 6 filas en la caja de herramientas
+PatchFeature g_toolboxButtons("Toolbox button bypass", "toolbox_buttons",
+                              {{sig::kToolboxPerRow, sig::kToolboxMaxCompare, {0x18}},
+                               {sig::kToolboxPerRow, sig::kToolboxMaxValue, {0x18}},
+                               {sig::kToolboxRows, sig::kToolboxMaxCompare, {0x06}},
+                               {sig::kToolboxRows, sig::kToolboxMaxValue, {0x06}}});
 
 // --- Cosmetic ---
 // (Sin efecto de muerte y Sin parpadeo al reaparecer, arriba, también salen en esta ventana)
@@ -191,6 +210,10 @@ void loadConfig() {
         g_levelCopy.load(creator);
         g_customObjects.load(creator);
         g_verify.load(creator);
+        g_placeOver.load(creator);
+        g_levelEdit.load(creator);
+        g_defaultSongs.load(creator);
+        g_toolboxButtons.load(creator);
 
         const nlohmann::json cosmetic = section(data, "cosmetic");
         g_noShake.load(cosmetic);
@@ -254,6 +277,10 @@ void saveConfig() {
     g_levelCopy.save(creator);
     g_customObjects.save(creator);
     g_verify.save(creator);
+    g_placeOver.save(creator);
+    g_levelEdit.save(creator);
+    g_defaultSongs.save(creator);
+    g_toolboxButtons.save(creator);
 
     nlohmann::json& cosmetic = data["cosmetic"];
     g_noShake.save(cosmetic);
@@ -319,6 +346,10 @@ void init() {
     g_shortcuts.init(gameAvailable);
     g_bot.init(gameAvailable);
     g_verify.init();
+    g_placeOver.init();
+    g_levelEdit.init();
+    g_defaultSongs.init();
+    g_toolboxButtons.init();
     g_autoPractice.init();
     g_hidePause.init();
     g_respawnDelay.init(destroyPlayer);
@@ -369,6 +400,10 @@ void shutdown() {
     g_levelCopy.disable();
     g_customObjects.disable();
     g_verify.disable();
+    g_placeOver.disable();
+    g_levelEdit.disable();
+    g_defaultSongs.disable();
+    g_toolboxButtons.disable();
     g_bot.disable();
     gui::gamefont::shutdown(); // suelta las texturas de las fuentes de GD
     g_ready = false;
@@ -441,6 +476,10 @@ void drawCreator() {
     changed |= g_levelCopy.drawUI();
     changed |= g_customObjects.drawUI();
     changed |= g_verify.drawUI();
+    changed |= g_placeOver.drawUI();
+    changed |= g_levelEdit.drawUI();
+    changed |= g_defaultSongs.drawUI();
+    changed |= g_toolboxButtons.drawUI();
     if (changed) markDirty();
 }
 

@@ -438,4 +438,46 @@ inline constexpr char kSliderClamp[] =
 inline constexpr int kSliderClampLow = 33;
 inline constexpr int kSliderClampHigh = 65;
 
+// --- Fase 12 (Creator, lista ampliada). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// EditorUI::onCreateObject: "if (typeExistsAtPosition(...)) no crear" (jne largo en +31) y, para
+// objetos personalizados (id < 0), un bucle que busca otro en la misma posición (jns en +43).
+// Place over: el jne pasa a NOPs y el jns a jmp (se salta el bucle).
+inline constexpr char kPlaceOver[] =
+    "4C 8B C0 F3 0F 11 74 24 28 44 88 74 24 20 44 0F B6 CF 41 8B D5 48 8B CB E8 ?? ?? ?? ?? 84 C0 "
+    "0F 85 ?? ?? ?? ?? 45 33 F6 45 85 ED 0F 89 ?? ?? ?? ??";
+inline constexpr int kPlaceOverExists = 31;
+inline constexpr int kPlaceOverCustom = 43;
+
+// PauseLayer::customSetup: el botón de editar solo sale si el nivel es del editor (tipo 2):
+// "if (tipo == 2 || ...)". je corto en +28 -> jmp.
+inline constexpr char kPauseEditButton[] =
+    "48 8B 15 ?? ?? ?? ?? 48 8B 82 ?? ?? ?? ?? 48 8B 88 ?? ?? ?? ?? 83 B9 ?? ?? ?? ?? 02 74 10 8B 82 ?? ?? ?? ?? "
+    "2B 82 ?? ?? ?? ?? 85 C0 7E 74";
+inline constexpr int kPauseEditButtonJump = 28;
+
+// PauseLayer::onEdit: la misma comprobación antes de ir al editor. je corto en +28 -> jmp.
+inline constexpr char kPauseOnEdit[] =
+    "48 8B 15 ?? ?? ?? ?? 48 8B 82 ?? ?? ?? ?? 48 8B 88 ?? ?? ?? ?? 83 B9 ?? ?? ?? ?? 02 74 14 8B 82 ?? ?? ?? ??";
+inline constexpr int kPauseOnEditJump = 28;
+
+// SongSelectNode::audioNext y audioPrevious (seguidas): limitan el tema por defecto a 0..21 (0x15).
+// Default song bypass: los tres "21" pasan a 40 (0x28), el último que conoce LevelTools::getAudioTitle.
+inline constexpr char kSongSelectArrows[] =
+    "8B 81 ?? ?? ?? ?? 83 F8 15 74 25 FF C0 C6 81 ?? ?? ?? ?? 01 BA 15 00 00 00 3B C2 0F 4F C2 33 D2 85 C0 "
+    "0F 48 C2 89 81 ?? ?? ?? ?? E9 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC "
+    "8B 81 ?? ?? ?? ?? 85 C0 74 25 FF C8 C6 81 ?? ?? ?? ?? 01 BA 15 00 00 00 3B C2";
+inline constexpr int kSongSelectArrowsLimits[3] = {8, 21, 84}; // byte bajo de cada "21"
+
+// EditorOptionsLayer: flechas de "Buttons Per Row" (6..12) y "Button Rows" (2..3). El editor solo
+// impone el mínimo al leerlos (EditorUI). Toolbox button bypass: el máximo sube a 24 y a 6.
+inline constexpr char kToolboxPerRow[] =
+    "BA 01 00 00 00 B9 FF FF FF FF 3B C2 0F 45 D1 03 93 ?? ?? ?? ?? 83 FA 06 7C 0C 83 FA 0C 7C 0C "
+    "BA 0C 00 00 00 EB 05 BA 06 00 00 00";
+inline constexpr char kToolboxRows[] =
+    "BA 01 00 00 00 B9 FF FF FF FF 3B C2 0F 45 D1 03 93 ?? ?? ?? ?? 83 FA 02 7C 0C 83 FA 03 7C 0C "
+    "BA 03 00 00 00 EB 05 BA 02 00 00 00";
+inline constexpr int kToolboxMaxCompare = 28; // "cmp edx, máximo"
+inline constexpr int kToolboxMaxValue = 32;   // "mov edx, máximo"
+
 } // namespace core::signatures
