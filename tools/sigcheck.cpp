@@ -96,6 +96,9 @@ int main(int argc, char** argv) {
         {"kSongSelectArrows", sig::kSongSelectArrows},
         {"kToolboxPerRow", sig::kToolboxPerRow},
         {"kToolboxRows", sig::kToolboxRows},
+        {"kPauseGameEnding", sig::kPauseGameEnding},
+        {"kCheckpointLimit", sig::kCheckpointLimit},
+        {"kLoadLevelSettings", sig::kLoadLevelSettings},
     };
 
     int failed = 0;

@@ -1,10 +1,16 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 12 (Creator) **probada** y mergeada en `main`. Fases 1 a 12 terminadas.
+- Fase: 13 (Level, cuarto bloque de la lista ampliada) con código completo, **pendiente de probar en el juego**,
+  rama `fase-13`. Fases 1 a 12 probadas y mergeadas en `main`.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: fase 13, bloque Level (prácticas) de la lista ampliada.
+- Próximo paso: que el usuario pruebe la fase 13. Después: merge a `main` y el siguiente bloque de la lista ampliada.
 - Notas / bloqueos:
+  - **Level (fase 13)**: Hitboxes al morir (en la ventana Player, junto a Mostrar hitboxes), Pause during complete,
+    Checkpoint limit bypass (500 -> 100000) y Force platformer (trampa: cuenta para el Cheat Indicator; se aplica al
+    entrar al nivel). **Ojo**: aún no hay *Safe mode*, así que completar un nivel con Force platformer lo guarda como
+    completado. **Pendientes de este bloque**: *Jump hack* (hay que localizar con seguridad `m_isOnGround` y cuándo
+    se lee) y *All modes in platformer* (no está claro qué limita en 2.2091).
   - **Creator (fase 12)**: hechos Place over, Level edit, Default song bypass (temas 0..40) y Toolbox button bypass
     (hasta 24 por fila y 6 filas). **No hechos**: *No (C) mark* (quita la marca de nivel copiado al subirlo: toca lo
     que se sube a los servidores y sirve para ocultar copias); *Hide UI* (el juego ya tiene el botón de ocultar la
@@ -180,6 +186,12 @@
 - [x] Default song bypass, Toolbox button bypass
 - [x] Probado dentro del juego (2026-11-12)
 
+## Fase 13 — Level (lista ampliada, bloque 4)
+- [x] Hitboxes al morir, Pause during complete
+- [x] Checkpoint limit bypass, Force platformer
+- [ ] Probado dentro del juego
+- [ ] Más adelante: Jump hack, All modes in platformer
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -193,12 +205,12 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [ ] All Modes in Platformer · [ ] All Passable ·
 [ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [x] Auto Practice Mode · [ ] Auto Song Download ·
 [ ] Checkpoint Delay · [ ] Confirm Full Restart · [ ] Confirm Practice Mode · [ ] Confirm Restart ·
-[ ] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
+[`] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
 [ ] Hitbox Multiplier · [ ] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
 [ ] Mute Level SFX · [x] No Mirror · [ ] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
-[ ] No Shaders · [ ] Pause Countdown · [ ] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
+[ ] No Shaders · [ ] Pause Countdown · [`] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
 
-**Bypass**: [ ] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [ ] Checkpoint Limit ·
+**Bypass**: [ ] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [`] Checkpoint Limit ·
 [ ] Comment History Bypass · [ ] Quick Chests · [x] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
 [ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
@@ -256,11 +268,11 @@ proyecto. Lo que ya está hecho lleva `[x]`.
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · All Modes Platformer (F) · Auto Clicker (M) ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · Auto Kill (F) · Auto Music Sync (M) ·
   Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames (D) · Click Between Steps (D) ·
-  Click on Steps (D) · Checkpoint Limit Bypass (F) · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
-  Normal / Practice / Reset (F) · Force Ice (F) · Force Platformer (F) · Frame Stepper (M) · Hitbox Multiplier (M) ·
+  Click on Steps (D) · [`] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
+  Normal / Practice / Reset (F) · Force Ice (F) · [`] Force Platformer · Frame Stepper (M) · Hitbox Multiplier (M) ·
   [x] Instant Complete · Jumpscare (M) · Jump Hack (F) · [x] Noclip · Noclip Limits (F) · No Collision (F) ·
-  Pause During Complete (F) · Practice Bug Fix (D) · [x] Practice Music · Random Seed (M) ·
-  Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · Show Hitboxes on Death (F) ·
+  [`] Pause During Complete · Practice Bug Fix (D) · [x] Practice Music · Random Seed (M) ·
+  Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · [`] Show Hitboxes on Death ·
   Show Hitboxes Trail (F, el juego ya guarda el rastro) · Show Layout (D) · [x] Show Trajectory · Show Triggers (M) ·
   [x] Smart StartPos (lo que hay es el StartPos switcher; el "smart" que ajusta velocidad y modo es D)
 - **Status** (labels): Field Formatting (M) · Font · Scale · Opacity · Hide Status (F) · [x] Noclip Accuracy ·

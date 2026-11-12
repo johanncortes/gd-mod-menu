@@ -2,6 +2,8 @@
 
 #include <windows.h>
 
+#include <cstring>
+
 #include <MinHook.h>
 #include <nlohmann/json.hpp>
 
@@ -19,10 +21,16 @@ using UpdateVisibilityFn = void (*)(void* playLayer);
 
 ShowHitboxesFn g_origShowHitboxes = nullptr;
 UpdateVisibilityFn g_updateVisibility = nullptr;
+int32_t g_deadOffset = 0; // PlayLayer: "el jugador ha muerto" (leído de la firma)
 
 bool g_enabled = false;
+bool g_onDeath = false;
 bool g_refreshPending = false; // hay que volver a mostrar/ocultar el nodo de hitboxes
 bool g_refreshing = false;
+
+bool playerDead(void* playLayer) {
+    return g_deadOffset > 0 && *(reinterpret_cast<const bool*>(playLayer) + g_deadOffset);
+}
 
 // El juego pregunta aquí cada frame si toca dibujar las hitboxes
 bool showHitboxesHook(void* playLayer) {
@@ -35,7 +43,7 @@ bool showHitboxesHook(void* playLayer) {
         g_updateVisibility(playLayer);
         g_refreshing = false;
     }
-    return g_enabled || g_origShowHitboxes(playLayer);
+    return g_enabled || (g_onDeath && playerDead(playLayer)) || g_origShowHitboxes(playLayer);
 }
 
 } // namespace
@@ -50,8 +58,11 @@ void Hitboxes::init() {
         return;
     }
     g_updateVisibility = reinterpret_cast<UpdateVisibilityFn>(updateVisibility);
+    std::memcpy(&g_deadOffset, showHitboxes + core::signatures::kShowHitboxesDead, sizeof(g_deadOffset));
+    m_onDeathAvailable = g_deadOffset > 0 && g_deadOffset < 0x10000;
     m_available = MH_CreateHook(showHitboxes, &showHitboxesHook, reinterpret_cast<void**>(&g_origShowHitboxes)) == MH_OK &&
                   MH_EnableHook(showHitboxes) == MH_OK;
+    if (!m_available) m_onDeathAvailable = false;
     core::logMsg("Hitboxes: %s (firmas en %p y %p)", m_available ? "listo" : "no disponible (hook)",
                  static_cast<void*>(showHitboxes), static_cast<void*>(updateVisibility));
 }
@@ -70,19 +81,31 @@ void Hitboxes::disable() {
     g_refreshPending = true;
 }
 
+void Hitboxes::setOnDeath(bool on) {
+    m_onDeath = on;
+    g_onDeath = on && m_onDeathAvailable;
+    if (m_available) g_refreshPending = true;
+}
+
 bool Hitboxes::drawUI() {
     bool enabled = m_enabled;
-    const bool changed = gui::toggle("Mostrar hitboxes", m_available, enabled);
+    bool changed = gui::toggle("Mostrar hitboxes", m_available, enabled);
     if (changed) enabled ? enable() : disable();
+    bool onDeath = m_onDeath;
+    if (gui::toggle("Hitboxes al morir", m_onDeathAvailable, onDeath)) {
+        setOnDeath(onDeath);
+        changed = true;
+    }
     return changed;
 }
 
 void Hitboxes::load(const nlohmann::json& j) {
     j.value("enabled", false) ? enable() : disable();
+    setOnDeath(j.value("on_death", false));
 }
 
 void Hitboxes::save(nlohmann::json& j) const {
-    j = {{"enabled", m_enabled}};
+    j = {{"enabled", m_enabled}, {"on_death", m_onDeath}};
 }
 
 } // namespace features

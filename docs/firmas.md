@@ -82,6 +82,10 @@
 | SongSelectNode::audioNext / audioPrevious: tema 0..21 | GeometryDash.exe | ver `kSongSelectArrows` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1401687E0; los tres `0x15` (+8, +21, +84) -> `0x28`. LevelTools::getAudioTitle conoce 0..40 (fase 12) |
 | EditorOptionsLayer: flechas de Buttons Per Row (6..12) | GeometryDash.exe | ver `kToolboxPerRow` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1402C6616; máximo en +28 y +32 -> 24 (fase 12) |
 | EditorOptionsLayer: flechas de Button Rows (2..3) | GeometryDash.exe | ver `kToolboxRows` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1402C66A6; máximo en +28 y +32 -> 6. EditorUI (0x1401CA831) solo impone el mínimo (fase 12) |
+| PlayLayer: decide si se dibujan las hitboxes ("jugador muerto") | GeometryDash.exe | ver `kShowHitboxes` + `kShowHitboxesDead` en `signatures.hpp` | 2.2091, build Steam 26002420 | +29 en la firma: `PlayLayer+0x334A`. Hitboxes al morir (fase 13) |
+| PlayLayer::pauseGame: no pausar si el nivel está terminando | GeometryDash.exe | ver `kPauseGameEnding` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14051A393; `jne` en +13 (bandera +0x3670) -> 6 NOPs (fase 13) |
+| PlayLayer::storeCheckpoint: máximo de checkpoints | GeometryDash.exe | ver `kCheckpointLimit` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140516545; `mov esi, 500` con el imm32 en +24 -> 100000 (fase 13) |
+| GJBaseGameLayer::loadLevelSettings: modo plataformas del nivel | GeometryDash.exe | ver `kLoadLevelSettings` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140344C60; `movzx edx, byte [settings+0x155]` en +10 -> `B2 01` + 5 NOPs (fase 13) |
 
 ## Notas de ingeniería inversa
 

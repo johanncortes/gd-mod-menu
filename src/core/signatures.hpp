@@ -55,6 +55,8 @@ inline constexpr char kGameLayerUpdate[] =
 inline constexpr char kShowHitboxes[] =
     "80 B9 ?? ?? ?? ?? 00 74 09 80 B9 ?? ?? ?? ?? 00 75 12 80 B9 ?? ?? ?? ?? 00 74 0C "
     "80 B9 ?? ?? ?? ?? 00 74 03 B0 01 C3 32 C0 C3 CC CC CC CC CC CC 80 B9 ?? ?? ?? ?? 00 74 09";
+// Desplazamiento de "jugador muerto" en PlayLayer, dentro de kShowHitboxes (fase 13).
+inline constexpr int kShowHitboxesDead = 29;
 
 // Función de PlayLayer que muestra u oculta el nodo de hitboxes según la función anterior.
 inline constexpr char kUpdateHitboxVisibility[] =
@@ -479,5 +481,26 @@ inline constexpr char kToolboxRows[] =
     "BA 03 00 00 00 EB 05 BA 02 00 00 00";
 inline constexpr int kToolboxMaxCompare = 28; // "cmp edx, máximo"
 inline constexpr int kToolboxMaxValue = 32;   // "mov edx, máximo"
+
+// --- Fase 13 (Level, lista ampliada). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// PlayLayer::pauseGame: "if (m_levelEnding) return" (bandera que ponen levelComplete,
+// playEndAnimationToPos y activatePlatformerEndTrigger). Pause during complete: el jne -> NOPs.
+inline constexpr char kPauseGameEnding[] =
+    "0F B6 F2 48 8B D9 80 B9 ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 80 B9 ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ??";
+inline constexpr int kPauseGameEndingJump = 13;
+
+// PlayLayer::storeCheckpoint: guarda como mucho 500 checkpoints (1 en plataformas sin práctica) y
+// borra los más viejos. Checkpoint limit bypass: el 500 (imm32 en +24) pasa a 100000.
+inline constexpr char kCheckpointLimit[] =
+    "80 BB ?? ?? ?? ?? 00 74 0E 80 BB ?? ?? ?? ?? 00 BE 01 00 00 00 74 05 BE F4 01 00 00";
+inline constexpr int kCheckpointLimitValue = 24;
+
+// GJBaseGameLayer::loadLevelSettings: "platformer = m_levelSettings->m_platformerMode" y lo copia
+// al nivel y a los dos jugadores. Force platformer: "movzx edx, byte [rax+X]" (7 bytes, +10) ->
+// "mov dl, 1" + NOPs.
+inline constexpr char kLoadLevelSettings[] =
+    "48 8B 81 ?? ?? ?? ?? 4C 8B C1 0F B6 90 ?? ?? ?? ?? 48 8B 81 ?? ?? ?? ?? 88 91 ?? ?? ?? ??";
+inline constexpr int kLoadLevelSettingsPlatformer = 10;
 
 } // namespace core::signatures
