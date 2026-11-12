@@ -14,8 +14,7 @@ public:
     void init(uint8_t* destroyPlayer);
     void enable();
     void disable();
-    bool drawUI();      // true si el usuario cambió algo
-    void drawOverlay(); // contador en pantalla mientras se juega
+    bool drawUI(); // true si el usuario cambió algo
 
     void load(const nlohmann::json& j);
     void save(nlohmann::json& j) const;
@@ -26,7 +25,15 @@ private:
     bool m_available = false;
     bool m_statsAvailable = false; // hooks de nivel de core::game (contador y precisión)
     bool m_enabled = false;
-    bool m_showStats = true;
 };
+
+// Estadísticas del intento actual, para los labels "Noclip deaths" y "Noclip accuracy".
+// false si el noclip no está activo, si no hay hooks de nivel o si el nivel no ha empezado.
+struct NoclipStats {
+    int deaths = 0;
+    float accuracy = 100.f; // % de frames sin tocar nada
+    bool hitting = false;   // está atravesando algo ahora mismo
+};
+bool noclipStats(NoclipStats& out);
 
 } // namespace features

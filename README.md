@@ -17,7 +17,8 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Level | StartPos switcher (Q = anterior, E = siguiente) | Probado |
 | Bypass | Unlock icons, character limit bypass, character filter bypass, instant complete | Probado |
 | Creator | Free scroll, level copy bypass, custom object bypass, verify bypass | Probado |
-| Labels | Cheat indicator, FPS, CPS, porcentaje, intento, tiempo, reloj | Probado |
+| Labels | Cheat indicator, FPS, CPS, noclip, porcentaje, intento, tiempo, reloj | Probado |
+| Labels | Fuente de GD, tamaño, opacidad y mover los labels arrastrándolos | Probado |
 | Shortcuts | Reiniciar nivel, alternar modo práctica, poner y quitar checkpoint | Probado |
 | Interface | Tema, color de acento, escala, fuente y tamaño | Probado |
 | Keybinds | Clic derecho sobre cualquier opción para asignarle una tecla | Probado |
@@ -63,6 +64,7 @@ Todavía no hay binarios publicados, así que hay que compilarlo.
 
 Hay que inyectar cada vez que se abre el juego.
 
+- **Labels**: dentro de un nivel, con el panel abierto, se arrastran con el ratón.
 - **Clic derecho** sobre una casilla o un botón le asigna una tecla (Supr la quita).
 - Los campos numéricos se aplican al pulsar **Enter** o al salir del campo.
 - **End** descarga la DLL sin cerrar el juego (modo desarrollo, activado por defecto).

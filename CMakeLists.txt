@@ -63,6 +63,7 @@ add_library(gdmenu SHARED
     src/config/config.cpp
     src/gui/menu.cpp
     src/gui/keybinds.cpp
+    src/gui/game_font.cpp
     src/gui/theme.cpp
     src/gui/widgets.cpp
     src/features/features.cpp

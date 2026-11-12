@@ -237,4 +237,20 @@ inline constexpr char kHandleButton[] =
     "48 89 5C 24 10 48 89 6C 24 18 48 89 74 24 20 57 41 56 41 57 48 83 EC 30 41 0F B6 E9 41 8B F8 "
     "0F B6 F2 48 8B D9 0F B6 89 ?? ?? ?? ??";
 
+// --- Fase 8 (Retoques). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// PlayLayer::checkForEnd(): si el jugador 1 ya llegó al portal final, lanza la animación de fin
+// de nivel (que llama a levelComplete al terminar). Instant complete lo llama después de llevar
+// al jugador al portal. De la firma se leen:
+inline constexpr char kCheckForEnd[] =
+    "48 89 5C 24 20 57 48 83 EC 20 48 8B F9 48 8B 89 ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? "
+    "80 BF ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 80 B9 ?? ?? ?? ?? 00 75 26 48 8D 54 24 30 E8 ?? ?? ?? ?? "
+    "48 8B D8 48 8B 8F ?? ?? ?? ?? 48 8B 11 FF 92 ?? ?? ?? ?? F3 0F 10 00 0F 2F 03 73 3E "
+    "48 8B 8F ?? ?? ?? ?? 80 B9 ?? ?? ?? ?? 00";
+inline constexpr int kCheckForEndPortal = 16;      // PlayLayer::m_endPortal
+inline constexpr int kCheckForEndStarted = 31;     // PlayLayer::m_levelEndAnimationStarted
+inline constexpr int kCheckForEndSpawnPos = 57;    // rel32 de EndPortalObject::getSpawnPos(CCPoint*)
+inline constexpr int kCheckForEndPlayer = 67;      // GJBaseGameLayer::m_player1
+inline constexpr int kCheckForEndGetPosition = 76; // posición de getPosition() en el vtable
+
 } // namespace core::signatures

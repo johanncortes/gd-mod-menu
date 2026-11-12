@@ -61,6 +61,7 @@ int main(int argc, char** argv) {
         {"kUiOnDeleteCheck", sig::kUiOnDeleteCheck},
         {"kProcessCommands", sig::kProcessCommands},
         {"kHandleButton", sig::kHandleButton},
+        {"kCheckForEnd", sig::kCheckForEnd},
     };
 
     int failed = 0;

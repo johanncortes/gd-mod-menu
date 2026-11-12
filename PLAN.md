@@ -1,16 +1,26 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 8 (Retoques) sin empezar. Fases 1 a 7 probadas por el usuario y mergeadas en `main` (de la 3 falta
-  *Show trajectory*).
-- Último agente: Claude
-- Próximo paso: fase 8, en una rama `fase-8`.
-- Pendientes para la fase final de retoques (pedidos por el usuario el 2026-11-11):
-  - Rediseño visual del panel y de los labels (ahora es un diseño inicial).
-  - Que el usuario pueda **mover los labels de sitio** dentro del juego.
-  - *Instant complete*: teletransportar al jugador al final del nivel mientras sale la animación.
-  - *Show trajectory* (fase 3).
+- Fase: 9 (Show trajectory) en curso, rama `fase-9`. Fases 1 a 8 probadas por el usuario y mergeadas en `main`.
+- Último agente: Claude (Opus 5.5)
+- Próximo paso: terminar y probar la fase 9. Después, la "Lista ampliada" (segunda captura) por bloques.
 - Notas / bloqueos:
+  - **Lo que pidió el usuario para la fase 8** (2026-11-11): panel en **Segoe UI** por defecto (le gustó); labels y
+    aviso del StartPos switcher con la **fuente de Geometry Dash**, ajustable, bien alineados; labels movibles dentro
+    del juego; Instant complete que lleve al jugador al final mientras sale la animación de completar.
+  - **Fase 8, qué se corrigió** del otro agente: (1) su *Show trajectory* dibujaba una parábola con una gravedad
+    inventada, sin la física del juego: **se quitó**; (2) Instant complete usaba offsets fijos y una altura inventada:
+    se rehízo con `PlayLayer::checkForEnd` (firma `kCheckForEnd`); (3) los labels iban dentro de una ventana de ImGui
+    con contorno a mano, y luego con una fuente Pusab TTF bajada de internet (descuadrada): ahora usan las fuentes de
+    bitmap del propio juego (`src/gui/game_font.cpp`); (4) la rejilla fija de 2 filas solapaba ventanas: ahora se
+    colocan por columnas según su tamaño real (`gui/menu.cpp`). El TTF de Pusab sigue en el historial de git
+    (commit 9ddd584, ya borrado del árbol); quitarlo del todo exige reescribir historia y force-push: solo si el
+    usuario lo pide.
+  - **Labels**: se dibujan en la lista de dibujo de fondo de ImGui (delante del juego, detrás del panel). Con el panel
+    abierto, una ventana invisible encima del bloque recoge el ratón para arrastrarlo (el clic no llega al juego).
+    La posición se guarda en fracción de pantalla; en la mitad derecha las líneas se alinean a la derecha. Fuente,
+    tamaño y opacidad son comunes a labels y StartPos switcher. El contador del noclip ahora son los labels
+    "Noclip deaths" y "Noclip accuracy" (antes iba abajo a la izquierda por su cuenta).
   - **Bot**: graba en el hook de `handleButton` con el tick de `m_commandIndex` y reproduce desde el hook de
     `processCommands` (`src/features/bot/bot.cpp`). Si el tick retrocede (reinicio o checkpoint) se descarta lo
     grabado desde ese tick. Probado por el usuario en Future Funk (3 minutos idénticos). Un replay solo vale con los
@@ -22,10 +32,6 @@
     su texto: **no puede haber dos opciones con el mismo texto**. Con el panel cerrado, las opciones se dibujan un
     frame en una ventana invisible para que la tecla use el mismo código que el clic (`gui/menu.cpp`).
     El StartPos switcher sigue con Q/E fijas.
-  - **Labels**: salen arriba a la izquierda y solo dentro de un nivel. El tiempo es la suma de los `dt` de
-    `GJBaseGameLayer::update` desde el último `resetLevel`. El CPS cuenta clic izquierdo, Espacio, Flecha arriba
-    y W en el hook de raw input. Faltan de la lista final: Best Run, Run From, Testmode, labels personalizados,
-    presets y "Show in editor".
   - **Hooks de nivel compartidos**: `PlayLayer::resetLevel` y `GJBaseGameLayer::update` se hookean una sola vez en
     `src/core/game.cpp`; las features se apuntan con `core::game::onResetLevel` / `onUpdate` (MinHook no admite dos
     hooks sobre la misma función). `core::game::playLayer()` da el nivel actual.
@@ -123,8 +129,21 @@
 - [x] Guardar/cargar replays
 - [x] Probado dentro del juego (2026-11-11)
 
+## Fase 8 — Retoques
+- [x] Rediseño visual del panel: tema oscuro, Segoe UI por defecto, títulos centrados (hecho por el otro agente, el
+  usuario lo aprobó)
+- [x] Labels y aviso del StartPos switcher con las fuentes de GD (Big, Gold, Chat o la del panel), tamaño y opacidad
+- [x] Mover los labels de sitio dentro del juego (arrastrar con el panel abierto)
+- [x] Ventanas del panel colocadas por columnas sin taparse (botón "Reordenar" en Interface)
+- [x] Instant complete: lleva al jugador al portal final y el juego hace la animación y completa el nivel
+- [x] Probado dentro del juego (2026-11-11)
+
+## Fase 9 — Show trajectory
+- [ ] Simular al jugador con la física real del juego (PlayerObject de prueba + checkCollisions) y dibujar el camino
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
-Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[~]` = hecho sin probar,
+Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
 de la fase 7.
 

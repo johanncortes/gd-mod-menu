@@ -23,6 +23,7 @@
 #include "features/player/noclip.hpp"
 #include "features/player/respawn_delay.hpp"
 #include "features/shortcuts/shortcuts.hpp"
+#include "gui/game_font.hpp"
 #include "gui/keybinds.hpp"
 #include "gui/theme.hpp"
 
@@ -141,6 +142,7 @@ void loadConfig() {
         g_bot.load(section(data, "bot"));
 
         gui::theme::load(section(data, "interface"));
+        if (gui::theme::configOutdated()) markDirty(); // se guarda con el formato nuevo
         gui::keybinds::load(section(data, "keybinds"));
     } catch (const nlohmann::json::exception& e) {
         // Un valor con el tipo equivocado: se queda lo cargado hasta ese punto
@@ -249,13 +251,14 @@ void shutdown() {
     g_customObjects.disable();
     g_verify.disable();
     g_bot.disable();
+    gui::gamefont::shutdown(); // suelta las texturas de las fuentes de GD
     g_ready = false;
 }
 
 void update() {
     if (!g_ready) return;
     gui::keybinds::update();
-    if (gui::keybinds::takeChanged()) markDirty();
+    if (gui::keybinds::takeChanged() || g_labels.takePositionChanged()) markDirty();
     g_startPosSwitcher.update();
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
     if (g_dirty && GetTickCount64() - g_dirtySince > 500) saveConfig();
@@ -320,7 +323,6 @@ void drawInterface() {
 void drawOverlay() {
     if (!g_ready) return;
     g_labels.drawOverlay(cheatsActive());
-    g_noclip.drawOverlay();
     g_startPosSwitcher.drawOverlay();
 }
 

@@ -45,6 +45,9 @@
 | UILayer::onDeleteCheck(CCObject*) | GeometryDash.exe | función entera, ver `kUiOnDeleteCheck` | 2.2091, build Steam 26002420 | 0x1406730D0. Botón de quitar checkpoint: llama a `PlayLayer::removeCheckpoint(false)`. Solo se llama (fase 6) |
 | GJBaseGameLayer::processCommands(float, bool, bool) | GeometryDash.exe | inicio de función, ver `kProcessCommands` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140342870. Hook del bot (un paso de física). De la firma se lee en +17 el offset del contador de ticks, `m_gameState.m_commandIndex` (+0x3E0) (fase 7) |
 | GJBaseGameLayer::handleButton(bool, int, bool) | GeometryDash.exe | inicio de función, ver `kHandleButton` | 2.2091, build Steam 26002420 | 0x14033C5B0. Hook del bot: aquí se graban los inputs y con el original se reproducen (fase 7) |
+| PlayLayer::checkForEnd() | GeometryDash.exe | inicio de función, ver `kCheckForEnd` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140513E60. Solo se llama (Instant complete, tras llevar al jugador al portal). De la firma se leen `m_endPortal` (+0x3320), `m_levelEndAnimationStarted` (+0x3A28), `m_player1` (+0xDB8), el slot de `getPosition()` (0xC8) y la dirección de `EndPortalObject::getSpawnPos` (0x140209330) (fase 8) |
+| CCNode vtable + CCNode::setPosition(const CCPoint&) | libcocos2d.dll | exports `??_7CCNode@cocos2d@@6B@` y `?setPosition@CCNode@cocos2d@@UEAAXAEBVCCPoint@2@@Z` | — | se busca el export dentro del vtable para saber su slot (0xB8) y llamar por el vtable a `PlayerObject::setPosition` (fase 8) |
+| CCTextureCache::sharedTextureCache, addImage; CCTexture2D::getName, hasPremultipliedAlpha; CCDirector::sharedDirector, getContentScaleFactor | libcocos2d.dll | exports por nombre | — | fuentes de GD en los labels: la textura de `bigFont`/`goldFont`/`chatFont` sale del caché de texturas del juego (fase 8) |
 
 ## Notas de ingeniería inversa
 
@@ -83,3 +86,11 @@
   El juego trae además un replay propio: con el byte +0x3280 activo, recorre un vector en +0x3478 de entradas de
   16 bytes (botón, pulsado, jugador 2, tick) y llama a `handleButton` cuando el tick coincide con +0x3EC. El bot
   hace lo mismo desde su hook, sin usar ese vector.
+- **Fin de nivel (2.2091)**: `GJBaseGameLayer::update` llama a `PlayLayer::checkForEnd`; si la x del jugador 1 llega a
+  `EndPortalObject::getSpawnPos` (o la pasa hacia atrás si el portal está girado, byte +0x558), marca
+  `m_levelEndAnimationStarted` y llama a `playEndAnimationToPos`, que bloquea a los jugadores, los lleva al portal
+  con un `CCBezierTo` y al terminar llama a `levelComplete`. En plataformas el final va por
+  `activatePlatformerEndTrigger` -> `playPlatformerEndAnimationToPos` (no hay portal).
+- **Fuentes de GD**: `Resources/bigFont-uhd.fnt` (BMFont de texto, cara "Pusab", 1024x1024) y sus versiones `-hd` y
+  normal; el juego elige según `CCDirector::getContentScaleFactor` (4, 2 o 1). Las texturas de cocos llevan el alfa
+  premultiplicado.
