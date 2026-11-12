@@ -26,6 +26,11 @@ using UpdateCallback = void (*)(void* gameLayer, float dt); // un frame de nivel
 void onResetLevel(ResetCallback callback);
 void onUpdate(UpdateCallback callback);
 
+// Filtro antes de GJBaseGameLayer::update (uno solo, el del frame stepper): si devuelve false ese
+// frame el nivel no avanza ni se llaman los avisos; puede cambiar dt.
+using UpdateFilter = bool (*)(void* gameLayer, float& dt);
+void setUpdateFilter(UpdateFilter filter);
+
 // Segundos de juego del intento actual (suma de los dt, así que sigue al speedhack).
 double attemptTime();
 

@@ -36,6 +36,9 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Global | Pitch shift | Probado |
 | Player | Jump hack | Probado |
 | Interface | Tema, color de acento, escala, fuente y tamaño | Probado |
+| Interface | Búsqueda de opciones (ventana Search) | Probado |
+| Shortcuts | Screenshot (PNG en screenshots/ y al portapapeles) | Probado |
+| Player | Frame stepper, auto clicker | Probado |
 | Keybinds | Clic derecho sobre cualquier opción para asignarle una tecla | Probado |
 | Bot | Grabar y reproducir inputs, guardar y cargar replays | Probado |
 

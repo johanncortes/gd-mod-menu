@@ -17,6 +17,7 @@
 #include "features/global/display.hpp"
 #include "features/global/fps_bypass.hpp"
 #include "features/global/safe_mode.hpp"
+#include "features/global/screenshot.hpp"
 #include "features/global/speedhack.hpp"
 #include "features/global/tps_bypass.hpp"
 #include "features/global/universal.hpp"
@@ -25,6 +26,8 @@
 #include "features/level/hide_pause.hpp"
 #include "features/level/startpos_switcher.hpp"
 #include "features/patch_feature.hpp"
+#include "features/player/auto_clicker.hpp"
+#include "features/player/frame_stepper.hpp"
 #include "features/player/hitboxes.hpp"
 #include "features/player/jump_hack.hpp"
 #include "features/player/noclip.hpp"
@@ -49,6 +52,7 @@ TpsBypass g_tpsBypass;
 SafeMode g_safeMode;
 LockCursor g_lockCursor;
 Display g_display;
+Screenshot g_screenshot;
 NoTransition g_noTransition;
 HighPriority g_highPriority;
 // Los deslizadores de volumen ya no saltan a 0 por debajo de 0.03
@@ -62,6 +66,8 @@ Hitboxes g_hitboxes;
 RespawnDelay g_respawnDelay;
 Trajectory g_trajectory;
 JumpHack g_jumpHack;
+FrameStepper g_frameStepper;
+AutoClicker g_autoClicker;
 // je -> jmp: playerDestroyed siempre toma el camino "ocultar al jugador sin efecto"
 PatchFeature g_noDeathEffect("Sin efecto de muerte", "no_death_effect", core::signatures::kDeathEffect,
                              core::signatures::kDeathEffectJump, {0xEB});
@@ -219,6 +225,7 @@ void loadConfig() {
         g_hitboxes.load(section(player, "hitboxes"));
         g_trajectory.load(section(player, "trajectory"));
         g_jumpHack.load(section(player, "jump_hack"));
+        g_autoClicker.load(section(player, "auto_clicker"));
         g_respawnDelay.load(section(player, "respawn_delay"));
         g_noDeathEffect.load(player);
         g_noRespawnFlash.load(player);
@@ -296,6 +303,7 @@ void saveConfig() {
     g_hitboxes.save(player["hitboxes"]);
     g_trajectory.save(player["trajectory"]);
     g_jumpHack.save(player["jump_hack"]);
+    g_autoClicker.save(player["auto_clicker"]);
     g_respawnDelay.save(player["respawn_delay"]);
     g_noDeathEffect.save(player);
     g_noRespawnFlash.save(player);
@@ -400,6 +408,7 @@ void init() {
     g_startPosSwitcher.init(gameAvailable);
     g_instantComplete.init(gameAvailable);
     g_shortcuts.init(gameAvailable);
+    g_autoClicker.init(gameAvailable); // antes que el bot: hookea handleButton
     g_bot.init(gameAvailable);
     g_verify.init();
     g_placeOver.init();
@@ -412,6 +421,7 @@ void init() {
     g_hitboxes.init();
     g_trajectory.init(gameAvailable);
     g_jumpHack.init(gameAvailable);
+    g_frameStepper.init(gameAvailable);
     g_noclip.init(destroyPlayer);
 
     loadConfig();
@@ -433,6 +443,8 @@ void shutdown() {
     g_hitboxes.disable();
     g_trajectory.disable();
     g_jumpHack.disable();
+    g_frameStepper.disable();
+    g_autoClicker.disable();
     g_respawnDelay.disable();
     g_noDeathEffect.disable();
     g_noRespawnFlash.disable();
@@ -482,6 +494,9 @@ void update() {
     g_startPosSwitcher.update();
     g_safeMode.update(cheatsActive());
     g_shortcuts.update();
+    g_screenshot.update(); // antes de que ImGui dibuje encima
+    g_frameStepper.update();
+    g_autoClicker.update();
     g_lockCursor.update(gui::isMenuOpen());
     g_display.update();
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
@@ -496,6 +511,8 @@ void disableCheats() {
     g_bot.disable();
     g_forcePlatformer.disable();
     g_jumpHack.disable();
+    g_frameStepper.disable();
+    g_autoClicker.disable();
     markDirty();
 }
 
@@ -525,6 +542,8 @@ void drawPlayer() {
     changed |= g_hitboxes.drawUI();
     changed |= g_trajectory.drawUI();
     changed |= g_jumpHack.drawUI();
+    changed |= g_autoClicker.drawUI();
+    changed |= g_frameStepper.drawUI();
     changed |= g_respawnDelay.drawUI();
     if (changed) markDirty();
 }
@@ -592,6 +611,7 @@ void drawBot() {
 
 void drawShortcuts() {
     g_shortcuts.drawUI();
+    g_screenshot.drawUI();
     ImGui::SeparatorText("Keybinds");
     if (gui::keybinds::drawUI()) markDirty();
 }
@@ -609,7 +629,8 @@ void drawOverlay() {
 
 bool cheatsActive() {
     return g_speedhack.active() || g_tpsBypass.active() || g_noclip.active() || g_bot.active() ||
-           g_forcePlatformer.cheatActive() || g_jumpHack.active();
+           g_forcePlatformer.cheatActive() || g_jumpHack.active() || g_frameStepper.active() ||
+           g_autoClicker.active();
 }
 
 } // namespace features

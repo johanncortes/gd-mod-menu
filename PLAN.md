@@ -1,10 +1,18 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 18 (Keybinds, Utility y pendientes) **probada** y mergeada en `main`. Fases 1 a 18 terminadas.
+- Fase: 19 (Search, Screenshot, Frame stepper, Auto clicker) **probada** y mergeada en `main`. Fases 1 a 19 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: fase 19, funciones de dificultad media y alta que quedan.
+- Próximo paso: fase 20, más funciones medias (Show triggers, Hitbox multiplier, No glow / No pulse...).
 - Notas / bloqueos:
+  - **Fase 19**: *Search* (ventana "Search": las casillas y botones que no coinciden no se dibujan pero sus teclas
+    siguen funcionando; las ventanas sin coincidencias se dibujan fuera de la pantalla para recontarlas; filtro en
+    `gui/widgets.cpp`). *Screenshot* (Shortcuts: PNG con WIC en `screenshots/` junto a la DLL + portapapeles CF_DIB;
+    se lee el back buffer en `features::update`, antes de que ImGui dibuje). *Frame stepper* (Player, trampa, no se
+    guarda activado: filtro `core::game::setUpdateFilter` que se salta `GJBaseGameLayer::update` salvo los pasos
+    pedidos, con dt = 1/240; audio pausado dentro del nivel con `setGameAudioPaused`). *Auto clicker* (Player,
+    trampa: `handleButton` alternando pulsar/soltar a N CPS, como mucho un cambio por frame). Con Frame stepper la
+    música queda desfasada al salir: reiniciar el intento.
   - **Fase 18**: *Keybinds* (ventana Shortcuts): lista de teclas con "Quitar", "Quitar todas", "Desactivar en el
     editor" (usa `core::game::editorLayer()`) y "Solo dentro de un nivel". La config de keybinds pasó a
     `{"binds": {...}, "disable_in_editor", "level_only"}` (se sigue leyendo el formato antiguo). *Utility*: P1 jump,
@@ -242,6 +250,11 @@
 - [x] Probado dentro del juego (2026-11-12)
 - [ ] Más adelante: Fast chests, Smooth editor trail
 
+## Fase 19 — Funciones medias (1)
+- [x] Search en el panel, Screenshot
+- [x] Frame stepper, Auto clicker
+- [x] Probado dentro del juego (2026-11-12)
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -265,8 +278,8 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
 
-**Player**: [ ] Always Show Trail · [ ] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
-[ ] Custom Wave Trail · [ ] Frame Stepper · [x] Jump Hack · [ ] Mute Level Audio on Death ·
+**Player**: [ ] Always Show Trail · [x] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
+[ ] Custom Wave Trail · [x] Frame Stepper · [x] Jump Hack · [ ] Mute Level Audio on Death ·
 [ ] Mute Rewards SFX on Death · [x] No Death Effect · [x] No Ghost Trail · [ ] No Hide Trigger ·
 [ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [x] No Spider Dash · [x] No Trail ·
 [ ] No Vehicle Particles · [x] Noclip · [x] Show Trajectory · [ ] Solid Wave Trail · [x] Respawn Delay ·
@@ -289,7 +302,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 **Keybinds**: [x] Open Menu (Tab) · [x] In-game only · [x] Clic derecho en cualquier opción para asignarle una tecla
 
 **Interface**: [x] Theme · [x] UI Scale · [x] Font · [x] Font Size · [ ] Reload Fonts · [ ] Layout Type · [ ] Style ·
-[ ] Enable Blur · [ ] Animate Windows · [x] Accent Color · [ ] Background Color · [ ] Language · [ ] Search
+[ ] Enable Blur · [ ] Animate Windows · [x] Accent Color · [ ] Background Color · [ ] Language · [x] Search
 
 (*) Chocan con la regla de `AGENTS.md` "nada de funciones para subir completions ni interactuar con servidores de
 GD". El usuario decidió hacerlas igualmente (2026-11-11), ver Estado actual.
@@ -315,11 +328,11 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [x] No Trail · No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
   Show Total Attempts · Solid Wave Trail · StartPos Reset Camera (M) · Stop Triggers on Death (M) ·
   Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
-- **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · All Modes Platformer (F) · Auto Clicker (M) ·
+- **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · All Modes Platformer (F) · [x] Auto Clicker ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · Auto Kill (F) · Auto Music Sync (M) ·
   Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames (D) · Click Between Steps (D) ·
   Click on Steps (D) · [x] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
-  Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · Frame Stepper (M) · Hitbox Multiplier (M) ·
+  Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · [x] Frame Stepper · Hitbox Multiplier (M) ·
   [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · Noclip Limits (F) · No Collision (F) ·
   [x] Pause During Complete · Practice Bug Fix (D) · [x] Practice Music · Random Seed (M) ·
   Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · [x] Show Hitboxes on Death ·
@@ -340,10 +353,10 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [x] Practice Mode · Settings (F) · [x] Resources / AppData · Toggle DevTools (N/A) · Crash Game (N/A)
 - **Replay**: es la fase 7 (Record, Play, guardar y cargar). Convert (.json, .gdr) es M.
 - **Keybinds**: [x] asignar tecla a una opción · [x] View Keybinds · [x] Remove Keybinds · [x] Disable in Editor
-- **Mega Hack / Interface**: Search (M) · [x] Theme · [x] Interface Scale · Animations (M) · Sort Interface (F) ·
+- **Mega Hack / Interface**: [x] Search · [x] Theme · [x] Interface Scale · Animations (M) · Sort Interface (F) ·
   Language (M) · Hide Endscreen Cheats / Extras (F) · Hide Menu Snow (F) · Auto-Update, Contribute Translations,
   Hide Iconic on Pause, Hide RobsVault Shortcut (N/A: son cosas del propio Mega Hack)
-- **Screenshot** (M): captura a archivo y al portapapeles.
+- **Screenshot**: [x] captura a archivo y al portapapeles.
 
 ## Mantenimiento por actualización de GD
 1. Ver qué firmas fallan: `build/Release/sigcheck.exe "<ruta>/GeometryDash.exe"` (o el panel, que las marca "no disponible").

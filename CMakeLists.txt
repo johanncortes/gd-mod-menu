@@ -83,13 +83,16 @@ add_library(gdmenu SHARED
     src/features/player/respawn_delay.cpp
     src/features/player/trajectory.cpp
     src/features/player/jump_hack.cpp
+    src/features/player/frame_stepper.cpp
+    src/features/player/auto_clicker.cpp
     src/features/cosmetic/no_mirror.cpp
     src/features/cosmetic/no_particles.cpp
     src/features/global/safe_mode.cpp
     src/features/global/universal.cpp
-    src/features/global/display.cpp)
+    src/features/global/display.cpp
+    src/features/global/screenshot.cpp)
 target_include_directories(gdmenu PRIVATE src)
-target_link_libraries(gdmenu PRIVATE minhook imgui nlohmann_json::nlohmann_json opengl32)
+target_link_libraries(gdmenu PRIVATE minhook imgui nlohmann_json::nlohmann_json opengl32 windowscodecs)
 target_compile_definitions(gdmenu PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE
     $<$<BOOL:${GDMENU_DEV}>:GDMENU_DEV>
     $<$<BOOL:${GDMENU_CONSOLE}>:GDMENU_CONSOLE>)
