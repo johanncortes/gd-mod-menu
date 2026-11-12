@@ -70,6 +70,27 @@ PatchFeature g_textLimit("Character limit bypass", "character_limit",
 // Los campos de texto aceptan cualquier carácter
 PatchFeature g_textFilter("Character filter bypass", "character_filter", sig::kTextFilter, sig::kTextFilterJump, {0xEB});
 InstantComplete g_instantComplete;
+// Comprobaciones de desbloqueo en el botón de cada sitio (fase 11). No cambian la partida guardada.
+PatchFeature g_unlockMainLevels("Unlock main levels", "unlock_main_levels", sig::kMainLevelLock,
+                                sig::kMainLevelLockJump, {0x90, 0xE9});
+PatchFeature g_unlockVaults("Unlock vaults", "unlock_vaults",
+                            {{sig::kVaultLock, sig::kVaultLockJump, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90}},
+                             {sig::kVaultOfSecretsLock, sig::kVaultOfSecretsLockJump, {0x90, 0x90}}});
+PatchFeature g_unlockBasement("Unlock basement (Keymaster)", "unlock_basement", sig::kBasementLock,
+                              sig::kBasementLockJump, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90});
+PatchFeature g_unlockChallenge("Unlock challenge level", "unlock_challenge", sig::kChallengeLevelLock,
+                               sig::kChallengeLevelLockJump, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90});
+PatchFeature g_unlockTreasureRoom("Unlock treasure room", "unlock_treasure_room", sig::kTreasureRoomLock,
+                                  sig::kTreasureRoomLockJump, {0x90, 0x90});
+PatchFeature g_unlockShops("Unlock shops", "unlock_shops",
+                           {{sig::kShopLocks, sig::kShopLockJumps[0], {0x90, 0xE9}},
+                            {sig::kShopLocks, sig::kShopLockJumps[1], {0x90, 0xE9}},
+                            {sig::kShopLocks, sig::kShopLockJumps[2], {0xEB}},
+                            {sig::kShopLocks, sig::kShopLockJumps[3], {0xEB}}});
+// Los deslizadores (editor, ajustes) pueden pasar de su mínimo y su máximo
+PatchFeature g_sliderLimit("Slider limit bypass", "slider_limit",
+                           {{sig::kSliderClamp, sig::kSliderClampLow, {0xEB}},
+                            {sig::kSliderClamp, sig::kSliderClampHigh, {0xEB}}});
 
 // --- Creator ---
 // El nivel se puede subir aunque no esté verificado
@@ -157,6 +178,13 @@ void loadConfig() {
         g_unlockIcons.load(bypass);
         g_textLimit.load(bypass);
         g_textFilter.load(bypass);
+        g_unlockMainLevels.load(bypass);
+        g_unlockVaults.load(bypass);
+        g_unlockBasement.load(bypass);
+        g_unlockChallenge.load(bypass);
+        g_unlockTreasureRoom.load(bypass);
+        g_unlockShops.load(bypass);
+        g_sliderLimit.load(bypass);
 
         const nlohmann::json creator = section(data, "creator");
         g_freeScroll.load(creator);
@@ -213,6 +241,13 @@ void saveConfig() {
     g_unlockIcons.save(bypass);
     g_textLimit.save(bypass);
     g_textFilter.save(bypass);
+    g_unlockMainLevels.save(bypass);
+    g_unlockVaults.save(bypass);
+    g_unlockBasement.save(bypass);
+    g_unlockChallenge.save(bypass);
+    g_unlockTreasureRoom.save(bypass);
+    g_unlockShops.save(bypass);
+    g_sliderLimit.save(bypass);
 
     nlohmann::json& creator = data["creator"];
     g_freeScroll.save(creator);
@@ -269,6 +304,13 @@ void init() {
     g_unlockIcons.init();
     g_textLimit.init();
     g_textFilter.init();
+    g_unlockMainLevels.init();
+    g_unlockVaults.init();
+    g_unlockBasement.init();
+    g_unlockChallenge.init();
+    g_unlockTreasureRoom.init();
+    g_unlockShops.init();
+    g_sliderLimit.init();
     g_freeScroll.init();
     g_levelCopy.init();
     g_customObjects.init();
@@ -316,6 +358,13 @@ void shutdown() {
     g_unlockIcons.disable();
     g_textLimit.disable();
     g_textFilter.disable();
+    g_unlockMainLevels.disable();
+    g_unlockVaults.disable();
+    g_unlockBasement.disable();
+    g_unlockChallenge.disable();
+    g_unlockTreasureRoom.disable();
+    g_unlockShops.disable();
+    g_sliderLimit.disable();
     g_freeScroll.disable();
     g_levelCopy.disable();
     g_customObjects.disable();
@@ -376,6 +425,13 @@ void drawBypass() {
     bool changed = g_unlockIcons.drawUI();
     changed |= g_textLimit.drawUI();
     changed |= g_textFilter.drawUI();
+    changed |= g_sliderLimit.drawUI();
+    changed |= g_unlockMainLevels.drawUI();
+    changed |= g_unlockVaults.drawUI();
+    changed |= g_unlockBasement.drawUI();
+    changed |= g_unlockChallenge.drawUI();
+    changed |= g_unlockTreasureRoom.drawUI();
+    changed |= g_unlockShops.drawUI();
     if (changed) markDirty();
     g_instantComplete.drawUI();
 }

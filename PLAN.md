@@ -1,10 +1,16 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 10 (Cosmetic) **probada** y mergeada en `main`. Fases 1 a 10 terminadas.
+- Fase: 11 (Bypass, segundo bloque de la lista ampliada) con código completo, **pendiente de probar en el juego**,
+  rama `fase-11`. Fases 1 a 10 probadas y mergeadas en `main`.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: siguiente bloque de la lista ampliada.
+- Próximo paso: que el usuario pruebe la fase 11. Después: merge a `main` y el siguiente bloque de la lista ampliada.
 - Notas / bloqueos:
+  - **Bypass (fase 11)**: los desbloqueos solo saltan la comprobación del botón que abre cada sitio (niveles
+    principales, The Vault, Vault of Secrets, sótano del Keymaster, The Challenge, Treasure Room, tiendas). No escriben
+    nada en la partida guardada; lo que el juego guarde al usar esos sitios (diálogos vistos, cofres abiertos) lo
+    guarda el juego como siempre. **Anti-Kick** de Mega Hack no se hizo: no está claro qué "kick" evita y puede tocar
+    servidores.
   - **Cosmetic (fase 10)**: ventana nueva "Cosmetic" (`features::drawCosmetic`). Sin efecto de muerte y Sin parpadeo
     pasaron ahí desde Player, pero su config sigue en `player`. Las nuevas guardan en la sección `cosmetic`. Casi
     todas son parches de bytes (`PatchFeature`); No mirror y No particles son hooks. "No spider dash" parchea un salto
@@ -158,6 +164,12 @@
 - [x] No mirror, No trail, No wave trail, No ghost trail, No spider dash
 - [x] Probado dentro del juego (2026-11-11)
 
+## Fase 11 — Bypass (lista ampliada, bloque 2)
+- [x] Unlock main levels, Unlock vaults (The Vault y Vault of Secrets), Unlock basement (Keymaster)
+- [x] Unlock challenge level, Unlock treasure room, Unlock shops
+- [x] Slider limit bypass
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -178,8 +190,8 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 
 **Bypass**: [ ] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [ ] Checkpoint Limit ·
 [ ] Comment History Bypass · [ ] Quick Chests · [x] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
-[ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [ ] Unlock Main Levels ·
-[ ] Unlock Paths · [ ] Unlock Shops · [ ] Unlock Vaults
+[ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [`] Unlock Main Levels ·
+[ ] Unlock Paths · [`] Unlock Shops · [`] Unlock Vaults
 
 **Player**: [ ] Always Show Trail · [ ] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
 [ ] Custom Wave Trail · [ ] Frame Stepper · [ ] Jump Hack · [ ] Mute Level Audio on Death ·
@@ -191,7 +203,7 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 **Bot**: [x] Disabled / Record / Playback · [x] Replays (New, Save, Load, Delete) · [x] Ignore Inputs
 
 **Creator**: [x] Custom Object Bypass · [ ] Default Song Bypass · [x] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
-[x] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [ ] Slider Limit ·
+[x] Level Copy Bypass · [ ] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [`] Slider Limit ·
 [ ] Smooth Editor Trail · [x] Verify Bypass (*)
 
 **Labels**: [x] Show Labels · [ ] Show in Editor · [x] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
@@ -216,8 +228,9 @@ dejar algo terminado y luego ir añadiendo esto por bloques. Dificultad estimada
 como los de la fase 4), **M** media, **D** difícil (días de trabajo y muchas pruebas), **N/A** no aplica a este
 proyecto. Lo que ya está hecho lleva `[x]`.
 
-- **Bypass** (F): Anti-Kick · Challenge Level · Keymaster · Main Levels · Music Customizer (M) · Slider Limit ·
-  [x] Text Length · Treasure Room · [x] Unlock Icons · Unlock Shops · Unlock Vaults
+- **Bypass** (F): Anti-Kick (no se hace, ver Estado actual) · [`] Challenge Level · [`] Keymaster ·
+  [`] Main Levels · Music Customizer (M) · [`] Slider Limit · [x] Text Length · [`] Treasure Room ·
+  [x] Unlock Icons · [`] Unlock Shops · [`] Unlock Vaults
 - **Creator**: Accurate Save (M) · [x] Copy Hack · [x] Custom Object Bypass · Default Song Bypass (F) ·
   Editor Extension (D) · [x] Free Scroll · Hide UI (F) · Level Edit (F) · Multiple Editor Trails (M) · No C Mark (F) ·
   Place Over (F) · Smooth Editor Trail (F) · Toolbox Button Bypass (F) · Trigger Value Bypass (M) · [x] Verify Hack

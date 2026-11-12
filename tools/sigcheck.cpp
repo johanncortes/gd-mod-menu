@@ -82,6 +82,14 @@ int main(int argc, char** argv) {
         {"kToggleGhostEffect", sig::kToggleGhostEffect},
         {"kSpiderDashSkip", sig::kSpiderDashSkip},
         {"kToggleFlipped", sig::kToggleFlipped},
+        {"kMainLevelLock", sig::kMainLevelLock},
+        {"kVaultLock", sig::kVaultLock},
+        {"kVaultOfSecretsLock", sig::kVaultOfSecretsLock},
+        {"kTreasureRoomLock", sig::kTreasureRoomLock},
+        {"kBasementLock", sig::kBasementLock},
+        {"kChallengeLevelLock", sig::kChallengeLevelLock},
+        {"kShopLocks", sig::kShopLocks},
+        {"kSliderClamp", sig::kSliderClamp},
     };
 
     int failed = 0;
