@@ -46,6 +46,11 @@ bool g_fontPending = true; // cargar la fuente al primer frame
 
 std::string g_layoutPath; // ImGui guarda el puntero, tiene que seguir vivo
 
+// Versión de la colocación de ventanas. Al subirla, el panel se recoloca una vez.
+constexpr int kLayoutVersion = 2;
+int g_layoutVersion = kLayoutVersion;
+bool g_arrangeRequested = false;
+
 // Colores y escala: se pueden cambiar en cualquier momento
 void applyStyle() {
     ImGuiStyle& style = ImGui::GetStyle();
@@ -125,6 +130,7 @@ void applyStyle() {
 
 void init() {
     g_layoutPath = config::siblingPath("gdmenu_layout.ini");
+    if (!std::filesystem::exists(g_layoutPath)) g_arrangeRequested = true;
     ImGui::GetIO().IniFilename = g_layoutPath.c_str();
     applyStyle();
 }
@@ -205,7 +211,13 @@ bool drawUI() {
 void load(const nlohmann::json& j) {
     g_theme = std::clamp(j.value("theme", g_theme), 0, IM_ARRAYSIZE(kThemes) - 1);
     g_scale = std::clamp(j.value("scale", g_scale), kMinScale, kMaxScale);
-    g_font = std::clamp(j.value("font", g_font), 0, IM_ARRAYSIZE(kFonts) - 1);
+    // La fuente se guarda por nombre (las configs antiguas guardaban un índice: se ignora)
+    const auto font = j.find("font");
+    if (font != j.end() && font->is_string())
+        for (int i = 0; i < IM_ARRAYSIZE(kFonts); ++i)
+            if (font->get<std::string>() == kFonts[i].name) g_font = i;
+    g_layoutVersion = j.value("layout_version", 1);
+    if (g_layoutVersion < kLayoutVersion) g_arrangeRequested = true;
     g_fontSize = std::clamp(j.value("font_size", g_fontSize), kMinFontSize, kMaxFontSize);
     const auto accent = j.find("accent");
     if (accent != j.end() && accent->is_array() && accent->size() == 3)
@@ -215,8 +227,23 @@ void load(const nlohmann::json& j) {
 }
 
 void save(nlohmann::json& j) {
-    j = {{"theme", g_theme}, {"scale", g_scale}, {"font", g_font}, {"font_size", g_fontSize},
-         {"accent", {g_accent[0], g_accent[1], g_accent[2]}}};
+    j = {{"theme", g_theme},
+         {"scale", g_scale},
+         {"font", kFonts[g_font].name},
+         {"font_size", g_fontSize},
+         {"accent", {g_accent[0], g_accent[1], g_accent[2]}},
+         {"layout_version", kLayoutVersion}};
+    g_layoutVersion = kLayoutVersion;
+}
+
+bool takeArrangeRequest() {
+    const bool requested = g_arrangeRequested;
+    g_arrangeRequested = false;
+    return requested;
+}
+
+bool configOutdated() {
+    return g_layoutVersion < kLayoutVersion;
 }
 
 } // namespace gui::theme

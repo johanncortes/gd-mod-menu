@@ -22,8 +22,8 @@
 #include "features/player/hitboxes.hpp"
 #include "features/player/noclip.hpp"
 #include "features/player/respawn_delay.hpp"
-#include "features/player/trajectory.hpp"
 #include "features/shortcuts/shortcuts.hpp"
+#include "gui/game_font.hpp"
 #include "gui/keybinds.hpp"
 #include "gui/theme.hpp"
 
@@ -40,7 +40,6 @@ TpsBypass g_tpsBypass;
 Noclip g_noclip;
 Hitboxes g_hitboxes;
 RespawnDelay g_respawnDelay;
-Trajectory g_trajectory;
 // je -> jmp: playerDestroyed siempre toma el camino "ocultar al jugador sin efecto"
 PatchFeature g_noDeathEffect("Sin efecto de muerte", "no_death_effect", core::signatures::kDeathEffect,
                              core::signatures::kDeathEffectJump, {0xEB});
@@ -117,7 +116,6 @@ void loadConfig() {
         const nlohmann::json player = section(data, "player");
         g_noclip.load(section(player, "noclip"));
         g_hitboxes.load(section(player, "hitboxes"));
-        g_trajectory.load(section(player, "trajectory"));
         g_respawnDelay.load(section(player, "respawn_delay"));
         g_noDeathEffect.load(player);
         g_noRespawnFlash.load(player);
@@ -144,6 +142,7 @@ void loadConfig() {
         g_bot.load(section(data, "bot"));
 
         gui::theme::load(section(data, "interface"));
+        if (gui::theme::configOutdated()) markDirty(); // se guarda con el formato nuevo
         gui::keybinds::load(section(data, "keybinds"));
     } catch (const nlohmann::json::exception& e) {
         // Un valor con el tipo equivocado: se queda lo cargado hasta ese punto
@@ -161,7 +160,6 @@ void saveConfig() {
     nlohmann::json& player = data["player"];
     g_noclip.save(player["noclip"]);
     g_hitboxes.save(player["hitboxes"]);
-    g_trajectory.save(player["trajectory"]);
     g_respawnDelay.save(player["respawn_delay"]);
     g_noDeathEffect.save(player);
     g_noRespawnFlash.save(player);
@@ -224,7 +222,6 @@ void init() {
     g_hidePause.init();
     g_respawnDelay.init(destroyPlayer);
     g_hitboxes.init();
-    g_trajectory.init();
     g_noclip.init(destroyPlayer);
 
     loadConfig();
@@ -239,7 +236,6 @@ void shutdown() {
     g_tpsBypass.shutdown();
     g_noclip.disable();
     g_hitboxes.disable();
-    g_trajectory.disable();
     g_respawnDelay.disable();
     g_noDeathEffect.disable();
     g_noRespawnFlash.disable();
@@ -255,13 +251,14 @@ void shutdown() {
     g_customObjects.disable();
     g_verify.disable();
     g_bot.disable();
+    gui::gamefont::shutdown(); // suelta las texturas de las fuentes de GD
     g_ready = false;
 }
 
 void update() {
     if (!g_ready) return;
     gui::keybinds::update();
-    if (gui::keybinds::takeChanged()) markDirty();
+    if (gui::keybinds::takeChanged() || g_labels.takePositionChanged()) markDirty();
     g_startPosSwitcher.update();
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
     if (g_dirty && GetTickCount64() - g_dirtySince > 500) saveConfig();
@@ -277,7 +274,6 @@ void drawGlobal() {
 void drawPlayer() {
     bool changed = g_noclip.drawUI();
     changed |= g_hitboxes.drawUI();
-    changed |= g_trajectory.drawUI();
     changed |= g_noDeathEffect.drawUI();
     changed |= g_noRespawnFlash.drawUI();
     changed |= g_respawnDelay.drawUI();
@@ -309,7 +305,7 @@ void drawCreator() {
 }
 
 void drawLabels() {
-    if (g_labels.drawUI() || g_labels.takePositionChanged()) markDirty();
+    if (g_labels.drawUI()) markDirty();
 }
 
 void drawBot() {
@@ -327,7 +323,6 @@ void drawInterface() {
 void drawOverlay() {
     if (!g_ready) return;
     g_labels.drawOverlay(cheatsActive());
-    g_noclip.drawOverlay();
     g_startPosSwitcher.drawOverlay();
 }
 

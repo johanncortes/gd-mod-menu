@@ -14,7 +14,6 @@
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
-#include "gui/theme.hpp"
 #include "gui/widgets.hpp"
 
 namespace features {
@@ -27,6 +26,7 @@ using DestroyPlayerFn = void (*)(void* playLayer, void* player, void* object);
 DestroyPlayerFn g_origDestroyPlayer = nullptr;
 
 bool g_enabled = false;
+bool g_statsAvailable = false; // hooks de nivel de core::game
 int32_t g_spikeOffset = 0; // PlayLayer::m_anticheatSpike, leído de la firma
 int32_t g_idOffset = 0;    // GameObject::m_uniqueID, leído de la firma
 
@@ -111,7 +111,7 @@ void Noclip::init(uint8_t* destroyPlayer) {
     if (!m_available) return;
 
     // Contador y precisión: opcionales, el noclip funciona sin ellos
-    m_statsAvailable = core::game::levelHooksAvailable();
+    m_statsAvailable = g_statsAvailable = core::game::levelHooksAvailable();
     if (m_statsAvailable) {
         core::game::onResetLevel(&onResetLevel);
         core::game::onUpdate(&onUpdate);
@@ -136,41 +136,26 @@ bool Noclip::drawUI() {
     bool enabled = m_enabled;
     bool changed = gui::toggle("Noclip", m_available, enabled);
     if (changed) enabled ? enable() : disable();
-    if (m_available) {
-        changed |= gui::toggle("Contador de noclip en pantalla", m_statsAvailable, m_showStats);
-        if (m_statsAvailable && m_enabled && g_frames > 0)
-            ImGui::TextDisabled("  %d muertes, %.2f%%", g_deaths, 100.0 * (g_frames - g_hitFrames) / g_frames);
-    }
+    // El contador en pantalla está en la ventana Labels (Noclip deaths / Noclip accuracy)
+    if (m_available && m_statsAvailable && m_enabled && g_frames > 0)
+        ImGui::TextDisabled("  %d muertes, %.2f%%", g_deaths, 100.0 * (g_frames - g_hitFrames) / g_frames);
     return changed;
 }
 
-void Noclip::drawOverlay() {
-    // Solo mientras el nivel corre (ni en pausa ni fuera del nivel)
-    if (!active() || !m_statsAvailable || !m_showStats || g_frames == 0) return;
-    if (!core::game::levelRunning()) return;
-
-    char text[64];
-    snprintf(text, sizeof(text), "Noclip: %d muertes  %.2f%%", g_deaths,
-             100.0 * (g_frames - g_hitFrames) / g_frames);
-
-    const ImVec2 pos(10.f, ImGui::GetIO().DisplaySize.y - ImGui::GetFontSize() - 10.f);
-
-    ImDrawList* draw = ImGui::GetForegroundDrawList();
-    const ImU32 shadow = IM_COL32(0, 0, 0, 230);
-    draw->AddText({pos.x - 1.f, pos.y}, shadow, text);
-    draw->AddText({pos.x + 1.f, pos.y}, shadow, text);
-    draw->AddText({pos.x, pos.y - 1.f}, shadow, text);
-    draw->AddText({pos.x, pos.y + 1.f}, shadow, text);
-    draw->AddText(pos, g_hitLastFrame ? IM_COL32(255, 90, 90, 255) : IM_COL32(255, 255, 255, 255), text);
-}
-
 void Noclip::load(const nlohmann::json& j) {
-    m_showStats = j.value("show_stats", m_showStats);
     j.value("enabled", false) ? enable() : disable();
 }
 
 void Noclip::save(nlohmann::json& j) const {
-    j = {{"enabled", m_enabled}, {"show_stats", m_showStats}};
+    j = {{"enabled", m_enabled}};
+}
+
+bool noclipStats(NoclipStats& out) {
+    if (!g_enabled || !g_statsAvailable) return false;
+    out.deaths = g_deaths;
+    out.accuracy = g_frames > 0 ? static_cast<float>(100.0 * (g_frames - g_hitFrames) / g_frames) : 100.f;
+    out.hitting = g_hitLastFrame;
+    return true;
 }
 
 } // namespace features

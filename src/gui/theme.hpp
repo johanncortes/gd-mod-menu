@@ -14,6 +14,13 @@ void applyPending();
 // Contenido de la ventana Interface. true si el usuario cambió algo.
 bool drawUI();
 
+// true una sola vez si hay que recolocar las ventanas del panel: no había posiciones guardadas,
+// o se guardaron con una colocación anterior que dejaba ventanas tapadas.
+bool takeArrangeRequest();
+
+// true si la config cargada es de una versión anterior del panel (hay que volver a guardarla).
+bool configOutdated();
+
 void load(const nlohmann::json& j);
 void save(nlohmann::json& j);
 

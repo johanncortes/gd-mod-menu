@@ -63,6 +63,7 @@ add_library(gdmenu SHARED
     src/config/config.cpp
     src/gui/menu.cpp
     src/gui/keybinds.cpp
+    src/gui/game_font.cpp
     src/gui/theme.cpp
     src/gui/widgets.cpp
     src/features/features.cpp
@@ -79,8 +80,7 @@ add_library(gdmenu SHARED
     src/features/level/startpos_switcher.cpp
     src/features/player/noclip.cpp
     src/features/player/hitboxes.cpp
-    src/features/player/respawn_delay.cpp
-    src/features/player/trajectory.cpp)
+    src/features/player/respawn_delay.cpp)
 target_include_directories(gdmenu PRIVATE src)
 target_link_libraries(gdmenu PRIVATE minhook imgui nlohmann_json::nlohmann_json opengl32)
 target_compile_definitions(gdmenu PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE

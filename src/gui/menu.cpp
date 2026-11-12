@@ -2,13 +2,16 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <cfloat>
+#include <vector>
 
 #include <imgui.h>
 
 #include "core/log.hpp"
 #include "features/features.hpp"
 #include "gui/keybinds.hpp"
+#include "gui/theme.hpp"
 
 namespace gui {
 
@@ -70,46 +73,55 @@ void draw() {
     }
 }
 
-static bool g_resetPositions = false;
+namespace {
+
+constexpr size_t kWindowCount = sizeof(kWindows) / sizeof(kWindows[0]);
+ImVec2 g_sizes[kWindowCount] = {}; // tamaño de cada ventana en el último frame
+int g_arrangeFrames = 0;           // > 0: hay que recolocar (se esperan dos frames: ImGui tarda en medir una ventana nueva)
+
+// Coloca las ventanas en columnas, de izquierda a derecha, cada una en la columna más baja
+// (como el panel de Mega Hack). Usa los tamaños del frame anterior.
+void arrange(ImVec2 (&positions)[kWindowCount]) {
+    const float gap = 8.f;
+    float columnWidth = 0.f;
+    for (const ImVec2& size : g_sizes) columnWidth = std::max(columnWidth, size.x);
+    const float screenWidth = ImGui::GetIO().DisplaySize.x;
+    const int columns = std::max(1, static_cast<int>((screenWidth - gap) / (columnWidth + gap)));
+    std::vector<float> bottoms(columns, gap);
+    for (size_t i = 0; i < kWindowCount; ++i) {
+        const int column = static_cast<int>(std::min_element(bottoms.begin(), bottoms.end()) - bottoms.begin());
+        positions[i] = {gap + column * (columnWidth + gap), bottoms[column]};
+        bottoms[column] += g_sizes[i].y + gap;
+    }
+}
+
+} // namespace
 
 void resetWindowPositions() {
-    g_resetPositions = true;
+    g_arrangeFrames = 3;
 }
 
 void drawWindows() {
-    // Posición inicial: rejilla organizada en 2 filas limpias sin solapamiento.
-    // Fila 0 (y = 10): Global, Level, Bypass, Player, Bot (5 ventanas)
-    // Fila 1 (y = 275): Creator, Labels, Shortcuts, Interface (4 ventanas)
-    const float scale = ImGui::GetIO().FontGlobalScale;
-    const float w = 240.f;
-    const float gapX = 10.f;
-    const float row0_Y = 10.f;
-    const float row1_Y = 275.f;
-    const ImGuiCond cond = g_resetPositions ? ImGuiCond_Always : ImGuiCond_FirstUseEver;
+    if (theme::takeArrangeRequest()) resetWindowPositions();
+    const bool arrangeNow = g_arrangeFrames == 1;
+    ImVec2 positions[kWindowCount];
+    if (arrangeNow) arrange(positions);
 
-    int i = 0;
-    for (const Window& window : kWindows) {
-        float x = 0.f;
-        float y = 0.f;
-        if (i < 5) {
-            x = gapX + i * (w + gapX);
-            y = row0_Y;
-        } else {
-            const int col = i - 5;
-            x = gapX + col * (w + gapX);
-            y = row1_Y;
-        }
-
-        ImGui::SetNextWindowPos({x, y}, cond);
-        ImGui::SetNextWindowSizeConstraints({w * scale, 0.f}, {FLT_MAX, FLT_MAX});
+    // El tamaño se ajusta siempre al contenido, con un ancho mínimo
+    const float minWidth = 240.f * ImGui::GetIO().FontGlobalScale;
+    for (size_t i = 0; i < kWindowCount; ++i) {
+        const Window& window = kWindows[i];
+        if (arrangeNow) ImGui::SetNextWindowPos(positions[i], ImGuiCond_Always);
+        else ImGui::SetNextWindowPos({8.f + (i % 5) * 250.f, 8.f + (i / 5) * 300.f}, ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSizeConstraints({minWidth, 0.f}, {FLT_MAX, FLT_MAX});
         if (ImGui::Begin(window.name, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
             if (window.draw) window.draw();
             else ImGui::TextDisabled("(vacío)");
         }
+        g_sizes[i] = ImGui::GetWindowSize();
         ImGui::End();
-        ++i;
     }
-    g_resetPositions = false;
+    if (g_arrangeFrames > 0) --g_arrangeFrames;
 }
 
 } // namespace gui

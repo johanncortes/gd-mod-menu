@@ -196,11 +196,6 @@ inline constexpr char kLevelComplete[] =
     "48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D A8 D8 FD FF FF "
     "48 81 EC 00 03 00 00 0F 29 70 C8 0F 29 78 B8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 85 ?? ?? ?? ??";
 
-// PlayLayer::playEndAnimationToPos(CCPoint), inicio de la función.
-// Reproduce la animación de fin de nivel hacia una coordenada.
-inline constexpr char kPlayEndAnimation[] =
-    "48 8B C4 55 57 41 54 48 8D 68 88 48 81 EC 60 01 00 00 80 B9 70 36 00 00 00 4C 8B E2 48 8B F9 0F 85";
-
 // --- Fase 5 (Labels). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
 
 // PlayLayer::getCurrentPercent(), función entera hasta la lectura del jugador. Solo se llama.
@@ -241,5 +236,21 @@ inline constexpr int kProcessCommandsTick = 17;
 inline constexpr char kHandleButton[] =
     "48 89 5C 24 10 48 89 6C 24 18 48 89 74 24 20 57 41 56 41 57 48 83 EC 30 41 0F B6 E9 41 8B F8 "
     "0F B6 F2 48 8B D9 0F B6 89 ?? ?? ?? ??";
+
+// --- Fase 8 (Retoques). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// PlayLayer::checkForEnd(): si el jugador 1 ya llegó al portal final, lanza la animación de fin
+// de nivel (que llama a levelComplete al terminar). Instant complete lo llama después de llevar
+// al jugador al portal. De la firma se leen:
+inline constexpr char kCheckForEnd[] =
+    "48 89 5C 24 20 57 48 83 EC 20 48 8B F9 48 8B 89 ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? "
+    "80 BF ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 80 B9 ?? ?? ?? ?? 00 75 26 48 8D 54 24 30 E8 ?? ?? ?? ?? "
+    "48 8B D8 48 8B 8F ?? ?? ?? ?? 48 8B 11 FF 92 ?? ?? ?? ?? F3 0F 10 00 0F 2F 03 73 3E "
+    "48 8B 8F ?? ?? ?? ?? 80 B9 ?? ?? ?? ?? 00";
+inline constexpr int kCheckForEndPortal = 16;      // PlayLayer::m_endPortal
+inline constexpr int kCheckForEndStarted = 31;     // PlayLayer::m_levelEndAnimationStarted
+inline constexpr int kCheckForEndSpawnPos = 57;    // rel32 de EndPortalObject::getSpawnPos(CCPoint*)
+inline constexpr int kCheckForEndPlayer = 67;      // GJBaseGameLayer::m_player1
+inline constexpr int kCheckForEndGetPosition = 76; // posición de getPosition() en el vtable
 
 } // namespace core::signatures

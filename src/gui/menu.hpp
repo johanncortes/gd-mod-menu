@@ -8,7 +8,7 @@ bool isMenuOpen();
 // Dibuja el panel. Se llama una vez por frame entre ImGui::NewFrame() y ImGui::Render().
 void draw();
 
-// Reordena todas las ventanas del panel a su rejilla limpia predeterminada
+// Recoloca las ventanas del panel en columnas, sin que se tapen (tarda un frame).
 void resetWindowPositions();
 
 } // namespace gui
