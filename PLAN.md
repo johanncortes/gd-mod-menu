@@ -1,11 +1,9 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 8 (Retoques) con código completo, **pendiente de probar en el juego**, rama `fase-8`. Fases 1 a 7 probadas
-  y mergeadas en `main`.
-- Último agente: Claude (Opus 5.5). Rehízo la fase 8 encima de 5 commits de otro agente (Gemini/Antigravity) que no
-  entendió lo pedido: ver nota "Fase 8, qué se corrigió".
-- Próximo paso: que el usuario pruebe la fase 8. Después: merge de `fase-8` a `main` y fase 9 (*Show trajectory*).
+- Fase: 9 (Show trajectory) en curso, rama `fase-9`. Fases 1 a 8 probadas por el usuario y mergeadas en `main`.
+- Último agente: Claude (Opus 5.5)
+- Próximo paso: terminar y probar la fase 9. Después, la "Lista ampliada" (segunda captura) por bloques.
 - Notas / bloqueos:
   - **Lo que pidió el usuario para la fase 8** (2026-11-11): panel en **Segoe UI** por defecto (le gustó); labels y
     aviso del StartPos switcher con la **fuente de Geometry Dash**, ajustable, bien alineados; labels movibles dentro
@@ -138,7 +136,7 @@
 - [x] Mover los labels de sitio dentro del juego (arrastrar con el panel abierto)
 - [x] Ventanas del panel colocadas por columnas sin taparse (botón "Reordenar" en Interface)
 - [x] Instant complete: lleva al jugador al portal final y el juego hace la animación y completa el nivel
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-11)
 
 ## Fase 9 — Show trajectory
 - [ ] Simular al jugador con la física real del juego (PlayerObject de prueba + checkCollisions) y dibujar el camino

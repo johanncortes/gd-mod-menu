@@ -18,7 +18,7 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Bypass | Unlock icons, character limit bypass, character filter bypass, instant complete | Probado |
 | Creator | Free scroll, level copy bypass, custom object bypass, verify bypass | Probado |
 | Labels | Cheat indicator, FPS, CPS, noclip, porcentaje, intento, tiempo, reloj | Probado |
-| Labels | Fuente de GD, tamaño, opacidad y mover los labels arrastrándolos | Hecho, falta probar en el juego |
+| Labels | Fuente de GD, tamaño, opacidad y mover los labels arrastrándolos | Probado |
 | Shortcuts | Reiniciar nivel, alternar modo práctica, poner y quitar checkpoint | Probado |
 | Interface | Tema, color de acento, escala, fuente y tamaño | Probado |
 | Keybinds | Clic derecho sobre cualquier opción para asignarle una tecla | Probado |
