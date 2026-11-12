@@ -58,6 +58,17 @@ StartPosSwitcher g_startPosSwitcher;
 // m_practiceMusicSync = 1 siempre: en práctica suena la música normal del nivel
 PatchFeature g_practiceMusicSync("Practice music sync", "practice_music_sync", sig::kPracticeMusicSync,
                                  sig::kPracticeMusicSyncValue, {0x01});
+// Se puede pausar durante la animación de completar el nivel
+PatchFeature g_pauseDuringComplete("Pause during complete", "pause_during_complete", sig::kPauseGameEnding,
+                                   sig::kPauseGameEndingJump, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90});
+// Hasta 100000 checkpoints en práctica (el juego borra los más viejos a partir de 500)
+PatchFeature g_checkpointLimit("Checkpoint limit bypass", "checkpoint_limit",
+                               {{sig::kCheckpointLimit, sig::kCheckpointLimitValue, {0xA0, 0x86, 0x01, 0x00}}});
+// Todos los niveles se juegan en modo plataformas (se aplica al entrar al nivel). Trampa.
+PatchFeature g_forcePlatformer("Force platformer", "force_platformer",
+                               {{sig::kLoadLevelSettings, sig::kLoadLevelSettingsPlatformer,
+                                 {0xB2, 0x01, 0x90, 0x90, 0x90, 0x90, 0x90}}},
+                               true);
 
 // --- Bypass ---
 // "mov al,1; ret" al inicio de las dos comprobaciones
@@ -192,6 +203,9 @@ void loadConfig() {
         g_hidePause.load(section(level, "hide_pause"));
         g_startPosSwitcher.load(section(level, "startpos_switcher"));
         g_practiceMusicSync.load(level);
+        g_pauseDuringComplete.load(level);
+        g_checkpointLimit.load(level);
+        g_forcePlatformer.load(level);
 
         const nlohmann::json bypass = section(data, "bypass");
         g_unlockIcons.load(bypass);
@@ -259,6 +273,9 @@ void saveConfig() {
     g_hidePause.save(level["hide_pause"]);
     g_startPosSwitcher.save(level["startpos_switcher"]);
     g_practiceMusicSync.save(level);
+    g_pauseDuringComplete.save(level);
+    g_checkpointLimit.save(level);
+    g_forcePlatformer.save(level);
 
     nlohmann::json& bypass = data["bypass"];
     g_unlockIcons.save(bypass);
@@ -327,6 +344,9 @@ void init() {
     g_noParticles.init();
     g_noRespawnFlash.init();
     g_practiceMusicSync.init();
+    g_pauseDuringComplete.init();
+    g_checkpointLimit.init();
+    g_forcePlatformer.init();
     g_labels.init(gameAvailable);
     g_unlockIcons.init();
     g_textLimit.init();
@@ -386,6 +406,9 @@ void shutdown() {
     g_hidePause.disable();
     g_startPosSwitcher.disable();
     g_practiceMusicSync.disable();
+    g_pauseDuringComplete.disable();
+    g_checkpointLimit.disable();
+    g_forcePlatformer.disable();
     g_unlockIcons.disable();
     g_textLimit.disable();
     g_textFilter.disable();
@@ -452,6 +475,9 @@ void drawLevel() {
     bool changed = g_autoPractice.drawUI();
     changed |= g_practiceMusicSync.drawUI();
     changed |= g_hidePause.drawUI();
+    changed |= g_pauseDuringComplete.drawUI();
+    changed |= g_checkpointLimit.drawUI();
+    changed |= g_forcePlatformer.drawUI();
     changed |= g_startPosSwitcher.drawUI();
     if (changed) markDirty();
 }
@@ -507,7 +533,8 @@ void drawOverlay() {
 }
 
 bool cheatsActive() {
-    return g_speedhack.active() || g_tpsBypass.active() || g_noclip.active() || g_bot.active();
+    return g_speedhack.active() || g_tpsBypass.active() || g_noclip.active() || g_bot.active() ||
+           g_forcePlatformer.cheatActive();
 }
 
 } // namespace features
