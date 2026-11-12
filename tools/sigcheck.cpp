@@ -74,6 +74,14 @@ int main(int argc, char** argv) {
         {"kCollisionLogReset", sig::kCollisionLogReset},
         {"kGameEventTriggered", sig::kGameEventTriggered},
         {"kDestroyObject", sig::kDestroyObject},
+        {"kShakeCamera", sig::kShakeCamera},
+        {"kLightningFlash", sig::kLightningFlash},
+        {"kCircleWaveDraw", sig::kCircleWaveDraw},
+        {"kHardStreakAddPoint", sig::kHardStreakAddPoint},
+        {"kActivateStreakResume", sig::kActivateStreakResume},
+        {"kToggleGhostEffect", sig::kToggleGhostEffect},
+        {"kSpiderDashSkip", sig::kSpiderDashSkip},
+        {"kToggleFlipped", sig::kToggleFlipped},
     };
 
     int failed = 0;

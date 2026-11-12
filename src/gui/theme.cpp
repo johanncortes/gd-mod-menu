@@ -47,7 +47,7 @@ bool g_fontPending = true; // cargar la fuente al primer frame
 std::string g_layoutPath; // ImGui guarda el puntero, tiene que seguir vivo
 
 // Versión de la colocación de ventanas. Al subirla, el panel se recoloca una vez.
-constexpr int kLayoutVersion = 2;
+constexpr int kLayoutVersion = 3; // 3: ventana Cosmetic (fase 10)
 int g_layoutVersion = kLayoutVersion;
 bool g_arrangeRequested = false;
 

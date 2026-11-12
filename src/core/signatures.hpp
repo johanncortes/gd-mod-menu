@@ -334,4 +334,51 @@ inline constexpr char kDestroyObject[] =
 // En kCurrentPercent: "cmp byte [rcx+X],0" con X = GJBaseGameLayer::m_isPlatformer.
 inline constexpr int kCurrentPercentPlatformer = 8;
 
+// --- Fase 10 (Cosmetic). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// GJBaseGameLayer::shakeCamera(float, float, float), inicio. No shake: ret.
+inline constexpr char kShakeCamera[] =
+    "40 53 48 83 EC 50 0F 29 74 24 40 0F 57 C0 0F 29 7C 24 30 0F 28 F2 0F 28 F9";
+
+// GJBaseGameLayer::lightningFlash(from, to, color, ...), inicio. No portal lightning: ret.
+inline constexpr char kLightningFlash[] =
+    "48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 48 89 7C 24 20 41 56 48 83 EC 40 4D 8B F1 49 8B C0 "
+    "48 8B EA 48 8B F1 4C 8B C2 48 8D 54 24 20 48 8B C8 FF 15 ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ??";
+
+// CCCircleWave::draw() (clase de GD), inicio. Los círculos de portales, anillos y recogidas. ret.
+inline constexpr char kCircleWaveDraw[] =
+    "40 53 48 83 EC 30 80 B9 ?? ?? ?? ?? 00 48 8B D9 74 10 BA 01 00 00 00 B9 02 03 00 00";
+
+// HardStreak::addPoint(CCPoint), inicio. Sin puntos la estela de la onda queda vacía. ret.
+inline constexpr char kHardStreakAddPoint[] =
+    "48 89 5C 24 10 55 56 57 48 83 EC 20 48 8B DA 48 8B E9 48 8B 89 ?? ?? ?? ??";
+
+// PlayerObject::activateStreak: "m_streakActive = 1; m_regularTrail->resumeStroke()". Es la única
+// llamada a CCMotionStreak::resumeStroke del juego. No trail: la llamada (6 bytes) pasa a NOPs.
+inline constexpr char kActivateStreakResume[] =
+    "C6 83 ?? ?? ?? ?? 01 FF 15 ?? ?? ?? ?? 80 BB ?? ?? ?? ?? 00 74 6F 48 8B 03";
+inline constexpr int kActivateStreakResumeCall = 7;
+
+// PlayerObject::toggleGhostEffect(GhostType), inicio. Al final de la firma, "if (tipo != 1) return"
+// tras quitar la estela anterior. No ghost trail: jne -> jmp (nunca se crea).
+inline constexpr char kToggleGhostEffect[] =
+    "48 89 5C 24 18 57 48 83 EC 20 48 8B D9 39 91 ?? ?? ?? ?? 0F 84 ?? ?? ?? ?? 89 91 ?? ?? ?? ?? "
+    "48 8B B9 ?? ?? ?? ?? 48 85 FF 74 3D 48 8B 8F ?? ?? ?? ?? 48 85 C9 74 08 48 8B 01 48 8B D7 FF 10 "
+    "48 8B CF FF 15 ?? ?? ?? ?? 48 8B CF FF 15 ?? ?? ?? ?? 48 8B 07 48 8B CF FF 90 ?? ?? ?? ?? "
+    "48 C7 83 ?? ?? ?? ?? 00 00 00 00 83 BB ?? ?? ?? ?? 01 0F 85 ?? ?? ?? ??";
+inline constexpr int kToggleGhostEffectJump = 111;
+
+// PlayerObject::playSpiderDashEffect (la misma firma que kSpiderDashEffect, alargada hasta el
+// primer "if"). No spider dash: je -> jmp (sale sin crear el efecto). El parche cae después
+// del inicio de la función, así que convive con el hook de Show trajectory.
+inline constexpr char kSpiderDashSkip[] =
+    "48 89 5C 24 10 48 89 6C 24 18 48 89 74 24 20 57 41 54 41 55 41 56 41 57 48 83 EC 50 0F 29 74 24 40 "
+    "0F 29 7C 24 30 4D 8B F8 48 8B EA 48 8B F9 44 0F B6 A9 ?? ?? ?? ?? 80 B9 ?? ?? ?? ?? 00 0F 84 ?? ?? ?? ??";
+inline constexpr int kSpiderDashSkipJump = 62;
+
+// GJBaseGameLayer::toggleFlipped(bool flip, bool noEffects), inicio. No mirror: hook que pasa
+// siempre flip = false.
+inline constexpr char kToggleFlipped[] =
+    "48 8B C4 48 89 58 18 48 89 68 20 56 48 81 EC 80 00 00 00 41 0F B6 E8 0F B6 F2";
+
 } // namespace core::signatures

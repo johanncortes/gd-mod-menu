@@ -15,6 +15,7 @@ void update();
 // Contenido de cada ventana del panel.
 void drawGlobal();
 void drawPlayer();
+void drawCosmetic();
 void drawLevel();
 void drawBypass();
 void drawCreator();
