@@ -1,10 +1,9 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 13 (Level, cuarto bloque de la lista ampliada) con código completo, **pendiente de probar en el juego**,
-  rama `fase-13`. Fases 1 a 12 probadas y mergeadas en `main`.
+- Fase: 13 (Level) **probada** y mergeada en `main`. Fases 1 a 13 terminadas.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: que el usuario pruebe la fase 13. Después: merge a `main` y el siguiente bloque de la lista ampliada.
+- Próximo paso: fase 14, bloque Cheat Safety (Safe mode, Auto safe mode, Disable cheats).
 - Notas / bloqueos:
   - **Level (fase 13)**: Hitboxes al morir (en la ventana Player, junto a Mostrar hitboxes), Pause during complete,
     Checkpoint limit bypass (500 -> 100000) y Force platformer (trampa: cuenta para el Cheat Indicator; se aplica al
@@ -189,7 +188,7 @@
 ## Fase 13 — Level (lista ampliada, bloque 4)
 - [x] Hitboxes al morir, Pause during complete
 - [x] Checkpoint limit bypass, Force platformer
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego (2026-11-12)
 - [ ] Más adelante: Jump hack, All modes in platformer
 
 ## Lista final de funciones (objetivo)
@@ -205,12 +204,12 @@ speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Edito
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [ ] All Modes in Platformer · [ ] All Passable ·
 [ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [x] Auto Practice Mode · [ ] Auto Song Download ·
 [ ] Checkpoint Delay · [ ] Confirm Full Restart · [ ] Confirm Practice Mode · [ ] Confirm Restart ·
-[`] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
+[x] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
 [ ] Hitbox Multiplier · [ ] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
 [ ] Mute Level SFX · [x] No Mirror · [ ] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
-[ ] No Shaders · [ ] Pause Countdown · [`] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
+[ ] No Shaders · [ ] Pause Countdown · [x] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
 
-**Bypass**: [ ] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [`] Checkpoint Limit ·
+**Bypass**: [ ] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [x] Checkpoint Limit ·
 [ ] Comment History Bypass · [ ] Quick Chests · [x] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
 [ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
@@ -268,11 +267,11 @@ proyecto. Lo que ya está hecho lleva `[x]`.
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · All Modes Platformer (F) · Auto Clicker (M) ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · Auto Kill (F) · Auto Music Sync (M) ·
   Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames (D) · Click Between Steps (D) ·
-  Click on Steps (D) · [`] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
-  Normal / Practice / Reset (F) · Force Ice (F) · [`] Force Platformer · Frame Stepper (M) · Hitbox Multiplier (M) ·
+  Click on Steps (D) · [x] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
+  Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · Frame Stepper (M) · Hitbox Multiplier (M) ·
   [x] Instant Complete · Jumpscare (M) · Jump Hack (F) · [x] Noclip · Noclip Limits (F) · No Collision (F) ·
-  [`] Pause During Complete · Practice Bug Fix (D) · [x] Practice Music · Random Seed (M) ·
-  Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · [`] Show Hitboxes on Death ·
+  [x] Pause During Complete · Practice Bug Fix (D) · [x] Practice Music · Random Seed (M) ·
+  Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · [x] Show Hitboxes on Death ·
   Show Hitboxes Trail (F, el juego ya guarda el rastro) · Show Layout (D) · [x] Show Trajectory · Show Triggers (M) ·
   [x] Smart StartPos (lo que hay es el StartPos switcher; el "smart" que ajusta velocidad y modo es D)
 - **Status** (labels): Field Formatting (M) · Font · Scale · Opacity · Hide Status (F) · [x] Noclip Accuracy ·
