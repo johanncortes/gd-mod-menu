@@ -19,6 +19,11 @@ public:
 private:
     bool m_levelInfo = false; // porcentaje e intentos (necesitan funciones del juego)
     bool m_time = false;      // tiempo del intento (necesita los hooks de nivel)
+    bool m_jumps = false;     // saltos del intento (offset de kEndLevelJumps)
+    bool m_frames = false;    // ticks de física del intento (offset de kProcessCommands)
+    bool m_position = false;  // posición del jugador 1
+    bool m_velocity = false;  // velocidad del jugador 1 (posición + hooks de nivel)
+    bool m_dead = false;      // "jugador muerto" (offset de kShowHitboxes)
 
     bool m_show = true;
     bool m_showCheat = true;
@@ -30,6 +35,12 @@ private:
     bool m_showAttempt = false;
     bool m_showTime = false;
     bool m_showClock = false;
+    bool m_showJumps = false;
+    bool m_showSession = false;
+    bool m_showFrames = false;
+    bool m_showPosition = false;
+    bool m_showVelocity = false;
+    bool m_showDead = false;
 
     // Posición: borde de anclaje en fracción de la pantalla (0..1). Con m_alignRight el
     // borde es el derecho del bloque; si no, el izquierdo. y es siempre el borde de arriba.

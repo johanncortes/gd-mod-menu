@@ -10,6 +10,7 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Ventana | Opción | Estado |
 | --- | --- | --- |
 | Global | Speedhack (con opción de acelerar el audio), FPS bypass, Physics bypass (TPS) | Probado |
+| Global | Safe mode, auto safe mode (no se guarda progreso con trampas) y botón para desactivar las trampas | Probado |
 | Player | Noclip con contador de muertes y precisión, mostrar hitboxes | Probado |
 | Player | Respawn delay | Probado |
 | Player | Hitboxes al morir | Probado |
@@ -26,6 +27,7 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Creator | Place over, level edit, default song bypass, toolbox button bypass | Probado |
 | Labels | Cheat indicator, FPS, CPS, noclip, porcentaje, intento, tiempo, reloj | Probado |
 | Labels | Fuente de GD, tamaño, opacidad y mover los labels arrastrándolos | Probado |
+| Labels | Jumps, session time, frame counter, posición, velocidad y muerto | Probado |
 | Shortcuts | Reiniciar nivel, alternar modo práctica, poner y quitar checkpoint | Probado |
 | Interface | Tema, color de acento, escala, fuente y tamaño | Probado |
 | Keybinds | Clic derecho sobre cualquier opción para asignarle una tecla | Probado |

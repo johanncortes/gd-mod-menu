@@ -2,6 +2,7 @@
 
 #include <windows.h>
 
+#include <imgui.h>
 #include <nlohmann/json.hpp>
 
 #include "config/config.hpp"
@@ -14,6 +15,7 @@
 #include "features/cosmetic/no_mirror.hpp"
 #include "features/cosmetic/no_particles.hpp"
 #include "features/global/fps_bypass.hpp"
+#include "features/global/safe_mode.hpp"
 #include "features/global/speedhack.hpp"
 #include "features/global/tps_bypass.hpp"
 #include "features/labels/labels.hpp"
@@ -27,6 +29,7 @@
 #include "features/player/trajectory.hpp"
 #include "features/shortcuts/shortcuts.hpp"
 #include "gui/game_font.hpp"
+#include "gui/widgets.hpp"
 #include "gui/keybinds.hpp"
 #include "gui/theme.hpp"
 
@@ -39,6 +42,7 @@ namespace sig = core::signatures;
 Speedhack g_speedhack;
 FpsBypass g_fpsBypass;
 TpsBypass g_tpsBypass;
+SafeMode g_safeMode;
 
 Noclip g_noclip;
 Hitboxes g_hitboxes;
@@ -189,6 +193,7 @@ void loadConfig() {
         g_speedhack.load(section(global, "speedhack"));
         g_fpsBypass.load(section(global, "fps_bypass"));
         g_tpsBypass.load(section(global, "tps_bypass"));
+        g_safeMode.load(section(global, "cheat_safety"));
 
         const nlohmann::json player = section(data, "player");
         g_noclip.load(section(player, "noclip"));
@@ -259,6 +264,7 @@ void saveConfig() {
     g_speedhack.save(global["speedhack"]);
     g_fpsBypass.save(global["fps_bypass"]);
     g_tpsBypass.save(global["tps_bypass"]);
+    g_safeMode.save(global["cheat_safety"]);
 
     nlohmann::json& player = data["player"];
     g_noclip.save(player["noclip"]);
@@ -332,6 +338,7 @@ void init() {
     // función y la firma dejaría de coincidir. destroyPlayer lo usan dos features.
     uint8_t* destroyPlayer = core::memory::findPattern(GetModuleHandleW(nullptr), core::signatures::kDestroyPlayer);
     const bool gameAvailable = core::game::init(); // GameManager y hooks de nivel compartidos
+    g_safeMode.init(gameAvailable);
     g_noDeathEffect.init();
     g_noShake.init();
     g_noLightning.init();
@@ -387,6 +394,7 @@ void shutdown() {
     g_speedhack.disable();
     g_fpsBypass.disable();
     g_tpsBypass.shutdown();
+    g_safeMode.disable();
     g_noclip.disable();
     g_hitboxes.disable();
     g_trajectory.disable();
@@ -437,14 +445,30 @@ void update() {
     gui::keybinds::update();
     if (gui::keybinds::takeChanged() || g_labels.takePositionChanged()) markDirty();
     g_startPosSwitcher.update();
+    g_safeMode.update(cheatsActive());
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
     if (g_dirty && GetTickCount64() - g_dirtySince > 500) saveConfig();
+}
+
+// Apaga todas las opciones que cuentan como trampa (las de cheatsActive)
+void disableCheats() {
+    g_speedhack.disable();
+    g_tpsBypass.disable();
+    g_noclip.disable();
+    g_bot.disable();
+    g_forcePlatformer.disable();
+    markDirty();
 }
 
 void drawGlobal() {
     bool changed = g_speedhack.drawUI();
     changed |= g_fpsBypass.drawUI();
     changed |= g_tpsBypass.drawUI();
+
+    ImGui::SeparatorText("Cheat safety");
+    changed |= g_safeMode.drawUI();
+    if (gui::button("Desactivar trampas", cheatsActive())) disableCheats();
+    if (g_safeMode.active()) ImGui::TextDisabled("Ahora no se guarda progreso en los niveles");
     if (changed) markDirty();
 }
 

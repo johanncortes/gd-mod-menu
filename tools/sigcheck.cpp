@@ -99,6 +99,8 @@ int main(int argc, char** argv) {
         {"kPauseGameEnding", sig::kPauseGameEnding},
         {"kCheckpointLimit", sig::kCheckpointLimit},
         {"kLoadLevelSettings", sig::kLoadLevelSettings},
+        {"kAttemptDiscardFlags", sig::kAttemptDiscardFlags},
+        {"kEndLevelJumps", sig::kEndLevelJumps},
     };
 
     int failed = 0;
