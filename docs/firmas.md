@@ -59,6 +59,15 @@
 | GJBaseGameLayer::gameEventTriggered(GJGameEvent, int, int) | GeometryDash.exe | inicio de función, ver `kGameEventTriggered` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14033AC80. Hook: nada mientras se simula (saltos y aterrizajes activan triggers de evento) (fase 9) |
 | GJBaseGameLayer::destroyObject(GameObject*) | GeometryDash.exe | inicio de función, ver `kDestroyObject` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14031D460. Hook: nada mientras se simula (bloques rompibles) (fase 9) |
 | CCLayer::create; CCNode::addChild, setVisible, getParent, removeFromParentAndCleanup, convertToWorldSpace; CCDictionary::removeAllObjects; vtable de CCNode (slots de update y getPosition) | libcocos2d.dll | exports por nombre | — | contenedor invisible del jugador simulado y paso de coordenadas a pantalla (fase 9) |
+| GJBaseGameLayer::shakeCamera(float, float, float) | GeometryDash.exe | inicio de función, ver `kShakeCamera` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140345BC0. No shake: `C3` (ret) (fase 10) |
+| GJBaseGameLayer::lightningFlash(from, to, color, ...) | GeometryDash.exe | inicio de función, ver `kLightningFlash` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140351030. No portal lightning: `C3` (fase 10) |
+| CCCircleWave::draw() | GeometryDash.exe | inicio de función, ver `kCircleWaveDraw` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140046AE0. Clase de GD (no de cocos2d). No circle effect: `C3` (fase 10) |
+| HardStreak::addPoint(CCPoint) | GeometryDash.exe | inicio de función, ver `kHardStreakAddPoint` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1403C0710. No wave trail: `C3` (fase 10) |
+| PlayerObject::activateStreak: llamada a CCMotionStreak::resumeStroke | GeometryDash.exe | inicio de función, ver `kActivateStreakResume` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404FE575 (+7 en la firma). Es la única llamada del juego a resumeStroke. No trail: 6 NOPs (fase 10) |
+| PlayerObject::toggleGhostEffect(GhostType) | GeometryDash.exe | inicio de función, ver `kToggleGhostEffect` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404FD180; el `jne` de "tipo != 1" en +111. No ghost trail: `90 E9` (fase 10) |
+| PlayerObject::playSpiderDashEffect: primer if | GeometryDash.exe | inicio de función, ver `kSpiderDashSkip` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F33AE (+62 en la firma). No spider dash: `90 E9`. Convive con el hook de Show trajectory al inicio de la función (fase 10) |
+| GJBaseGameLayer::toggleFlipped(bool flip, bool noEffects) | GeometryDash.exe | inicio de función, ver `kToggleFlipped` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140350B00. No mirror: hook que pasa flip = false (fase 10) |
+| CCParticleSystem::addParticle | libcocos2d.dll | export por nombre | — | No particles: hook que devuelve false (fase 10) |
 
 ## Notas de ingeniería inversa
 

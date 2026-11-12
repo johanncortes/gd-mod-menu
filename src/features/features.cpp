@@ -11,6 +11,8 @@
 #include "core/signatures.hpp"
 #include "features/bot/bot.hpp"
 #include "features/bypass/instant_complete.hpp"
+#include "features/cosmetic/no_mirror.hpp"
+#include "features/cosmetic/no_particles.hpp"
 #include "features/global/fps_bypass.hpp"
 #include "features/global/speedhack.hpp"
 #include "features/global/tps_bypass.hpp"
@@ -83,6 +85,28 @@ PatchFeature g_customObjects("Custom object bypass", "custom_objects",
                              {{sig::kCustomObjectSize, sig::kCustomObjectSizeJump, {0x90, 0xE9}},
                               {sig::kCustomObjectCount, sig::kCustomObjectCountJump, {0x90, 0xE9}}});
 
+// --- Cosmetic ---
+// (Sin efecto de muerte y Sin parpadeo al reaparecer, arriba, también salen en esta ventana)
+NoMirror g_noMirror;
+NoParticles g_noParticles;
+// ret al inicio: la cámara no tiembla (portales, final del nivel, triggers de shake)
+PatchFeature g_noShake("No shake", "no_shake", sig::kShakeCamera, 0, {0xC3});
+// ret al inicio: sin los rayos de los portales y del final del nivel
+PatchFeature g_noLightning("No portal lightning", "no_portal_lightning", sig::kLightningFlash, 0, {0xC3});
+// ret al inicio de CCCircleWave::draw: sin los círculos de portales, anillos y monedas
+PatchFeature g_noCircles("No circle effect", "no_circle_effect", sig::kCircleWaveDraw, 0, {0xC3});
+// la estela normal del icono nunca se reanuda (la llamada a resumeStroke pasa a NOPs)
+PatchFeature g_noTrail("No trail", "no_trail", sig::kActivateStreakResume, sig::kActivateStreakResumeCall,
+                       {0x90, 0x90, 0x90, 0x90, 0x90, 0x90});
+// ret al inicio de HardStreak::addPoint: la estela de la onda no recibe puntos
+PatchFeature g_noWaveTrail("No wave trail", "no_wave_trail", sig::kHardStreakAddPoint, 0, {0xC3});
+// jne -> jmp: el efecto fantasma (portal de "ghost") nunca se crea
+PatchFeature g_noGhostTrail("No ghost trail", "no_ghost_trail", sig::kToggleGhostEffect, sig::kToggleGhostEffectJump,
+                            {0x90, 0xE9});
+// je -> jmp: el teletransporte de la araña no crea su efecto
+PatchFeature g_noSpiderDash("No spider dash", "no_spider_dash", sig::kSpiderDashSkip, sig::kSpiderDashSkipJump,
+                            {0x90, 0xE9});
+
 // --- Labels ---
 Labels g_labels;
 
@@ -140,6 +164,17 @@ void loadConfig() {
         g_customObjects.load(creator);
         g_verify.load(creator);
 
+        const nlohmann::json cosmetic = section(data, "cosmetic");
+        g_noShake.load(cosmetic);
+        g_noLightning.load(cosmetic);
+        g_noCircles.load(cosmetic);
+        g_noTrail.load(cosmetic);
+        g_noWaveTrail.load(cosmetic);
+        g_noGhostTrail.load(cosmetic);
+        g_noSpiderDash.load(cosmetic);
+        g_noMirror.load(cosmetic);
+        g_noParticles.load(cosmetic);
+
         g_labels.load(section(data, "labels"));
 
         g_bot.load(section(data, "bot"));
@@ -185,6 +220,17 @@ void saveConfig() {
     g_customObjects.save(creator);
     g_verify.save(creator);
 
+    nlohmann::json& cosmetic = data["cosmetic"];
+    g_noShake.save(cosmetic);
+    g_noLightning.save(cosmetic);
+    g_noCircles.save(cosmetic);
+    g_noTrail.save(cosmetic);
+    g_noWaveTrail.save(cosmetic);
+    g_noGhostTrail.save(cosmetic);
+    g_noSpiderDash.save(cosmetic);
+    g_noMirror.save(cosmetic);
+    g_noParticles.save(cosmetic);
+
     g_labels.save(data["labels"]);
 
     g_bot.save(data["bot"]);
@@ -208,6 +254,15 @@ void init() {
     uint8_t* destroyPlayer = core::memory::findPattern(GetModuleHandleW(nullptr), core::signatures::kDestroyPlayer);
     const bool gameAvailable = core::game::init(); // GameManager y hooks de nivel compartidos
     g_noDeathEffect.init();
+    g_noShake.init();
+    g_noLightning.init();
+    g_noCircles.init();
+    g_noTrail.init();
+    g_noWaveTrail.init();
+    g_noGhostTrail.init();
+    g_noSpiderDash.init(); // antes que g_trajectory, que hookea el inicio de esa función
+    g_noMirror.init();
+    g_noParticles.init();
     g_noRespawnFlash.init();
     g_practiceMusicSync.init();
     g_labels.init(gameAvailable);
@@ -245,6 +300,15 @@ void shutdown() {
     g_respawnDelay.disable();
     g_noDeathEffect.disable();
     g_noRespawnFlash.disable();
+    g_noShake.disable();
+    g_noLightning.disable();
+    g_noCircles.disable();
+    g_noTrail.disable();
+    g_noWaveTrail.disable();
+    g_noGhostTrail.disable();
+    g_noSpiderDash.disable();
+    g_noMirror.disable();
+    g_noParticles.disable();
     g_autoPractice.disable();
     g_hidePause.disable();
     g_startPosSwitcher.disable();
@@ -281,9 +345,22 @@ void drawPlayer() {
     bool changed = g_noclip.drawUI();
     changed |= g_hitboxes.drawUI();
     changed |= g_trajectory.drawUI();
-    changed |= g_noDeathEffect.drawUI();
-    changed |= g_noRespawnFlash.drawUI();
     changed |= g_respawnDelay.drawUI();
+    if (changed) markDirty();
+}
+
+void drawCosmetic() {
+    bool changed = g_noDeathEffect.drawUI();
+    changed |= g_noRespawnFlash.drawUI();
+    changed |= g_noShake.drawUI();
+    changed |= g_noLightning.drawUI();
+    changed |= g_noCircles.drawUI();
+    changed |= g_noParticles.drawUI();
+    changed |= g_noMirror.drawUI();
+    changed |= g_noTrail.drawUI();
+    changed |= g_noWaveTrail.drawUI();
+    changed |= g_noGhostTrail.drawUI();
+    changed |= g_noSpiderDash.drawUI();
     if (changed) markDirty();
 }
 
