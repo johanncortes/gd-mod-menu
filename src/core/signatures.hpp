@@ -503,4 +503,15 @@ inline constexpr char kLoadLevelSettings[] =
     "48 8B 81 ?? ?? ?? ?? 4C 8B C1 0F B6 90 ?? ?? ?? ?? 48 8B 81 ?? ?? ?? ?? 88 91 ?? ?? ?? ??";
 inline constexpr int kLoadLevelSettingsPlatformer = 10;
 
+// --- Fase 14 (Cheat Safety). GD 2.2091, Steam build 26002420 (exe del 2026-10-16). ---
+
+// PlayLayer::destroyPlayer: antes de guardar el nuevo récord comprueba, entre otras, dos banderas
+// de PlayLayer que descartan el intento: "se usaron herramientas" (+25 en la firma) y "se cambió
+// la velocidad" (+38). levelComplete y EndLevelLayer miran las mismas. resetLevel las recalcula.
+inline constexpr char kAttemptDiscardFlags[] =
+    "44 38 BE ?? ?? ?? ?? 74 0D 44 38 BE ?? ?? ?? ?? 0F 84 ?? ?? ?? ?? 44 38 BE ?? ?? ?? ?? 0F 85 ?? ?? ?? ?? "
+    "44 38 BE ?? ?? ?? ??";
+inline constexpr int kAttemptDiscardToolsUsed = 25;
+inline constexpr int kAttemptDiscardSpeedChanged = 38;
+
 } // namespace core::signatures

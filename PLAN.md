@@ -1,10 +1,16 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 13 (Level) **probada** y mergeada en `main`. Fases 1 a 13 terminadas.
+- Fase: 14 (Cheat Safety, quinto bloque de la lista ampliada) con código completo, **pendiente de probar en el
+  juego**, rama `fase-14`. Fases 1 a 13 probadas y mergeadas en `main`.
 - Último agente: Claude (Opus 5.5)
-- Próximo paso: fase 14, bloque Cheat Safety (Safe mode, Auto safe mode, Disable cheats).
+- Próximo paso: que el usuario pruebe la fase 14. Después: merge a `main` y el bloque Status (más labels).
 - Notas / bloqueos:
+  - **Cheat Safety (fase 14)**: en la ventana Global. *Safe mode* y *Auto safe mode* (activado por defecto: con
+    cualquier trampa de `cheatsActive()` el intento no guarda) ponen a 1 las dos banderas con las que el juego descarta
+    un intento (ver `docs/firmas.md`), tras cada frame del nivel (callback de `core::game::onUpdate`). *Desactivar
+    trampas* apaga speedhack, physics bypass, noclip, bot y force platformer. *Safe Mode Popup* no se hizo: el texto
+    "Ahora no se guarda progreso" del panel cumple esa función.
   - **Level (fase 13)**: Hitboxes al morir (en la ventana Player, junto a Mostrar hitboxes), Pause during complete,
     Checkpoint limit bypass (500 -> 100000) y Force platformer (trampa: cuenta para el Cheat Indicator; se aplica al
     entrar al nivel). **Ojo**: aún no hay *Safe mode*, así que completar un nivel con Force platformer lo guarda como
@@ -191,14 +197,19 @@
 - [x] Probado dentro del juego (2026-11-12)
 - [ ] Más adelante: Jump hack, All modes in platformer
 
+## Fase 14 — Cheat Safety (lista ampliada, bloque 5)
+- [x] Safe mode y Auto safe mode (banderas del propio juego para descartar un intento)
+- [x] Botón "Desactivar trampas"
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
 de la fase 7.
 
 **Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [ ] Pitch Shift · [x] Audio Speed (opción del
-speedhack) · [ ] Sync with Speedhack · [ ] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
-[ ] Discord RPC · [ ] Lock Cursor · [ ] No Short Numbers · [ ] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
+speedhack) · [ ] Sync with Speedhack · [`] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
+[ ] Discord RPC · [ ] Lock Cursor · [ ] No Short Numbers · [`] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
 [ ] Transparent Lists
 
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [ ] All Modes in Platformer · [ ] All Passable ·
@@ -283,7 +294,7 @@ proyecto. Lo que ya está hecho lleva `[x]`.
 - **Display**: [x] FPS · Unlock FPS (F) · [x] Physics TPS · Frame Extrapolation (D) · Vertical Sync (F) ·
   Lock Delta (M) · Real Time (M) · Borderless (M) · Fullscreen (F)
 - **Speedhack**: [x] Speed · [x] Speedhack Audio · Classic Mode (F)
-- **Cheat Safety**: Safe Mode (M) · Auto Safe Mode (M) · Safe Mode Popup (F) · Disable Cheats (F) ·
+- **Cheat Safety**: [`] Safe Mode · [`] Auto Safe Mode · Safe Mode Popup (texto en el panel) · [`] Disable Cheats ·
   Ruleset (N/A, es propio de Mega Hack)
 - **Utility**: P1 Click / P2 Click / Left / Right (M) · Uncomplete Level (M) · [x] Restart Level ·
   [x] Practice Mode · Settings (F) · Resources / AppData (F, abrir carpeta) · Toggle DevTools (N/A) · Crash Game (N/A)

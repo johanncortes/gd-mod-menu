@@ -86,6 +86,7 @@
 | PlayLayer::pauseGame: no pausar si el nivel está terminando | GeometryDash.exe | ver `kPauseGameEnding` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14051A393; `jne` en +13 (bandera +0x3670) -> 6 NOPs (fase 13) |
 | PlayLayer::storeCheckpoint: máximo de checkpoints | GeometryDash.exe | ver `kCheckpointLimit` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140516545; `mov esi, 500` con el imm32 en +24 -> 100000 (fase 13) |
 | GJBaseGameLayer::loadLevelSettings: modo plataformas del nivel | GeometryDash.exe | ver `kLoadLevelSettings` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140344C60; `movzx edx, byte [settings+0x155]` en +10 -> `B2 01` + 5 NOPs (fase 13) |
+| PlayLayer::destroyPlayer: banderas que descartan el intento | GeometryDash.exe | ver `kAttemptDiscardFlags` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1405128A5. De la firma: +25 -> `PlayLayer+0x39F9` ("se usaron herramientas"; resetLevel la copia de +0x8A2, PauseLayer::onSideButtonPressed la pone) y +38 -> `+0x39FA` ("se cambió la velocidad"; TimeSpeedControl). Las miran destroyPlayer, levelComplete, EndLevelLayer::customSetup y dtCommitPlaytime. Safe mode las pone a 1 tras cada frame (fase 14) |
 
 ## Notas de ingeniería inversa
 
@@ -139,3 +140,6 @@
 - **collisionCheckObjects**: los objetos de tipo 0 y 0x15 los apunta como sólidos y los de tipo 2 y 0x2F como
   peligros (listas en el nivel que `checkCollisions` vacía al empezar); el resto (portales, pads, anillos, monedas,
   triggers, portal dual, espejo) los activa directamente, casi todos tras `canBeActivatedByPlayer`.
+- **Intentos que no cuentan (2.2091)**: además del modo práctica (+0x32E0) y del test mode por StartPos (+0x3328, que
+  también usan la cámara y los checkpoints), PlayLayer tiene dos banderas propias para descartar un intento:
+  +0x39F9 y +0x39FA. No afectan a la física; solo a guardar récord, completado, monedas, estrellas y tiempo jugado.

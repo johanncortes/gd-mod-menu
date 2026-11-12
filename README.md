@@ -10,6 +10,7 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Ventana | Opción | Estado |
 | --- | --- | --- |
 | Global | Speedhack (con opción de acelerar el audio), FPS bypass, Physics bypass (TPS) | Probado |
+| Global | Safe mode, auto safe mode (no se guarda progreso con trampas) y botón para desactivar las trampas | Hecho, falta probar |
 | Player | Noclip con contador de muertes y precisión, mostrar hitboxes | Probado |
 | Player | Respawn delay | Probado |
 | Player | Hitboxes al morir | Probado |
