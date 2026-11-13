@@ -31,6 +31,7 @@ private:
     bool m_showCheat = true;
     bool m_showFps = true;
     bool m_showCps = false;
+    bool m_showTaps = false; // no depende de "Show labels"
     bool m_showNoclipDeaths = true;   // solo salen con el noclip activo
     bool m_showNoclipAccuracy = true;
     bool m_showPercent = false;

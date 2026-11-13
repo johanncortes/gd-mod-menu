@@ -124,8 +124,9 @@ bool hookExport(const wchar_t* module, const char* name, void* hook, void** orig
 
 } // namespace
 
-void setGameAudioPaused(bool paused) {
-    g_audioPaused = paused;
+void setGameAudioPaused(bool paused, int who) {
+    static std::atomic<int> mask{0}; // un bit por cada opción que lo pide
+    g_audioPaused = (paused ? mask |= 1 << who : mask &= ~(1 << who)) != 0;
 }
 
 bool timeHookAvailable() { return g_timeHook; }

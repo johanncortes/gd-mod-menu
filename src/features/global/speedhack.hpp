@@ -33,9 +33,12 @@ private:
     float m_shiftPitch = 1.f;
 };
 
-// Pausa (o reanuda) todo el audio del juego: grupo maestro de FMOD. Lo usa el frame stepper.
-// Se aplica en el siguiente FMOD::System::update.
-void setGameAudioPaused(bool paused);
+// Pausa (o reanuda) todo el audio del juego: grupo maestro de FMOD. Cada opción que lo usa pasa su
+// número en `who`: el audio sigue en pausa mientras alguna lo pida. Se aplica en el siguiente
+// FMOD::System::update.
+inline constexpr int kAudioPauseFrameStepper = 0;
+inline constexpr int kAudioPauseCountdown = 1;
+void setGameAudioPaused(bool paused, int who = kAudioPauseFrameStepper);
 
 // El hook de CCScheduler::update del speedhack, para otras opciones (features/global/game_time.hpp).
 bool timeHookAvailable();           // false: las dos funciones de abajo no hacen nada

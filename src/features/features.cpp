@@ -29,6 +29,7 @@
 #include "features/level/hide_pause.hpp"
 #include "features/level/level_objects.hpp"
 #include "features/level/level_tweaks.hpp"
+#include "features/level/pause_tweaks.hpp"
 #include "features/level/smart_startpos.hpp"
 #include "features/level/startpos_switcher.hpp"
 #include "features/patch_feature.hpp"
@@ -107,6 +108,11 @@ ShowTriggers g_showTriggers;
 SmartStartPos g_smartStartPos;
 RandomSeed g_randomSeed;
 StopOnDeath g_stopOnDeath;
+PauseTweaks g_pauseTweaks;
+// Las monedas se recogen también en modo práctica (no se guardan: eso lo decide el final del nivel)
+PatchFeature g_practiceCoins("Practice coins", "practice_coins",
+                             {{sig::kSecretCoinPractice, sig::kCoinPracticeJump, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90}},
+                              {sig::kUserCoinPractice, sig::kCoinPracticeJump, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90}}});
 // El total de intentos guardado del nivel no sube (el contador "Attempt N" de la sesión sí)
 PatchFeature g_freezeAttempts("Freeze attempts", "freeze_attempts", sig::kLevelAttempts, sig::kLevelAttemptsInc,
                               {0x90, 0x90});
@@ -279,6 +285,8 @@ void loadConfig() {
         g_forcePlatformer.load(level);
         g_allModesPlatformer.load(level);
         g_freezeAttempts.load(level);
+        g_practiceCoins.load(level);
+        g_pauseTweaks.load(level);
         g_showLayout.load(level);
         g_showTriggers.load(level);
         g_stopOnDeath.load(level);
@@ -374,6 +382,8 @@ void saveConfig() {
     g_forcePlatformer.save(level);
     g_allModesPlatformer.save(level);
     g_freezeAttempts.save(level);
+    g_practiceCoins.save(level);
+    g_pauseTweaks.save(level);
     g_showLayout.save(level);
     g_showTriggers.save(level);
     g_stopOnDeath.save(level);
@@ -457,6 +467,8 @@ void init() {
     g_smoothTrail.init();
     g_noNewBest.init();
     g_freezeAttempts.init();
+    g_practiceCoins.init();
+    g_pauseTweaks.init(gameAvailable);
     g_noPulse.init();
     g_noOrbRing.init();
     g_noTransition.init();
@@ -540,6 +552,8 @@ void shutdown() {
     g_smoothTrail.disable();
     g_noNewBest.disable();
     g_freezeAttempts.disable();
+    g_practiceCoins.disable();
+    g_pauseTweaks.disable();
     g_noPulse.disable();
     g_noOrbRing.disable();
     g_noclip.disable();
@@ -604,6 +618,7 @@ void update() {
     g_frameStepper.update();
     g_autoClicker.update();
     g_fastChests.update();
+    g_pauseTweaks.update();
     updateLevelObjects();
     g_lockCursor.update(gui::isMenuOpen());
     g_display.update();
@@ -694,6 +709,8 @@ void drawLevel() {
     changed |= g_allModesPlatformer.drawUI();
     changed |= g_stopOnDeath.drawUI();
     changed |= g_freezeAttempts.drawUI();
+    changed |= g_practiceCoins.drawUI();
+    changed |= g_pauseTweaks.drawUI();
     changed |= g_randomSeed.drawUI();
     changed |= g_showLayout.drawUI();
     changed |= g_showTriggers.drawUI();
@@ -756,6 +773,7 @@ void drawOverlay() {
     g_trajectory.drawOverlay();
     g_labels.drawOverlay(cheatsActive());
     g_startPosSwitcher.drawOverlay();
+    g_pauseTweaks.drawOverlay();
 }
 
 bool cheatsActive() {

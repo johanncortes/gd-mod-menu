@@ -120,6 +120,10 @@
 | GJBaseGameLayer::collisionCheckObjects: portales de onda y swing | GeometryDash.exe | ver `kPlatformerWave`, `kPlatformerSwing` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14031C617, 0x14031C458; `jne` en +7 -> 6 nop. All modes in platformer (fase 21) |
 | PlayLayer::updateVisibility: escala con la música | GeometryDash.exe | ver `kAudioScale` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14050E9A2; `je` en +7 -> `90 E9`. No pulse (fase 22) |
 | RingObject::spawnCircle() | GeometryDash.exe | ver `kRingSpawnCircle` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140643A80; `C3` al inicio. No orb ring (fase 22) |
+| GJBaseGameLayer::collisionCheckObjects: monedas en práctica | GeometryDash.exe | ver `kSecretCoinPractice`, `kUserCoinPractice` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14031CF96, 0x14031D013; `jne` en +7 -> 6 nop. Practice coins (fase 24) |
+| PauseLayer::onRestart / onRestartFull | GeometryDash.exe | ver `kPauseOnRestart`, `kPauseOnRestartFull` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404DAE30, 0x1404DAF60 (iguales salvo el argumento final). Hooks de Confirm restart (fase 24) |
+| PauseLayer::onPracticeMode / onNormalMode | GeometryDash.exe | ver `kPauseOnPracticeMode`, `kPauseOnNormalMode` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404DAAC0, 0x1404DAB90. Hooks de Confirm practice mode (fase 24) |
+| PlayLayer::resume() | GeometryDash.exe | ver `kPlayLayerResume` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14051AA00. Hook de Pause countdown (fase 24) |
 
 ## Notas de ingeniería inversa
 

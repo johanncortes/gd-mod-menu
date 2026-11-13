@@ -123,6 +123,17 @@ struct Line {
 bool g_dragging = false;
 ImVec2 g_dragTopLeft; // esquina superior izquierda mientras se arrastra, en píxeles
 
+// Show taps: un cuadro abajo a la izquierda que se enciende mientras el salto está pulsado
+void drawTaps() {
+    const ImVec2 screen = ImGui::GetIO().DisplaySize;
+    const float size = screen.y * 0.05f, margin = screen.y * 0.025f;
+    const ImVec2 min{margin, screen.y - margin - size}, max{margin + size, screen.y - margin};
+    ImDrawList* draw = ImGui::GetBackgroundDrawList();
+    const bool held = core::input::jumpHeld();
+    draw->AddRectFilled(min, max, held ? IM_COL32(120, 255, 120, 220) : IM_COL32(0, 0, 0, 90), size * 0.2f);
+    draw->AddRect(min, max, IM_COL32(255, 255, 255, 200), size * 0.2f, ImDrawFlags_None, size * 0.06f);
+}
+
 ImU32 withAlpha(ImU32 color, float alpha) {
     return (color & ~IM_COL32_A_MASK) | (static_cast<ImU32>(255.f * std::clamp(alpha, 0.f, 1.f)) << IM_COL32_A_SHIFT);
 }
@@ -171,6 +182,7 @@ bool Labels::drawUI() {
     changed |= gui::toggle("Cheat indicator", true, m_showCheat);
     changed |= gui::toggle("FPS", true, m_showFps);
     changed |= gui::toggle("CPS", true, m_showCps);
+    changed |= gui::toggle("Show taps", true, m_showTaps);
     changed |= gui::toggle("Noclip deaths", m_time, m_showNoclipDeaths);
     changed |= gui::toggle("Noclip accuracy", m_time, m_showNoclipAccuracy);
     changed |= gui::toggle("Percentage", m_levelInfo, m_showPercent);
@@ -225,6 +237,7 @@ void Labels::drawOverlay(bool cheatsActive) {
         g_sessionStart = GetTickCount64();
         g_bestTo = -1.f;
     }
+    if (playLayer && m_showTaps) drawTaps();
     if (!m_show || !playLayer) {
         g_dragging = false;
         return;
@@ -414,6 +427,7 @@ void Labels::load(const nlohmann::json& j) {
     m_showCheat = j.value("cheat_indicator", m_showCheat);
     m_showFps = j.value("fps", m_showFps);
     m_showCps = j.value("cps", m_showCps);
+    m_showTaps = j.value("show_taps", m_showTaps);
     m_showNoclipDeaths = j.value("noclip_deaths", m_showNoclipDeaths);
     m_showNoclipAccuracy = j.value("noclip_accuracy", m_showNoclipAccuracy);
     m_showPercent = j.value("percentage", m_showPercent);
@@ -447,6 +461,7 @@ void Labels::save(nlohmann::json& j) const {
          {"cheat_indicator", m_showCheat},
          {"fps", m_showFps},
          {"cps", m_showCps},
+         {"show_taps", m_showTaps},
          {"noclip_deaths", m_showNoclipDeaths},
          {"noclip_accuracy", m_showNoclipAccuracy},
          {"percentage", m_showPercent},
