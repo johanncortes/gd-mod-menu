@@ -304,7 +304,7 @@
 - [x] Random seed, Stop triggers on death, All modes in platformer
 - [x] Smart StartPos, StartPos reset camera
 - [x] Smooth editor trail, Uncomplete level
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego
 
 ## Fase 22 — Labels, límites del noclip y parches sueltos
 - [x] Labels Run from y Best run

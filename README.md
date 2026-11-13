@@ -21,14 +21,14 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Cosmetic | No shake, no portal lightning, no circle effect, no particles, no mirror | Probado |
 | Cosmetic | No trail, no wave trail, no ghost trail, no spider dash | Probado |
 | Cosmetic | No glow, solid wave trail, hide player | Probado |
-| Cosmetic | No new best popup | Hecho, falta probar |
-| Global | Fast chests, lock delta | Hecho, falta probar |
-| Labels | Total attempts | Hecho, falta probar |
-| Level | Show layout, show triggers, hitbox multiplier (peligros) | Hecho, falta probar |
-| Level | Random seed, stop triggers on death, all modes in platformer | Hecho, falta probar |
-| Level | Smart StartPos, StartPos reset camera | Hecho, falta probar |
-| Creator | Smooth editor trail | Hecho, falta probar |
-| Shortcuts | Uncomplete level | Hecho, falta probar |
+| Cosmetic | No new best popup | Probado |
+| Global | Fast chests, lock delta | Probado |
+| Labels | Total attempts | Probado |
+| Level | Show layout, show triggers, hitbox multiplier (peligros) | Probado |
+| Level | Random seed, stop triggers on death, all modes in platformer | Probado |
+| Level | Smart StartPos, StartPos reset camera | Probado |
+| Creator | Smooth editor trail | Probado |
+| Shortcuts | Uncomplete level | Probado |
 | Labels | Run from, best run | Hecho, falta probar |
 | Player | Noclip: límite de muertes y precisión mínima | Hecho, falta probar |
 | Cosmetic | Instant mirror, no pulse, no orb ring | Hecho, falta probar |
