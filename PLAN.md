@@ -1,11 +1,11 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 27 (lanzador para usuarios y página del repositorio) con código completo, **pendiente de probar**, rama
-  `fase-27`. Fases 1 a 26 probadas y mergeadas en `main`.
+- Fase: 27 **probada**. Fases 1 a 27 probadas y mergeadas en `main`. Publicada la versión beta `v1.0.0-beta`
+  (release de GitHub con `GDModMenu.exe`, 2026-11-13).
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: que el usuario pruebe `GDModMenu.exe`. Después: merge, crear la release `v1.0.0` en GitHub con
-  ese exe (compilado con `-DGDMENU_DEV=OFF` en la carpeta `release/`) y añadir las capturas a `docs/img/`.
+- Próximo paso: el usuario añadirá las capturas (`docs/img/LEEME.md`) y más funciones más adelante. Para una
+  versión nueva: compilar en `release/` con `-DGDMENU_DEV=OFF` y crear la release con ese `GDModMenu.exe`.
 - Notas / bloqueos:
   - **Fase 27**: `GDModMenu.exe` (`injector/launcher.cpp`) lleva `gdmenu.dll` como recurso; al abrirlo la deja en
     la carpeta GDModMenu de LOCALAPPDATA (ahí quedan también `config.json` y `gdmenu.log`), abre el juego por
@@ -345,8 +345,9 @@
 ## Fase 27 — Lanzador para usuarios y página del repositorio
 - [x] `GDModMenu.exe`: un solo archivo, abre el juego e inyecta
 - [x] README para usuarios
-- [ ] Probado
-- [ ] Release en GitHub y capturas
+- [x] Probado
+- [x] Release en GitHub (`v1.0.0-beta`)
+- [ ] Capturas en `docs/img/` (las pone el usuario)
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
