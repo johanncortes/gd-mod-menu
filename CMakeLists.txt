@@ -111,6 +111,20 @@ add_executable(injector injector/main.cpp)
 target_compile_definitions(injector PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
 target_compile_options(injector PRIVATE /W4 /utf-8)
 
+# --- Lanzador para usuarios: GDModMenu.exe, un solo archivo con la DLL dentro ---
+set(GDMENU_EMBED ${CMAKE_BINARY_DIR}/embed/gdmenu.dll)
+add_custom_command(OUTPUT ${GDMENU_EMBED}
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:gdmenu> ${GDMENU_EMBED}
+    DEPENDS gdmenu
+    COMMENT "Copiando gdmenu.dll para el lanzador")
+configure_file(injector/launcher.rc.in ${CMAKE_BINARY_DIR}/launcher.rc @ONLY)
+set_source_files_properties(${CMAKE_BINARY_DIR}/launcher.rc PROPERTIES OBJECT_DEPENDS ${GDMENU_EMBED})
+add_executable(GDModMenu WIN32 injector/launcher.cpp ${CMAKE_BINARY_DIR}/launcher.rc ${GDMENU_EMBED})
+add_dependencies(GDModMenu gdmenu)
+target_compile_definitions(GDModMenu PRIVATE NOMINMAX UNICODE _UNICODE)
+target_compile_options(GDModMenu PRIVATE /W4 /utf-8)
+target_link_libraries(GDModMenu PRIVATE shell32 ole32)
+
 # --- Comprobador de firmas: sigcheck.exe <GeometryDash.exe> (sin abrir el juego) ---
 add_executable(sigcheck tools/sigcheck.cpp src/core/memory.cpp)
 target_include_directories(sigcheck PRIVATE src)
@@ -118,6 +132,6 @@ target_compile_definitions(sigcheck PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 target_compile_options(sigcheck PRIVATE /W4 /utf-8)
 
 # Todo junto en build/<Config>/
-set_target_properties(gdmenu injector sigcheck PROPERTIES
+set_target_properties(gdmenu injector GDModMenu sigcheck PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

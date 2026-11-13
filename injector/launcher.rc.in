@@ -1,0 +1,2 @@
+// La DLL del mod menu, dentro del lanzador (la deja CMake en esa ruta antes de compilar el recurso)
+1 RCDATA "@GDMENU_EMBED@"
