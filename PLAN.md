@@ -1,14 +1,17 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 22 (labels, límites del noclip y parches sueltos) con código completo, **pendiente de probar en el
-  juego**, rama `fase-22` (sale de `fase-21`, que tampoco está probada). Fases 1 a 20 probadas y mergeadas en
-  `main`.
+- Fase: 23 (Auto kill y Transition speed) con código completo, **pendiente de probar en el juego**, rama
+  `fase-23` (sale de `fase-22`, que sale de `fase-21`; ninguna de las tres está probada). Fases 1 a 20 probadas
+  y mergeadas en `main`.
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: que el usuario pruebe las fases 21 y 22. El usuario pidió seguir trabajando sin esperar a la
-  prueba (2026-11-12): las fases nuevas van en ramas encadenadas y **no se mergean ni se marcan como probadas**
-  hasta que él las confirme.
+- Próximo paso: que el usuario pruebe las fases 21, 22 y 23 (la DLL de `fase-23` las lleva todas). El usuario
+  pidió seguir trabajando sin esperar a la prueba (2026-11-12): **no se mergean ni se marcan como probadas**
+  hasta que él las confirme. Al confirmar: marcar, commit `fase N: probada` en cada rama y merge en orden.
 - Notas / bloqueos:
+  - **Fase 23** (nada probado en el juego todavía): *Auto kill* (Player, bajo Noclip: al llegar al porcentaje
+    se llama al `destroyPlayer` original, una vez por intento; si el intento empieza ya pasado ese porcentaje no
+    mata) y *Transition speed* (Global > Universal, mismo hook que No transition).
   - **Fase 22** (nada probado en el juego todavía): labels *Run from* (porcentaje del que sale el intento) y
     *Best run* (la muerte más lejana desde que se entró al nivel); *Noclip: límite de muertes* y *precisión
     mínima* (pasado el límite, el siguiente golpe mata de verdad); *Instant mirror* (mismo hook que No mirror);
@@ -309,6 +312,11 @@
 - [x] Instant mirror, Freeze attempts, No pulse, No orb ring
 - [ ] Probado dentro del juego
 
+## Fase 23 — Auto kill y Transition speed
+- [x] Auto kill
+- [x] Transition speed
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -316,7 +324,7 @@ de la fase 7.
 
 **Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [x] Pitch Shift · [x] Audio Speed (opción del
 speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
-[ ] Discord RPC · [x] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
+[ ] Discord RPC · [x] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [ ] Show Taps · [`] Transition Speed ·
 [ ] Transparent Lists
 
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [`] All Modes in Platformer · [ ] All Passable ·
@@ -332,7 +340,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
 
-**Player**: [ ] Always Show Trail · [x] AutoClicker · [ ] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
+**Player**: [ ] Always Show Trail · [x] AutoClicker · [`] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
 [ ] Custom Wave Trail · [x] Frame Stepper · [x] Jump Hack · [ ] Mute Level Audio on Death ·
 [ ] Mute Rewards SFX on Death · [x] No Death Effect · [x] No Ghost Trail · [ ] No Hide Trigger ·
 [ ] No Platformer Jump Anim · [x] No Respawn Flash · [ ] No Robot Fire · [x] No Spider Dash · [x] No Trail ·
@@ -383,7 +391,7 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [`] Show Total Attempts (label) · [x] Solid Wave Trail · [`] StartPos Reset Camera · [`] Stop Triggers on Death ·
   Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · [`] All Modes Platformer · [x] Auto Clicker ·
-  Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · Auto Kill (F) · Auto Music Sync (M) ·
+  Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · [`] Auto Kill · Auto Music Sync (M) ·
   Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames / Steps / on Steps (ajustes del propio juego) · [x] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
   Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · [x] Frame Stepper · [`] Hitbox Multiplier ·
   [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · [`] Noclip Limits · No Collision (F) ·
@@ -396,7 +404,7 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [x] Frame Counter · [x] Position · [x] Velocity · [x] Dead · Replay State (con el bot)
 - **Universal**: [x] Allow Low Volume · Compact Lists (M) · Custom Background (M) · [`] Fast Chests ·
   Load Audio to Memory (M) · [x] Lock Cursor · Main Menu Play (D) · No Music Fade Out (F) · [x] No Transition ·
-  [x] Pitch Shifter · [x] Thread Priority · Transition Customizer (M) · Transparent Lists (M)
+  [x] Pitch Shifter · [x] Thread Priority · Transition Customizer (M; hecho solo [`] Transition speed) · Transparent Lists (M)
 - **Display**: [x] FPS · [x] Unlock FPS · [x] Physics TPS · Frame Extrapolation (D) · [x] Vertical Sync ·
   [`] Lock Delta · Real Time (M) · [x] Borderless · [x] Fullscreen
 - **Speedhack**: [x] Speed · [x] Speedhack Audio · Classic Mode (F)

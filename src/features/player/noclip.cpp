@@ -45,6 +45,14 @@ constexpr int kAccuracyGraceFrames = 60; // al empezar el intento la precisión 
 int g_deathLimit = 0;
 float g_minAccuracy = 0.f; // en %
 
+// Auto kill: al llegar a un porcentaje el jugador muere (una vez por intento)
+using PercentFn = float (*)(void* playLayer);
+PercentFn g_currentPercent = nullptr; // PlayLayer::getCurrentPercent
+float g_autoKillPercent = 0.f;        // 0 = apagado
+// Por intento: si empieza ya pasado el porcentaje (StartPos, checkpoint) no se mata, o moriría sin parar
+enum class AutoKill { Unknown, Armed, Done };
+AutoKill g_autoKill = AutoKill::Unknown;
+
 bool limitReached() {
     if (g_deathLimit > 0 && g_deaths >= g_deathLimit) return true;
     return g_minAccuracy > 0.f && g_frames > kAccuracyGraceFrames &&
@@ -86,12 +94,24 @@ void destroyPlayerHook(void* playLayer, void* player, void* object) {
 // Empieza un intento (aviso de core::game)
 void onResetLevel(void* playLayer) {
     g_playLayer = playLayer;
+    g_autoKill = AutoKill::Unknown;
     resetStats();
 }
 
 // Un frame de nivel (aviso de core::game)
 void onUpdate(void* gameLayer, float) {
-    if (!g_enabled || gameLayer != g_playLayer) return;
+    if (gameLayer != g_playLayer || gameLayer != core::game::playLayer()) return;
+    if (g_autoKillPercent > 0.f && g_autoKill != AutoKill::Done) {
+        const bool past = g_currentPercent(gameLayer) >= g_autoKillPercent;
+        if (g_autoKill == AutoKill::Unknown) {
+            g_autoKill = past ? AutoKill::Done : AutoKill::Armed;
+        } else if (past) {
+            g_autoKill = AutoKill::Done;
+            // Directo a la función del juego: muere aunque el noclip esté activo
+            if (void* player = core::game::player1(gameLayer)) g_origDestroyPlayer(gameLayer, player, nullptr);
+        }
+    }
+    if (!g_enabled) return;
     ++g_frames;
     if (g_hitThisFrame) {
         ++g_hitFrames;
@@ -108,6 +128,8 @@ bool hookAt(void* target, void* hook, void** original) {
 } // namespace
 
 void Noclip::init(uint8_t* destroyPlayer) {
+    g_currentPercent = reinterpret_cast<PercentFn>(
+        core::memory::findPattern(GetModuleHandleW(nullptr), core::signatures::kCurrentPercent));
     if (!destroyPlayer) {
         core::logMsg("Noclip: no disponible (firma kDestroyPlayer no encontrada)");
         return;
@@ -158,6 +180,8 @@ bool Noclip::drawUI() {
                                          kMinDeathLimit, kMaxDeathLimit, "%.0f");
     limitChanged |= gui::toggleValue("Noclip: precisión mínima", limits, m_accuracyOn, m_minAccuracy, 1.f, 100.f,
                                      "%.1f%%");
+    limitChanged |= gui::toggleValue("Auto kill", limits && g_currentPercent, m_autoKillOn, m_autoKill, 1.f, 100.f,
+                                     "%.1f%%");
     if (limitChanged) applyLimits();
     return changed || limitChanged;
 }
@@ -165,6 +189,7 @@ bool Noclip::drawUI() {
 void Noclip::applyLimits() {
     g_deathLimit = m_deathLimitOn ? static_cast<int>(m_deathLimit) : 0;
     g_minAccuracy = m_accuracyOn ? m_minAccuracy : 0.f;
+    g_autoKillPercent = m_autoKillOn && m_statsAvailable && g_currentPercent ? m_autoKill : 0.f;
 }
 
 void Noclip::load(const nlohmann::json& j) {
@@ -172,6 +197,8 @@ void Noclip::load(const nlohmann::json& j) {
     m_deathLimit = std::clamp(j.value("death_limit", m_deathLimit), kMinDeathLimit, kMaxDeathLimit);
     m_accuracyOn = j.value("min_accuracy_on", false);
     m_minAccuracy = std::clamp(j.value("min_accuracy", m_minAccuracy), 1.f, 100.f);
+    m_autoKillOn = j.value("auto_kill_on", false);
+    m_autoKill = std::clamp(j.value("auto_kill", m_autoKill), 1.f, 100.f);
     applyLimits();
     j.value("enabled", false) ? enable() : disable();
 }
@@ -181,7 +208,9 @@ void Noclip::save(nlohmann::json& j) const {
          {"death_limit_on", m_deathLimitOn},
          {"death_limit", m_deathLimit},
          {"min_accuracy_on", m_accuracyOn},
-         {"min_accuracy", m_minAccuracy}};
+         {"min_accuracy", m_minAccuracy},
+         {"auto_kill_on", m_autoKillOn},
+         {"auto_kill", m_autoKill}};
 }
 
 bool noclipStats(NoclipStats& out) {

@@ -22,6 +22,7 @@ private:
 
 // No transition: las transiciones entre pantallas (fundido) duran 0 s. Hook al export
 // CCTransitionFade::create(float, CCScene*) de libcocos2d.
+// Transition speed: con el mismo hook, las transiciones van N veces más rápidas (o lentas).
 class NoTransition {
 public:
     void init();
@@ -35,6 +36,8 @@ public:
 private:
     bool m_available = false;
     bool m_enabled = false;
+    bool m_speedOn = false;
+    float m_speed = 2.f;
 };
 
 // High priority: el proceso del juego pasa a prioridad alta (como en el Administrador de tareas).
