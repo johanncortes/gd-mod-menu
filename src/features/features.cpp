@@ -16,6 +16,7 @@
 #include "features/cosmetic/no_mirror.hpp"
 #include "features/cosmetic/no_new_best.hpp"
 #include "features/cosmetic/no_particles.hpp"
+#include "features/cosmetic/player_effects.hpp"
 #include "features/global/display.hpp"
 #include "features/global/fps_bypass.hpp"
 #include "features/global/game_time.hpp"
@@ -200,6 +201,15 @@ HidePlayer g_hidePlayer;
 NoNewBest g_noNewBest;
 // je -> jmp: los objetos que laten con la música se quedan quietos
 PatchFeature g_noPulse("No pulse", "no_pulse", sig::kAudioScale, sig::kAudioScaleJump, {0x90, 0xE9});
+NoFire g_noFire;
+TrailAlwaysOn g_trailAlwaysOn;
+// setVisible(true) -> setVisible(false): el fuego del dash (orbe de dash) no aparece
+PatchFeature g_noDashFire("No dash fire", "no_dash_fire", sig::kDashFireShow, sig::kDashFireShowValue, {0x00});
+// je -> jmp: el juego actúa como si no hubiera ningún shader activo
+PatchFeature g_noShaders("No shaders", "no_shaders", sig::kShaderActive, sig::kShaderActiveJump, {0x90, 0xE9});
+// El botón de pausa del nivel no se ve (se aplica al entrar al nivel)
+PatchFeature g_hidePauseButton("Hide pause button", "hide_pause_button", sig::kPauseButtonCursor,
+                               sig::kPauseButtonCursorJump, {0x90, 0x90});
 // ret al inicio: los orbes no sueltan su círculo al activarlos
 PatchFeature g_noOrbRing("No orb ring", "no_orb_ring", sig::kRingSpawnCircle, 0, {0xC3});
 // jne -> jmp en GameObject::addGlow: ningún objeto crea su brillo (al entrar al nivel)
@@ -333,6 +343,11 @@ void loadConfig() {
         g_noNewBest.load(cosmetic);
         g_noPulse.load(cosmetic);
         g_noOrbRing.load(cosmetic);
+        g_noFire.load(cosmetic);
+        g_trailAlwaysOn.load(cosmetic);
+        g_noDashFire.load(cosmetic);
+        g_noShaders.load(cosmetic);
+        g_hidePauseButton.load(cosmetic);
 
         g_labels.load(section(data, "labels"));
 
@@ -430,6 +445,11 @@ void saveConfig() {
     g_noNewBest.save(cosmetic);
     g_noPulse.save(cosmetic);
     g_noOrbRing.save(cosmetic);
+    g_noFire.save(cosmetic);
+    g_trailAlwaysOn.save(cosmetic);
+    g_noDashFire.save(cosmetic);
+    g_noShaders.save(cosmetic);
+    g_hidePauseButton.save(cosmetic);
 
     g_labels.save(data["labels"]);
 
@@ -471,6 +491,11 @@ void init() {
     g_pauseTweaks.init(gameAvailable);
     g_noPulse.init();
     g_noOrbRing.init();
+    g_noFire.init();
+    g_trailAlwaysOn.init();
+    g_noDashFire.init();
+    g_noShaders.init();
+    g_hidePauseButton.init();
     g_noTransition.init();
     g_display.init();
     g_allowLowVolume.init();
@@ -556,6 +581,11 @@ void shutdown() {
     g_pauseTweaks.disable();
     g_noPulse.disable();
     g_noOrbRing.disable();
+    g_noFire.disable();
+    g_trailAlwaysOn.disable();
+    g_noDashFire.disable();
+    g_noShaders.disable();
+    g_hidePauseButton.disable();
     g_noclip.disable();
     g_hitboxes.disable();
     g_trajectory.disable();
@@ -696,6 +726,11 @@ void drawCosmetic() {
     changed |= g_noNewBest.drawUI();
     changed |= g_noPulse.drawUI();
     changed |= g_noOrbRing.drawUI();
+    changed |= g_noFire.drawUI();
+    changed |= g_noDashFire.drawUI();
+    changed |= g_trailAlwaysOn.drawUI();
+    changed |= g_noShaders.drawUI();
+    changed |= g_hidePauseButton.drawUI();
     if (changed) markDirty();
 }
 

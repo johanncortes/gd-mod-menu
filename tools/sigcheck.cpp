@@ -140,6 +140,10 @@ int main(int argc, char** argv) {
         {"kPauseOnPracticeMode", sig::kPauseOnPracticeMode},
         {"kPauseOnNormalMode", sig::kPauseOnNormalMode},
         {"kPlayLayerResume", sig::kPlayLayerResume},
+        {"kFireBoostCreate", sig::kFireBoostCreate},
+        {"kDashFireShow", sig::kDashFireShow},
+        {"kShaderActive", sig::kShaderActive},
+        {"kPauseButtonCursor", sig::kPauseButtonCursor},
     };
 
     int failed = 0;

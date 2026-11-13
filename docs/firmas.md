@@ -124,6 +124,10 @@
 | PauseLayer::onRestart / onRestartFull | GeometryDash.exe | ver `kPauseOnRestart`, `kPauseOnRestartFull` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404DAE30, 0x1404DAF60 (iguales salvo el argumento final). Hooks de Confirm restart (fase 24) |
 | PauseLayer::onPracticeMode / onNormalMode | GeometryDash.exe | ver `kPauseOnPracticeMode`, `kPauseOnNormalMode` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404DAAC0, 0x1404DAB90. Hooks de Confirm practice mode (fase 24) |
 | PlayLayer::resume() | GeometryDash.exe | ver `kPlayLayerResume` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14051AA00. Hook de Pause countdown (fase 24) |
+| PlayerFireBoostSprite::create() | GeometryDash.exe | ver `kFireBoostCreate` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1405023E6; +30 -> disp RIP del vtable (0x1407D4308). No robot & swing fire (fase 25) |
+| PlayerObject::startDashing: muestra el fuego del dash | GeometryDash.exe | ver `kDashFireShow` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F3C0C; `B2 01` en +32 -> `B2 00`. No dash fire (fase 25) |
+| GJBaseGameLayer::updateShaderLayer: ¿hay shader activo? | GeometryDash.exe | ver `kShaderActive` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14032A52A; `je` en +39 -> `90 E9`. No shaders (fase 25) |
+| UILayer::init: botón de pausa | GeometryDash.exe | ver `kPauseButtonCursor` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1406702B9; `jne` en +14 -> `90 90`. Hide pause button (fase 25) |
 
 ## Notas de ingeniería inversa
 

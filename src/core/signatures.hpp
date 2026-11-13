@@ -771,4 +771,33 @@ inline constexpr char kPauseOnNormalMode[] =
 inline constexpr char kPlayLayerResume[] =
     "48 89 5C 24 10 57 48 83 EC 40 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 30 48 8B D9 FF 15 ?? ?? ?? ??";
 
+// --- Fase 25 (cosméticos). GD 2.2091, Steam build 26002420. ---
+
+// PlayerFireBoostSprite::create(): "sprite->vtable = PlayerFireBoostSprite::vftable". De aquí sale la
+// dirección de ese vtable (lea rax, [rip + X]) para No robot & swing fire.
+inline constexpr char kFireBoostCreate[] =
+    "B9 60 02 00 00 E8 ?? ?? ?? ?? 48 8B D8 48 89 44 24 30 48 8B C8 FF 15 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? "
+    "48 89 03 48 8D 05 ?? ?? ?? ??";
+inline constexpr int kFireBoostCreateVtable = 30; // disp RIP del vtable principal
+
+// PlayerObject::startDashing: "m_dashFireSprite->setVisible(true)". No dash fire: el true (+33) -> false.
+inline constexpr char kDashFireShow[] =
+    "41 0F 28 CC EB 08 F3 0F 10 0D ?? ?? ?? ?? 48 8B CF E8 ?? ?? ?? ?? 48 8B 8F ?? ?? ?? ?? 48 8B 01 B2 01 "
+    "FF 90 ?? ?? ?? ??";
+inline constexpr int kDashFireShowValue = 33;
+
+// GJBaseGameLayer::updateShaderLayer, tras ShaderLayer::performCalculations: "if (!m_shaderLayer->
+// hayAlgunShaderActivo) saca las capas del nivel de la capa de shaders". No shaders: el je (+39) -> jmp,
+// como si nunca hubiera ninguno activo.
+inline constexpr char kShaderActive[] =
+    "E8 ?? ?? ?? ?? 48 8B 8F ?? ?? ?? ?? 44 0F 28 44 24 40 0F 28 74 24 60 48 8B 01 48 8B 90 ?? ?? ?? ?? "
+    "38 99 ?? ?? ?? ?? 0F 84 ?? ?? ?? ??";
+inline constexpr int kShaderActiveJump = 39;
+
+// UILayer::init: "if (!gameVariable("0024")) m_pauseBtn->setVisible(false)" (0024 = mostrar el cursor
+// en el nivel). Hide pause button: el jne (+14) -> nop nop, el botón se oculta siempre.
+inline constexpr char kPauseButtonCursor[] =
+    "48 8D 15 ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 75 12 48 8B 8E ?? ?? ?? ?? 48 8B 01 33 D2 FF 90 ?? ?? ?? ??";
+inline constexpr int kPauseButtonCursorJump = 14;
+
 } // namespace core::signatures
