@@ -58,6 +58,7 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Bot | Grabar y reproducir inputs, guardar y cargar replays | Probado |
 | Level | Practice coins, confirm restart, confirm practice mode, pause countdown | Hecho, falta probar |
 | Labels | Show taps | Hecho, falta probar |
+| Cosmetic | No robot & swing fire, no dash fire, trail always on, no shaders, hide pause button | Hecho, falta probar |
 
 Las opciones se guardan en `config.json`, junto a la DLL.
 

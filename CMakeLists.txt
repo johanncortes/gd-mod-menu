@@ -89,6 +89,7 @@ add_library(gdmenu SHARED
     src/features/cosmetic/no_particles.cpp
     src/features/cosmetic/hide_player.cpp
     src/features/cosmetic/no_new_best.cpp
+    src/features/cosmetic/player_effects.cpp
     src/features/global/game_time.cpp
     src/features/level/level_objects.cpp
     src/features/level/level_tweaks.cpp
