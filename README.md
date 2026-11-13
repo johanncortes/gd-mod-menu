@@ -33,8 +33,8 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Player | Noclip: límite de muertes y precisión mínima | Probado |
 | Cosmetic | Instant mirror, no pulse, no orb ring | Probado |
 | Level | Freeze attempts | Probado |
-| Player | Auto kill | Hecho, falta probar |
-| Global | Transition speed | Hecho, falta probar |
+| Player | Auto kill | Probado |
+| Global | Transition speed | Probado |
 | Level | Auto practice mode, practice music sync, hide pause menu | Probado |
 | Level | StartPos switcher (Q = anterior, E = siguiente) | Probado |
 | Level | Pause during complete, checkpoint limit bypass, force platformer | Probado |
