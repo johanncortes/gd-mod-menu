@@ -2,6 +2,8 @@
 
 #include <windows.h>
 
+#include <algorithm>
+
 #include <MinHook.h>
 #include <nlohmann/json.hpp>
 
@@ -72,9 +74,11 @@ namespace {
 using TransitionFadeFn = void* (*)(float duration, void* scene);
 TransitionFadeFn g_origTransitionFade = nullptr;
 bool g_noTransition = false;
+float g_transitionSpeed = 1.f; // 1 = la duración del juego
+constexpr float kMinTransitionSpeed = 0.25f, kMaxTransitionSpeed = 10.f;
 
 void* transitionFadeHook(float duration, void* scene) {
-    return g_origTransitionFade(g_noTransition ? 0.f : duration, scene);
+    return g_origTransitionFade(g_noTransition ? 0.f : duration / g_transitionSpeed, scene);
 }
 
 } // namespace
@@ -108,15 +112,25 @@ bool NoTransition::drawUI() {
     bool enabled = m_enabled;
     const bool changed = gui::toggle("No transition", m_available, enabled);
     if (changed) enabled ? enable() : disable();
+    if (gui::toggleValue("Transition speed", m_available, m_speedOn, m_speed, kMinTransitionSpeed,
+                         kMaxTransitionSpeed, "x%.2f")) {
+        g_transitionSpeed = m_speedOn && m_available ? m_speed : 1.f;
+        return true;
+    }
     return changed;
 }
 
 void NoTransition::load(const nlohmann::json& j) {
     j.value("no_transition", false) ? enable() : disable();
+    m_speedOn = j.value("transition_speed_on", false);
+    m_speed = std::clamp(j.value("transition_speed", m_speed), kMinTransitionSpeed, kMaxTransitionSpeed);
+    g_transitionSpeed = m_speedOn && m_available ? m_speed : 1.f;
 }
 
 void NoTransition::save(nlohmann::json& j) const {
     j["no_transition"] = m_enabled;
+    j["transition_speed_on"] = m_speedOn;
+    j["transition_speed"] = m_speed;
 }
 
 // --- High priority ---

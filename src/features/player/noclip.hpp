@@ -10,6 +10,8 @@ namespace features {
 // Cuenta las "muertes" evitadas y la precisión (frames sin tocar nada / frames totales).
 // Límites (opcionales): con N muertes evitadas, o con la precisión por debajo de un mínimo, el
 // siguiente golpe mata de verdad.
+// Auto kill (va aquí porque usa el mismo PlayLayer::destroyPlayer): al llegar a un porcentaje el
+// jugador muere, una vez por intento, esté o no el noclip activo.
 class Noclip {
 public:
     // destroyPlayer: inicio de PlayLayer::destroyPlayer (nullptr si no se encontró la firma)
@@ -33,6 +35,8 @@ private:
     float m_deathLimit = 10.f; // entero; float por el campo numérico del panel
     bool m_accuracyOn = false;
     float m_minAccuracy = 90.f; // %
+    bool m_autoKillOn = false;
+    float m_autoKill = 50.f; // %
 };
 
 // Estadísticas del intento actual, para los labels "Noclip deaths" y "Noclip accuracy".
