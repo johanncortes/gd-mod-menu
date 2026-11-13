@@ -578,5 +578,141 @@ inline constexpr char kLevelSettingsPlayers[] =
     "48 8B 81 ?? ?? ?? ?? 4C 8B C1 0F B6 90 ?? ?? ?? ?? 48 8B 81 ?? ?? ?? ?? 88 91 ?? ?? ?? ?? 88 90 ?? ?? ?? ?? "
     "48 8B 89 ?? ?? ?? ??";
 inline constexpr int kLevelSettingsPlayer2 = 39;
+inline constexpr int kLevelSettingsObject = 3;      // GJBaseGameLayer::m_levelSettings
+inline constexpr int kLevelSettingsPlatformer = 13; // LevelSettingsObject::m_platformerMode
+
+// --- Fase 21 (descartadas revisadas, difíciles y de riesgo). GD 2.2091, Steam build 26002420. ---
+
+// PlayLayer::init(GJGameLevel*, bool), inicio. Hook: avisa de que empieza a cargarse un nivel.
+inline constexpr char kPlayLayerInit[] =
+    "48 8B C4 48 89 58 10 48 89 70 18 48 89 78 20 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC D0 00 00 00 "
+    "0F 29 70 C8 0F 29 78 B8 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 07 45 0F B6 F8 44 88 45 87 48 8B FA 48 8B F1";
+
+// PlayLayer::addObject(GameObject*), inicio. Hook: avisa de cada objeto que el nivel añade al cargar.
+inline constexpr char kPlayLayerAddObject[] =
+    "48 85 D2 0F 84 ?? ?? ?? ?? 48 8B C4 55 56 41 56 48 8B EC 48 81 EC 80 00 00 00 48 89 58 08 4C 8B F1 "
+    "4C 89 60 E0 48 8B CA 0F 29 78 B8 48 8B F2 44 0F 29 40 A8";
+
+// PlayLayer::addObject, el tramo que decide si el objeto entra en las secciones de dibujo y colisión
+// (los triggers no entran: se les pone el índice de sección a -1). Se leen dos offsets de GameObject.
+inline constexpr char kAddObjectSection[] =
+    "8B 86 ?? ?? ?? ?? 3D 1D 0E 00 00 74 47 3D 4E 0E 00 00 74 40 48 8B 06 48 8B CE FF 90 ?? ?? ?? ?? 83 F8 14 "
+    "75 1E 83 BE ?? ?? ?? ?? 01 75 09 80 BE ?? ?? ?? ?? 00 75 0C 81 BE ?? ?? ?? ?? 0F 08 00 00 75 11 49 8B 06 "
+    "48 8B D6 49 8B CE FF 90 ?? ?? ?? ?? EB 0A C7 86 ?? ?? ?? ?? FF FF FF FF";
+inline constexpr int kAddObjectId = 2;            // GameObject::m_objectID
+inline constexpr int kAddObjectSectionIndex = 86; // GameObject: índice de sección (-1 = en ninguna)
+
+// GJBaseGameLayer::addToSection(GameObject*), inicio. Hook de Show layout.
+inline constexpr char kAddToSection[] =
+    "48 89 5C 24 20 48 89 54 24 10 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 20 F2 0F 10 9A ?? ?? ?? ?? "
+    "0F 57 C0 66 0F 2F C3";
+
+// GameObject::getObjectRect() entero: llama a getObjectRect(escalaX, escalaY) con los dos factores de
+// escala de la hitbox del objeto. El mismo par se usa para la caja orientada (updateOrientedBox).
+inline constexpr char kObjectRectScale[] =
+    "48 8B 01 F3 0F 10 91 ?? ?? ?? ?? F3 0F 10 89 ?? ?? ?? ?? 48 FF A0 ?? ?? ?? ??";
+inline constexpr int kObjectRectScaleY = 7;
+inline constexpr int kObjectRectScaleX = 15;
+
+// GJBaseGameLayer::checkCollisions: "if (objeto->m_isObjectRectDirty) objeto->getObjectRect();
+// if (objeto->m_objectRadius > 0) playerCircleCollision(...)".
+inline constexpr char kObjectRadius[] =
+    "80 BB ?? ?? ?? ?? 00 74 0C 48 8B 03 48 8B CB FF 90 ?? ?? ?? ?? F3 0F 10 83 ?? ?? ?? ?? 41 0F 2F C7 76 18 "
+    "4C 8B C3 48 8B D7 49 8B CE E8 ?? ?? ?? ?? 84 C0";
+inline constexpr int kObjectRadiusDirty = 2;   // GameObject::m_isObjectRectDirty
+inline constexpr int kObjectRadiusOffset = 25; // GameObject::m_objectRadius
+
+// PlayLayer::showNewBest(bool, int orbs, int diamonds, bool, bool, bool), inicio. Hook de No new best
+// popup: sin orbes ni diamantes la función solo crea el cartel, así que se salta entera.
+inline constexpr char kShowNewBest[] =
+    "48 8B C4 48 89 58 10 55 56 57 41 54 41 55 41 56 41 57 48 8D 68 98 48 81 EC 30 01 00 00 0F 29 70 B8";
+
+// RewardUnlockLayer::step2 (el cofre se abre) y showCloseButton (fin de la animación), inicios.
+// Fast chests acelera el tiempo del juego entre los dos.
+inline constexpr char kRewardStep2[] =
+    "48 89 5C 24 08 57 48 83 EC 40 48 8B F9 48 8D 44 24 20 48 89 44 24 58 48 C7 44 24 30 0F 00 00 00";
+inline constexpr char kRewardShowClose[] =
+    "40 53 48 83 EC 20 48 8B D9 B2 01 48 8B 89 ?? ?? ?? ?? 48 8B 01 FF 90 ?? ?? ?? ?? 48 8B 8B ?? ?? ?? ?? "
+    "B2 01 48 8B 01 FF 90 ?? ?? ?? ?? 48 8B 8B ?? ?? ?? ?? 48 8B 01 FF 90 ?? ?? ?? ??";
+
+// PlayLayer::resetLevel: "m_level->m_attempts += 1". m_attempts es un valor con semilla: el número
+// real es aleatorio - semilla.
+inline constexpr char kLevelAttempts[] =
+    "48 8B BE ?? ?? ?? ?? 8B 9F ?? ?? ?? ?? 2B 9F ?? ?? ?? ?? FF C3 89 9F ?? ?? ?? ??";
+inline constexpr int kLevelAttemptsLevel = 3;   // PlayLayer::m_level
+inline constexpr int kLevelAttemptsRandom = 9;  // GJGameLevel::m_attempts (aleatorio)
+inline constexpr int kLevelAttemptsSeed = 15;   // GJGameLevel::m_attempts (semilla)
+
+// PlayLayer::resetLevel: "semilla = (m_usaSemillaGuardada && m_semillaGuardada) ? m_semillaGuardada :
+// hora". Random seed: el je (+7) -> nop nop, y se escribe la semilla elegida en m_semillaGuardada.
+inline constexpr char kRandomSeed[] =
+    "80 BE ?? ?? ?? ?? 00 74 0C 48 8B 86 ?? ?? ?? ?? 48 85 C0 75 15 33 D2 48 8D 4D A7 FF 15 ?? ?? ?? ?? "
+    "8B 45 A7 0F AF 45 AB";
+inline constexpr int kRandomSeedJump = 7;
+inline constexpr int kRandomSeedStored = 12; // PlayLayer: semilla guardada (uint64)
+
+// LevelEditorLayer::postUpdate: "if (m_playbackMode == 1 && m_trailTimer >= 1/30) añade un punto al
+// rastro". Smooth editor trail: el jb (+25) -> 6 nop, un punto por frame.
+inline constexpr char kEditorTrailInterval[] =
+    "83 BE ?? ?? ?? ?? 01 0F 85 ?? ?? ?? ?? F3 41 0F 10 06 0F 2F 05 ?? ?? ?? ?? 0F 82 ?? ?? ?? ??";
+inline constexpr int kEditorTrailJump = 25;
+
+// GJGameLevel::savePercentage: donde guarda un porcentaje mayor. De aquí salen los offsets de los
+// porcentajes del nivel (los que llevan semilla son tres int: valor, semilla y aleatorio).
+inline constexpr char kSavePercentage[] =
+    "45 84 C0 74 0B 89 B9 ?? ?? ?? ?? E9 ?? ?? ?? ?? 89 B9 ?? ?? ?? ?? FF 15 ?? ?? ?? ?? 66 0F 6E C0 0F 5B C0 "
+    "F3 0F 5E C6 F3 0F 59 C7 F3 0F 2C C0 89 86 ?? ?? ?? ?? 03 C7 89 86 ?? ?? ?? ?? 8B AE ?? ?? ?? ?? "
+    "2B AE ?? ?? ?? ?? 3B EF 0F 8D ?? ?? ?? ?? 89 BE ?? ?? ?? ?? FF 15 ?? ?? ?? ?? 66 0F 6E C0 0F 5B C0 "
+    "F3 0F 5E C6 F3 0F 59 C7 F3 0F 2C C0 89 86 ?? ?? ?? ?? 03 C7 89 86 ?? ?? ?? ??";
+inline constexpr int kSavePercentPractice = 7;      // m_practicePercent
+inline constexpr int kSavePercentNormalValue = 18;  // m_normalPercent: valor
+inline constexpr int kSavePercentNormalSeed = 49;   //                  semilla
+inline constexpr int kSavePercentNormalRandom = 57; //                  aleatorio (= valor + semilla)
+inline constexpr int kSavePercentNewRandom = 63;    // m_newNormalPercent2: aleatorio
+inline constexpr int kSavePercentNewSeed = 69;      //                      semilla
+inline constexpr int kSavePercentNewValue = 83;     //                      valor
+
+// GJBaseGameLayer::loadStartPosObject: lee los ajustes del StartPos (LevelSettingsObject).
+inline constexpr char kLoadStartPosSettings[] =
+    "48 8B 85 ?? ?? ?? ?? 8B 98 ?? ?? ?? ?? 8B B8 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? 48 8B 01 FF 90 ?? ?? ?? ??";
+inline constexpr int kLoadStartPosSettingsOffset = 3; // StartPosObject::m_startSettings
+inline constexpr char kStartPosResetCamera[] =
+    "48 8B 85 ?? ?? ?? ?? 80 B8 ?? ?? ?? ?? 00 0F 84 ?? ?? ?? ?? 33 DB";
+inline constexpr int kStartPosResetCameraOffset = 9; // LevelSettingsObject::m_resetCamera
+
+// GJBaseGameLayer::setupLevelStart(LevelSettingsObject*): cuatro tramos de los que se leen los offsets
+// de los ajustes de inicio (gravedad invertida, dual, mini, espejo y velocidad).
+inline constexpr char kSetupLevelStart[] =
+    "48 8B EA 48 8B F1 41 B0 01 0F B6 92 ?? ?? ?? ?? 48 8B 89 ?? ?? ?? ?? E8 ?? ?? ?? ?? 0F B6 95 ?? ?? ?? ?? "
+    "48 8B 8E ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? 0F B6 85 ?? ?? ?? ??";
+inline constexpr int kSetupLevelStartFlipped = 12; // m_isFlipped
+inline constexpr char kSetupLevelStartDual[] = "80 BD ?? ?? ?? ?? 00 74 7B C6 44 24 20 01 45 33 C9 41 B0 01";
+inline constexpr int kSetupLevelStartDualOffset = 2; // m_startDual
+inline constexpr char kSetupLevelStartMini[] =
+    "0F B6 95 ?? ?? ?? ?? 48 8B 8E ?? ?? ?? ?? E8 ?? ?? ?? ?? 80 BE ?? ?? ?? ?? 00";
+inline constexpr int kSetupLevelStartMiniOffset = 3; // m_startMini
+inline constexpr char kSetupLevelStartMirror[] =
+    "44 38 A5 ?? ?? ?? ?? 74 18 44 38 A6 ?? ?? ?? ?? 75 0F 41 B0 01 41 0F B6 D0 48 8B CE E8 ?? ?? ?? ?? "
+    "41 B1 01 44 8B C3 48 8B 96 ?? ?? ?? ?? 48 8B CE E8 ?? ?? ?? ?? 8B 8D ?? ?? ?? ?? 83 E9 01";
+inline constexpr int kSetupLevelStartMirrorOffset = 3; // m_mirrorMode
+inline constexpr int kSetupLevelStartSpeed = 56;       // m_startSpeed
+
+// GJBaseGameLayer::setupLevelStart: "if (plataformas && (modo == onda || modo == swing)) modo = cubo".
+// All modes in platformer: el jne (+7) -> jmp que salta todo el tramo. De aquí sale también m_startMode.
+inline constexpr char kPlatformerStartMode[] =
+    "44 38 A5 ?? ?? ?? ?? 75 09 44 38 A6 ?? ?? ?? ?? 74 17 8B 85 ?? ?? ?? ?? 83 F8 04 74 05 83 F8 07 75 07 "
+    "44 89 A5 ?? ?? ?? ??";
+inline constexpr int kPlatformerStartModeJump = 7;
+inline constexpr int kPlatformerStartModeOffset = 20; // LevelSettingsObject::m_startMode
+
+// GJBaseGameLayer::collisionCheckObjects: los portales de onda (0x1A) y de swing (0x29) no hacen nada
+// en modo plataformas ("if (!m_isPlatformer && canBeActivatedByPlayer(...))"). El jne (+7) -> 6 nop.
+inline constexpr char kPlatformerWave[] =
+    "80 BE ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 4C 8B C7 49 8B D6 48 8B CE E8 ?? ?? ?? ?? 84 C0 0F 84 ?? ?? ?? ?? "
+    "4C 8B C7 49 8B D6 48 8B CE E8 ?? ?? ?? ?? BA 1A 00 00 00 49 8B CE";
+inline constexpr char kPlatformerSwing[] =
+    "80 BE ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 4C 8B C7 49 8B D6 48 8B CE E8 ?? ?? ?? ?? 84 C0 0F 84 ?? ?? ?? ?? "
+    "4C 8B C7 49 8B D6 48 8B CE E8 ?? ?? ?? ?? BA 29 00 00 00 49 8B CE";
+inline constexpr int kPlatformerPortalJump = 7;
 
 } // namespace core::signatures

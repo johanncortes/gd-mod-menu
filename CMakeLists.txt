@@ -88,6 +88,11 @@ add_library(gdmenu SHARED
     src/features/cosmetic/no_mirror.cpp
     src/features/cosmetic/no_particles.cpp
     src/features/cosmetic/hide_player.cpp
+    src/features/cosmetic/no_new_best.cpp
+    src/features/global/game_time.cpp
+    src/features/level/level_objects.cpp
+    src/features/level/level_tweaks.cpp
+    src/features/level/smart_startpos.cpp
     src/features/global/safe_mode.cpp
     src/features/global/universal.cpp
     src/features/global/display.cpp

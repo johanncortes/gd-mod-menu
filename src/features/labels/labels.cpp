@@ -37,6 +37,8 @@ int32_t g_attemptsOffset = 0;         // PlayLayer::m_attempts, leído de kUpdat
 int32_t g_jumpsOffset = 0;            // PlayLayer::m_jumps, leído de kEndLevelJumps
 int32_t g_tickOffset = 0;             // GJBaseGameLayer: ticks de física, leído de kProcessCommands
 int32_t g_deadOffset = 0;             // PlayLayer: jugador muerto, leído de kShowHitboxes
+int32_t g_totalRandomOffset = 0;      // GJGameLevel::m_attempts (aleatorio y semilla), de kLevelAttempts
+int32_t g_totalSeedOffset = 0;
 
 // Velocidad del jugador 1: diferencia de posición entre dos frames / tiempo de juego
 bool g_hasLastPos = false;
@@ -127,6 +129,10 @@ void Labels::init(bool gameAvailable) {
     m_jumps = gameAvailable && plausible(g_jumpsOffset);
     m_frames = gameAvailable && plausible(g_tickOffset);
     m_dead = gameAvailable && plausible(g_deadOffset);
+    const uint8_t* levelAttempts = core::memory::findPattern(exe, sig::kLevelAttempts);
+    g_totalRandomOffset = readOffset(levelAttempts ? levelAttempts + sig::kLevelAttemptsRandom : nullptr);
+    g_totalSeedOffset = readOffset(levelAttempts ? levelAttempts + sig::kLevelAttemptsSeed : nullptr);
+    m_total = gameAvailable && plausible(g_totalRandomOffset) && plausible(g_totalSeedOffset);
     m_position = gameAvailable && g_getPosition;
     m_velocity = m_position && m_time;
     if (m_velocity) {
@@ -146,6 +152,7 @@ bool Labels::drawUI() {
     changed |= gui::toggle("Noclip accuracy", m_time, m_showNoclipAccuracy);
     changed |= gui::toggle("Percentage", m_levelInfo, m_showPercent);
     changed |= gui::toggle("Attempt", m_levelInfo, m_showAttempt);
+    changed |= gui::toggle("Total attempts", m_total, m_showTotal);
     changed |= gui::toggle("Level time", m_time, m_showTime);
     changed |= gui::toggle("Clock", true, m_showClock);
     changed |= gui::toggle("Jumps", m_jumps, m_showJumps);
@@ -228,6 +235,12 @@ void Labels::drawOverlay(bool cheatsActive) {
         int32_t attempts = 0;
         memcpy(&attempts, static_cast<const uint8_t*>(playLayer) + g_attemptsOffset, 4);
         snprintf(text, sizeof(text), "Attempt %d", attempts);
+        lines.push_back({text, kWhite});
+    }
+    void* level = (m_showTotal && m_total) ? core::game::level(playLayer) : nullptr;
+    if (level) {
+        // El número real es aleatorio - semilla (así lo guarda el juego)
+        snprintf(text, sizeof(text), "Total %d", fieldInt(level, g_totalRandomOffset) - fieldInt(level, g_totalSeedOffset));
         lines.push_back({text, kWhite});
     }
     if (m_showTime && m_time) {
@@ -370,6 +383,7 @@ void Labels::load(const nlohmann::json& j) {
     m_showNoclipAccuracy = j.value("noclip_accuracy", m_showNoclipAccuracy);
     m_showPercent = j.value("percentage", m_showPercent);
     m_showAttempt = j.value("attempt", m_showAttempt);
+    m_showTotal = j.value("total_attempts", m_showTotal);
     m_showTime = j.value("level_time", m_showTime);
     m_showClock = j.value("clock", m_showClock);
     m_showJumps = j.value("jumps", m_showJumps);
@@ -400,6 +414,7 @@ void Labels::save(nlohmann::json& j) const {
          {"noclip_accuracy", m_showNoclipAccuracy},
          {"percentage", m_showPercent},
          {"attempt", m_showAttempt},
+         {"total_attempts", m_showTotal},
          {"level_time", m_showTime},
          {"clock", m_showClock},
          {"jumps", m_showJumps},

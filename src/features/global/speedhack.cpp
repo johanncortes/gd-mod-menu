@@ -26,9 +26,14 @@ constexpr int kDspPitchShiftPitch = 0; // FMOD_DSP_PITCHSHIFT_PITCH
 using SchedulerUpdateFn = void (*)(void* self, float dt);
 SchedulerUpdateFn g_origSchedulerUpdate = nullptr;
 std::atomic<float> g_timeScale{1.f};
+std::atomic<float> g_timeBoost{1.f};   // Fast chests
+std::atomic<float> g_lockedDelta{0.f}; // Lock delta: segundos por frame; 0 = el tiempo real
+bool g_timeHook = false;
 
 void schedulerUpdateHook(void* self, float dt) {
-    g_origSchedulerUpdate(self, dt * g_timeScale);
+    const float locked = g_lockedDelta;
+    if (locked > 0.f) dt = locked;
+    g_origSchedulerUpdate(self, dt * g_timeScale * g_timeBoost);
 }
 
 // --- Audio: tono del grupo maestro de FMOD ---
@@ -123,9 +128,14 @@ void setGameAudioPaused(bool paused) {
     g_audioPaused = paused;
 }
 
+bool timeHookAvailable() { return g_timeHook; }
+void setTimeBoost(float factor) { g_timeBoost = factor; }
+void setLockedDelta(float seconds) { g_lockedDelta = seconds; }
+
 void Speedhack::init() {
     m_available = hookExport(L"libcocos2d.dll", "?update@CCScheduler@cocos2d@@UEAAXM@Z",
                              &schedulerUpdateHook, reinterpret_cast<void**>(&g_origSchedulerUpdate));
+    g_timeHook = m_available;
     core::logMsg("Speedhack: %s", m_available ? "listo" : "no disponible (CCScheduler::update)");
 
     if (HMODULE fmod = GetModuleHandleW(L"fmod.dll")) {

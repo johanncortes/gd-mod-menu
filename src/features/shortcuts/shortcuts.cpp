@@ -51,6 +51,29 @@ struct PlayerAction {
 PlayerAction g_actions[] = {
     {"P1 jump", 1, true}, {"P2 jump", 1, false}, {"P1 left", 2, true}, {"P1 right", 3, true}};
 
+// Uncomplete level: offsets de los porcentajes de GJGameLevel (kSavePercentage), en este orden:
+// práctica; normal: valor, semilla, aleatorio; "normal nuevo": aleatorio, semilla, valor
+constexpr int kPercentSites[] = {sig::kSavePercentPractice,   sig::kSavePercentNormalValue, sig::kSavePercentNormalSeed,
+                                 sig::kSavePercentNormalRandom, sig::kSavePercentNewRandom, sig::kSavePercentNewSeed,
+                                 sig::kSavePercentNewValue};
+int32_t g_percent[7] = {};
+constexpr ULONGLONG kConfirmMs = 3000;
+ULONGLONG g_uncompleteArmed = 0; // primera pulsación: espera la segunda
+ULONGLONG g_uncompleteDone = 0;
+
+// Pone a 0 los porcentajes guardados del nivel (normal y práctica). Los valores con semilla se
+// guardan como valor + semilla. No toca estrellas, monedas, orbes ni la lista de completados.
+void uncompleteLevel(void* level) {
+    auto field = [level](int index) -> int32_t& {
+        return *reinterpret_cast<int32_t*>(static_cast<uint8_t*>(level) + g_percent[index]);
+    };
+    field(0) = 0;
+    field(1) = 0;
+    field(3) = field(2);
+    field(6) = 0;
+    field(4) = field(5);
+}
+
 void openFolder(const wchar_t* path) {
     ShellExecuteW(nullptr, L"open", path, nullptr, nullptr, SW_SHOWNORMAL);
 }
@@ -103,6 +126,13 @@ void Shortcuts::init(bool gameAvailable) {
         g_practiceOffset = readInt(toggle + sig::kTogglePracticeModeFlag);
         m_practice = plausibleOffset(g_practiceOffset);
     }
+    if (const uint8_t* percent = core::memory::findPattern(exe, sig::kSavePercentage)) {
+        m_uncomplete = true;
+        for (int i = 0; i < 7; ++i) {
+            g_percent[i] = readInt(percent + kPercentSites[i]);
+            m_uncomplete = m_uncomplete && plausibleOffset(g_percent[i]);
+        }
+    }
     g_placeCheckpoint = reinterpret_cast<UiHandlerFn>(core::memory::findPattern(exe, sig::kUiOnCheck));
     g_removeCheckpoint = reinterpret_cast<UiHandlerFn>(core::memory::findPattern(exe, sig::kUiOnDeleteCheck));
     m_checkpoints = g_placeCheckpoint && g_removeCheckpoint;
@@ -144,6 +174,21 @@ void Shortcuts::drawUI() {
     if (gui::button("Remove checkpoint", m_checkpoints) && playLayer) g_removeCheckpoint(nullptr, nullptr);
 
     ImGui::SeparatorText("Utility");
+    // Borra progreso guardado: pide una segunda pulsación
+    void* level = core::game::level(playLayer);
+    const ULONGLONG now = GetTickCount64();
+    const bool armed = g_uncompleteArmed && now - g_uncompleteArmed < kConfirmMs;
+    if (gui::button("Uncomplete level", m_uncomplete) && level) {
+        if (armed) {
+            uncompleteLevel(level);
+            g_uncompleteDone = now;
+        }
+        g_uncompleteArmed = armed ? 0 : now;
+    } else if (armed) {
+        ImGui::TextDisabled("Pulsa otra vez: el nivel vuelve a 0%%");
+    } else if (g_uncompleteDone && now - g_uncompleteDone < kConfirmMs) {
+        ImGui::TextDisabled("Porcentajes del nivel puestos a 0%%");
+    }
     // Con la tecla asignada la acción dura lo que se mantenga pulsada (Shortcuts::update); el
     // clic hace una pulsación corta. gui::button también devuelve true al pulsar la tecla: se ignora.
     for (PlayerAction& action : g_actions)

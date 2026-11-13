@@ -37,4 +37,9 @@ private:
 // Se aplica en el siguiente FMOD::System::update.
 void setGameAudioPaused(bool paused);
 
+// El hook de CCScheduler::update del speedhack, para otras opciones (features/global/game_time.hpp).
+bool timeHookAvailable();           // false: las dos funciones de abajo no hacen nada
+void setTimeBoost(float factor);    // multiplica el tiempo del juego además del speedhack (1 = nada)
+void setLockedDelta(float seconds); // cada frame dura esto para el juego; 0 = lo que dure de verdad
+
 } // namespace features
