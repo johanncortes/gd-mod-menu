@@ -1,12 +1,13 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 25 (Cosméticos (3)) con código completo, **pendiente de probar en el juego**, rama `fase-25`. Sale de `fase-24` (sin probar). Fases 1 a 23 probadas y mergeadas en `main`.
+- Fase: 26 (Interface y label Testmode) con código completo, **pendiente de probar en el juego**, rama `fase-26`. Sale de `fase-25`, que sale de `fase-24` (ninguna de las tres está probada). Fases 1 a 23 probadas y mergeadas en `main`.
 - Último agente: Claude (Fable 5.2)
 - Próximo paso: que el usuario pruebe las fases pendientes (la DLL de la última rama las lleva todas). El usuario
   pidió seguir trabajando sin esperar a la prueba: **no se mergean ni se marcan como probadas** hasta que él las
   confirme. Al confirmar: commit `fase N: probada` por cada una y merge en orden.
 - Notas / bloqueos:
+  - **Fase 26** (nada probado en el juego todavía): Interface: *Color de fondo propio*, *Redondeo* y *Animar al abrir* (fundido de 150 ms; todo en `gui/theme.cpp` y `gui/menu.cpp`, sin tocar el juego). Labels: *Testmode* (sale cuando se juega desde un StartPos). **Miradas y no hechas en esta tanda**: *Auto LDM* (el byte que se copia en `PlayLayer::init` no es lo que decide qué objetos se cargan; falta encontrar dónde se filtran) y *No music fade out* (`FMODAudioEngine::fadeOutMusic` está localizada en 0x1400654A0, pero no está claro qué fundido quita la opción de Mega Hack).
   - **Fase 25** (nada probado en el juego todavía): *No robot & swing fire* (parche en el vtable de `PlayerFireBoostSprite`: su `visit()` pasa a una función vacía; solo se aplica si la entrada era `CCNode::visit`), *No dash fire* (parche en `startDashing`), *Trail always on* (hook del export `CCMotionStreak::stopStroke`), *No shaders* (parche en `updateShaderLayer`: como si no hubiera ningún shader activo) y *Hide pause button* (parche en `UILayer::init`, se aplica al entrar al nivel). Ojo: `CCNode::draw` está vacía y comparte dirección con otras funciones vacías; para localizar una posición del vtable hay que buscar una función con cuerpo (`visit`, slot 93).
   - **Fase 24** (nada probado en el juego todavía): *Practice coins* (parche en los dos tipos de moneda de `collisionCheckObjects`); *Confirm restart* y *Confirm practice mode* (hooks de los manejadores de `PauseLayer`: la primera pulsación no llega al juego y sale un aviso; confirmar al salir ya es un ajuste del juego, `PauseLayer::tryQuit`); *Pause countdown* (hook de `PlayLayer::resume` + filtro de update + audio en pausa durante 3 s; `setGameAudioPaused` admite ahora varios motivos a la vez); *Show taps* (Labels).
   - **Fase 23** (nada probado en el juego todavía): *Auto kill* (Player, bajo Noclip: al llegar al porcentaje
@@ -331,6 +332,11 @@
 - [x] Hide pause button
 - [ ] Probado dentro del juego
 
+## Fase 26 — Interface y label Testmode
+- [x] Color de fondo propio, Redondeo, Animar al abrir
+- [x] Label Testmode
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -368,7 +374,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [x] Smooth Editor Trail · [x] Verify Bypass (*)
 
 **Labels**: [x] Show Labels · [ ] Show in Editor · [x] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
-[ ] Presets · [x] FPS · [ ] Testmode · [x] Run From · [x] Attempt · [x] Percentage · [x] Level Time · [x] Best Run ·
+[ ] Presets · [x] FPS · [`] Testmode · [x] Run From · [x] Attempt · [x] Percentage · [x] Level Time · [x] Best Run ·
 [x] Clock · [x] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
 
 **Shortcuts**: [x] StartPos switcher (no sale en la captura, se mantiene) · [x] P1 Jump · [x] P2 Jump · [ ] Show Options · [x] Uncomplete Level · [x] Restart Level ·
@@ -377,8 +383,8 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 
 **Keybinds**: [x] Open Menu (Tab) · [x] In-game only · [x] Clic derecho en cualquier opción para asignarle una tecla
 
-**Interface**: [x] Theme · [x] UI Scale · [x] Font · [x] Font Size · [ ] Reload Fonts · [ ] Layout Type · [ ] Style ·
-[ ] Enable Blur · [ ] Animate Windows · [x] Accent Color · [ ] Background Color · [ ] Language · [x] Search
+**Interface**: [x] Theme · [x] UI Scale · [x] Font · [x] Font Size · [ ] Reload Fonts · [ ] Layout Type · [`] Style (redondeo) ·
+[ ] Enable Blur · [`] Animate Windows · [x] Accent Color · [`] Background Color · [ ] Language · [x] Search
 
 (*) Chocan con la regla de `AGENTS.md` "nada de funciones para subir completions ni interactuar con servidores de
 GD". El usuario decidió hacerlas igualmente (2026-11-11), ver Estado actual.

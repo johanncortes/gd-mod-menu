@@ -125,6 +125,14 @@ void resetWindowPositions() {
 }
 
 void drawWindows() {
+    // Fundido al abrir: si hace un rato que no se dibujaba, el panel acaba de abrirse
+    static ULONGLONG lastDraw = 0, openedAt = 0;
+    const ULONGLONG now = GetTickCount64();
+    if (now - lastDraw > 100) openedAt = now;
+    lastDraw = now;
+    const float fade = theme::animate() ? std::min(1.f, 0.15f + (now - openedAt) / 150.f) : 1.f;
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * fade);
+
     drawSearchBox();
     if (theme::takeArrangeRequest()) resetWindowPositions();
     const bool arrangeNow = g_arrangeFrames == 1;
@@ -163,6 +171,7 @@ void drawWindows() {
         ImGui::End();
     }
     if (g_arrangeFrames > 0) --g_arrangeFrames;
+    ImGui::PopStyleVar();
 }
 
 } // namespace gui
