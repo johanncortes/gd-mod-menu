@@ -1,10 +1,17 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 26 **probada**. Fases 1 a 26 probadas y mergeadas en `main` (2026-11-13).
+- Fase: 27 **probada**. Fases 1 a 27 probadas y mergeadas en `main`. Publicada la versión beta `v1.0.0-beta`
+  (release de GitHub con `GDModMenu.exe`, 2026-11-13).
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: fase 27 (página del repositorio e inyector para cualquier usuario).
+- Próximo paso: el usuario añadirá las capturas (`docs/img/LEEME.md`) y más funciones más adelante. Para una
+  versión nueva: compilar en `release/` con `-DGDMENU_DEV=OFF` y crear la release con ese `GDModMenu.exe`.
 - Notas / bloqueos:
+  - **Fase 27**: `GDModMenu.exe` (`injector/launcher.cpp`) lleva `gdmenu.dll` como recurso; al abrirlo la deja en
+    la carpeta GDModMenu de LOCALAPPDATA (ahí quedan también `config.json` y `gdmenu.log`), abre el juego por
+    Steam si hace falta, espera a que tenga ventana y la inyecta. README rehecho para usuarios. **Decisiones del
+    usuario pendientes**: hacer público el repositorio (ojo: la fuente Pusab sigue en el historial de git,
+    commit 9ddd584), licencia y capturas (`docs/img/LEEME.md`).
   - **Fase 26** (nada probado en el juego todavía): Interface: *Color de fondo propio*, *Redondeo* y *Animar al abrir* (fundido de 150 ms; todo en `gui/theme.cpp` y `gui/menu.cpp`, sin tocar el juego). Labels: *Testmode* (sale cuando se juega desde un StartPos). **Miradas y no hechas en esta tanda**: *Auto LDM* (el byte que se copia en `PlayLayer::init` no es lo que decide qué objetos se cargan; falta encontrar dónde se filtran) y *No music fade out* (`FMODAudioEngine::fadeOutMusic` está localizada en 0x1400654A0, pero no está claro qué fundido quita la opción de Mega Hack).
   - **Fase 25** (nada probado en el juego todavía): *No robot & swing fire* (parche en el vtable de `PlayerFireBoostSprite`: su `visit()` pasa a una función vacía; solo se aplica si la entrada era `CCNode::visit`), *No dash fire* (parche en `startDashing`), *Trail always on* (hook del export `CCMotionStreak::stopStroke`), *No shaders* (parche en `updateShaderLayer`: como si no hubiera ningún shader activo) y *Hide pause button* (parche en `UILayer::init`, se aplica al entrar al nivel). Ojo: `CCNode::draw` está vacía y comparte dirección con otras funciones vacías; para localizar una posición del vtable hay que buscar una función con cuerpo (`visit`, slot 93).
   - **Fase 24** (nada probado en el juego todavía): *Practice coins* (parche en los dos tipos de moneda de `collisionCheckObjects`); *Confirm restart* y *Confirm practice mode* (hooks de los manejadores de `PauseLayer`: la primera pulsación no llega al juego y sale un aviso; confirmar al salir ya es un ajuste del juego, `PauseLayer::tryQuit`); *Pause countdown* (hook de `PlayLayer::resume` + filtro de update + audio en pausa durante 3 s; `setGameAudioPaused` admite ahora varios motivos a la vez); *Show taps* (Labels).
@@ -334,6 +341,13 @@
 - [x] Color de fondo propio, Redondeo, Animar al abrir
 - [x] Label Testmode
 - [x] Probado dentro del juego
+
+## Fase 27 — Lanzador para usuarios y página del repositorio
+- [x] `GDModMenu.exe`: un solo archivo, abre el juego e inyecta
+- [x] README para usuarios
+- [x] Probado
+- [x] Release en GitHub (`v1.0.0-beta`)
+- [ ] Capturas en `docs/img/` (las pone el usuario)
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
