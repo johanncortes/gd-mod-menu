@@ -18,9 +18,10 @@ using ToggleFlippedFn = void (*)(void* gameLayer, bool flip, bool noEffects);
 
 ToggleFlippedFn g_origToggleFlipped = nullptr;
 bool g_enabled = false;
+bool g_instant = false;
 
 void toggleFlippedHook(void* gameLayer, bool flip, bool noEffects) {
-    g_origToggleFlipped(gameLayer, g_enabled ? false : flip, noEffects);
+    g_origToggleFlipped(gameLayer, g_enabled ? false : flip, noEffects || g_instant);
 }
 
 } // namespace
@@ -51,15 +52,22 @@ bool NoMirror::drawUI() {
     bool enabled = m_enabled;
     const bool changed = gui::toggle("No mirror", m_available, enabled);
     if (changed) enabled ? enable() : disable();
+    if (gui::toggle("Instant mirror", m_available, m_instant)) {
+        g_instant = m_instant && m_available;
+        return true;
+    }
     return changed;
 }
 
 void NoMirror::load(const nlohmann::json& j) {
     j.value("no_mirror", false) ? enable() : disable();
+    m_instant = j.value("instant_mirror", false);
+    g_instant = m_instant && m_available;
 }
 
 void NoMirror::save(nlohmann::json& j) const {
     j["no_mirror"] = m_enabled;
+    j["instant_mirror"] = m_instant;
 }
 
 } // namespace features

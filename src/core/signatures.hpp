@@ -715,4 +715,24 @@ inline constexpr char kPlatformerSwing[] =
     "4C 8B C7 49 8B D6 48 8B CE E8 ?? ?? ?? ?? BA 29 00 00 00 49 8B CE";
 inline constexpr int kPlatformerPortalJump = 7;
 
+// --- Fase 22 (labels, límites del noclip y parches sueltos). GD 2.2091, Steam build 26002420. ---
+
+// PlayLayer::updateVisibility: "if (objeto->m_usesAudioScale && !objeto->m_hasNoAudioScale)
+// objeto->setRScale(pulso de la música)". No pulse: el je (+7) -> jmp.
+inline constexpr char kAudioScale[] =
+    "80 BF ?? ?? ?? ?? 00 0F 84 ?? ?? ?? ?? 80 BF ?? ?? ?? ?? 00 75 77 48 8B 07 48 8B 90 ?? ?? ?? ?? 48 8B CF "
+    "80 BF ?? ?? ?? ?? 00";
+inline constexpr int kAudioScaleJump = 7;
+
+// RingObject::spawnCircle(), inicio: el círculo que sale de un orbe al activarlo. No orb ring: ret.
+// (PlayerObject::spawnCircle empieza igual: la firma llega hasta la comparación con el objeto 3643.)
+inline constexpr char kRingSpawnCircle[] =
+    "48 89 5C 24 08 48 89 74 24 18 57 48 83 EC 30 48 8B F1 48 8B 05 ?? ?? ?? ?? 48 85 C0 75 32 B9 E8 06 00 00 "
+    "E8 ?? ?? ?? ?? 48 89 44 24 48 48 8B C8 E8 ?? ?? ?? ?? 90 48 89 05 ?? ?? ?? ?? 48 8B 08 48 8B 51 48 48 8B C8 "
+    "FF D2 48 8B 05 ?? ?? ?? ?? 48 83 B8 ?? ?? ?? ?? 00 0F 84 ?? ?? ?? ?? 80 BE ?? ?? ?? ?? 00 0F 85 ?? ?? ?? ?? "
+    "81 BE ?? ?? ?? ?? 3B 0E 00 00 0F 84 ?? ?? ?? ??";
+
+// Freeze attempts usa kLevelAttempts: el "inc ebx" que suma el intento al total del nivel.
+inline constexpr int kLevelAttemptsInc = 19;
+
 } // namespace core::signatures

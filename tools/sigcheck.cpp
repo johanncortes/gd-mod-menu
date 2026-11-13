@@ -131,6 +131,8 @@ int main(int argc, char** argv) {
         {"kPlatformerStartMode", sig::kPlatformerStartMode},
         {"kPlatformerWave", sig::kPlatformerWave},
         {"kPlatformerSwing", sig::kPlatformerSwing},
+        {"kAudioScale", sig::kAudioScale},
+        {"kRingSpawnCircle", sig::kRingSpawnCircle},
     };
 
     int failed = 0;

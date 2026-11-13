@@ -118,6 +118,8 @@
 | GJBaseGameLayer::setupLevelStart | GeometryDash.exe | ver `kSetupLevelStart`, `...Dual`, `...Mini`, `...Mirror` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1403193BB, 0x140319403, 0x14031948A, 0x140319C6C; gravedad (+0x171), dual (+0x151), mini (+0x150), espejo (+0x152), velocidad (+0x14C). Smart StartPos (fase 21) |
 | GJBaseGameLayer::setupLevelStart: plataformas sin onda ni swing | GeometryDash.exe | ver `kPlatformerStartMode` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1403194FE; `jne` en +7 -> `EB 20`; +20 -> `m_startMode` (+0x148). All modes in platformer (fase 21) |
 | GJBaseGameLayer::collisionCheckObjects: portales de onda y swing | GeometryDash.exe | ver `kPlatformerWave`, `kPlatformerSwing` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14031C617, 0x14031C458; `jne` en +7 -> 6 nop. All modes in platformer (fase 21) |
+| PlayLayer::updateVisibility: escala con la música | GeometryDash.exe | ver `kAudioScale` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14050E9A2; `je` en +7 -> `90 E9`. No pulse (fase 22) |
+| RingObject::spawnCircle() | GeometryDash.exe | ver `kRingSpawnCircle` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140643A80; `C3` al inicio. No orb ring (fase 22) |
 
 ## Notas de ingeniería inversa
 

@@ -25,6 +25,7 @@ private:
     bool m_velocity = false;  // velocidad del jugador 1 (posición + hooks de nivel)
     bool m_dead = false;      // "jugador muerto" (offset de kShowHitboxes)
     bool m_total = false;     // intentos totales del nivel (offsets de kLevelAttempts)
+    bool m_runs = false;      // Run from y Best run (porcentaje, "jugador muerto" y hooks de nivel)
 
     bool m_show = true;
     bool m_showCheat = true;
@@ -43,6 +44,8 @@ private:
     bool m_showPosition = false;
     bool m_showVelocity = false;
     bool m_showDead = false;
+    bool m_showRunFrom = false;
+    bool m_showBestRun = false;
 
     // Posición: borde de anclaje en fracción de la pantalla (0..1). Con m_alignRight el
     // borde es el derecho del bloque; si no, el izquierdo. y es siempre el borde de arriba.
