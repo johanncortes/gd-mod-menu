@@ -9,6 +9,7 @@ Para practicar niveles, ver hitboxes y trayectorias, grabar replays y trabajar m
 [![Descargar](https://img.shields.io/github/v/release/johanncortes/gd-mod-menu?label=Descargar&style=for-the-badge)](https://github.com/johanncortes/gd-mod-menu/releases/latest)
 ![Geometry Dash 2.2091](https://img.shields.io/badge/Geometry%20Dash-2.2091-blue?style=for-the-badge)
 ![Windows x64](https://img.shields.io/badge/Windows-x64-lightgrey?style=for-the-badge)
+![Licencia GPL v3](https://img.shields.io/badge/Licencia-GPL%20v3-green?style=for-the-badge)
 
 </div>
 
@@ -117,6 +118,11 @@ build\Release\sigcheck.exe "C:\Program Files (x86)\Steam\steamapps\common\Geomet
 
 Las firmas están en [src/core/signatures.hpp](src/core/signatures.hpp) y documentadas en
 [docs/firmas.md](docs/firmas.md). El plan y el estado del proyecto están en [PLAN.md](PLAN.md).
+
+## Licencia
+
+[GPL v3](LICENSE). Puedes usar, modificar y redistribuir el código; si publicas una versión modificada,
+tiene que ser también con su código y bajo la misma licencia.
 
 ---
 
