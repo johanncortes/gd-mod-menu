@@ -323,7 +323,7 @@
 - [x] Confirm restart, Confirm practice mode
 - [x] Pause countdown
 - [x] Show taps
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego
 
 ## Fase 25 — Cosméticos (3)
 - [x] No robot & swing fire, No dash fire
