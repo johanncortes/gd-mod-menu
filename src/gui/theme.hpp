@@ -1,7 +1,7 @@
 #pragma once
 #include <nlohmann/json_fwd.hpp>
 
-// Aspecto del panel: tema, color de acento, escala y fuente. También guarda la posición
+// Aspecto del panel: tema, colores de acento y de fondo, redondeo, escala y fuente. También guarda la posición
 // de las ventanas (gdmenu_layout.ini junto a la DLL).
 namespace gui::theme {
 
@@ -13,6 +13,9 @@ void applyPending();
 
 // Contenido de la ventana Interface. true si el usuario cambió algo.
 bool drawUI();
+
+// true si el panel debe aparecer con un fundido al abrirse.
+bool animate();
 
 // true una sola vez si hay que recolocar las ventanas del panel: no había posiciones guardadas,
 // o se guardaron con una colocación anterior que dejaba ventanas tapadas.

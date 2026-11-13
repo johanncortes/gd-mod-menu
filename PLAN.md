@@ -1,12 +1,11 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 25 (Cosméticos (3)) con código completo, **pendiente de probar en el juego**, rama `fase-25`. Sale de `fase-24` (sin probar). Fases 1 a 23 probadas y mergeadas en `main`.
+- Fase: 26 **probada**. Fases 1 a 26 probadas y mergeadas en `main` (2026-11-13).
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: que el usuario pruebe las fases pendientes (la DLL de la última rama las lleva todas). El usuario
-  pidió seguir trabajando sin esperar a la prueba: **no se mergean ni se marcan como probadas** hasta que él las
-  confirme. Al confirmar: commit `fase N: probada` por cada una y merge en orden.
+- Próximo paso: fase 27 (página del repositorio e inyector para cualquier usuario).
 - Notas / bloqueos:
+  - **Fase 26** (nada probado en el juego todavía): Interface: *Color de fondo propio*, *Redondeo* y *Animar al abrir* (fundido de 150 ms; todo en `gui/theme.cpp` y `gui/menu.cpp`, sin tocar el juego). Labels: *Testmode* (sale cuando se juega desde un StartPos). **Miradas y no hechas en esta tanda**: *Auto LDM* (el byte que se copia en `PlayLayer::init` no es lo que decide qué objetos se cargan; falta encontrar dónde se filtran) y *No music fade out* (`FMODAudioEngine::fadeOutMusic` está localizada en 0x1400654A0, pero no está claro qué fundido quita la opción de Mega Hack).
   - **Fase 25** (nada probado en el juego todavía): *No robot & swing fire* (parche en el vtable de `PlayerFireBoostSprite`: su `visit()` pasa a una función vacía; solo se aplica si la entrada era `CCNode::visit`), *No dash fire* (parche en `startDashing`), *Trail always on* (hook del export `CCMotionStreak::stopStroke`), *No shaders* (parche en `updateShaderLayer`: como si no hubiera ningún shader activo) y *Hide pause button* (parche en `UILayer::init`, se aplica al entrar al nivel). Ojo: `CCNode::draw` está vacía y comparte dirección con otras funciones vacías; para localizar una posición del vtable hay que buscar una función con cuerpo (`visit`, slot 93).
   - **Fase 24** (nada probado en el juego todavía): *Practice coins* (parche en los dos tipos de moneda de `collisionCheckObjects`); *Confirm restart* y *Confirm practice mode* (hooks de los manejadores de `PauseLayer`: la primera pulsación no llega al juego y sale un aviso; confirmar al salir ya es un ajuste del juego, `PauseLayer::tryQuit`); *Pause countdown* (hook de `PlayLayer::resume` + filtro de update + audio en pausa durante 3 s; `setGameAudioPaused` admite ahora varios motivos a la vez); *Show taps* (Labels).
   - **Fase 23** (nada probado en el juego todavía): *Auto kill* (Player, bajo Noclip: al llegar al porcentaje
@@ -322,14 +321,19 @@
 - [x] Confirm restart, Confirm practice mode
 - [x] Pause countdown
 - [x] Show taps
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego
 
 ## Fase 25 — Cosméticos (3)
 - [x] No robot & swing fire, No dash fire
 - [x] Trail always on
 - [x] No shaders
 - [x] Hide pause button
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego
+
+## Fase 26 — Interface y label Testmode
+- [x] Color de fondo propio, Redondeo, Animar al abrir
+- [x] Label Testmode
+- [x] Probado dentro del juego
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
@@ -338,26 +342,26 @@ de la fase 7.
 
 **Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [x] Pitch Shift · [x] Audio Speed (opción del
 speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
-[ ] Discord RPC · [x] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [`] Show Taps · [x] Transition Speed ·
+[ ] Discord RPC · [x] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [x] Show Taps · [x] Transition Speed ·
 [ ] Transparent Lists
 
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [x] All Modes in Platformer · [ ] All Passable ·
 [ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [x] Auto Practice Mode · [ ] Auto Song Download ·
-[ ] Checkpoint Delay · [`] Confirm Full Restart · [`] Confirm Practice Mode · [`] Confirm Restart ·
+[ ] Checkpoint Delay · [x] Confirm Full Restart · [x] Confirm Practice Mode · [x] Confirm Restart ·
 [x] Force Platformer · [x] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
 [x] Hitbox Multiplier · [x] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
 [ ] Mute Level SFX · [x] No Mirror · [x] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
-[`] No Shaders · [`] Pause Countdown · [x] Pause During Complete · [`] Practice Coins · Practice Fix (ya lo hace el juego)
+[x] No Shaders · [x] Pause Countdown · [x] Pause During Complete · [x] Practice Coins · Practice Fix (ya lo hace el juego)
 
 **Bypass**: [x] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [x] Checkpoint Limit ·
 [ ] Comment History Bypass · [x] Quick Chests · [x] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
 [ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
 
-**Player**: [`] Always Show Trail · [x] AutoClicker · [x] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
+**Player**: [x] Always Show Trail · [x] AutoClicker · [x] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
 [ ] Custom Wave Trail · [x] Frame Stepper · [x] Jump Hack · [ ] Mute Level Audio on Death ·
 [ ] Mute Rewards SFX on Death · [x] No Death Effect · [x] No Ghost Trail · [ ] No Hide Trigger ·
-[ ] No Platformer Jump Anim · [x] No Respawn Flash · [`] No Robot Fire · [x] No Spider Dash · [x] No Trail ·
+[ ] No Platformer Jump Anim · [x] No Respawn Flash · [x] No Robot Fire · [x] No Spider Dash · [x] No Trail ·
 [ ] No Vehicle Particles · [x] Noclip · [x] Show Trajectory · [x] Solid Wave Trail · [x] Respawn Delay ·
 [x] Mostrar hitboxes (no sale en la captura, se mantiene)
 
@@ -368,7 +372,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [x] Smooth Editor Trail · [x] Verify Bypass (*)
 
 **Labels**: [x] Show Labels · [ ] Show in Editor · [x] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
-[ ] Presets · [x] FPS · [ ] Testmode · [x] Run From · [x] Attempt · [x] Percentage · [x] Level Time · [x] Best Run ·
+[ ] Presets · [x] FPS · [x] Testmode · [x] Run From · [x] Attempt · [x] Percentage · [x] Level Time · [x] Best Run ·
 [x] Clock · [x] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
 
 **Shortcuts**: [x] StartPos switcher (no sale en la captura, se mantiene) · [x] P1 Jump · [x] P2 Jump · [ ] Show Options · [x] Uncomplete Level · [x] Restart Level ·
@@ -377,8 +381,8 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 
 **Keybinds**: [x] Open Menu (Tab) · [x] In-game only · [x] Clic derecho en cualquier opción para asignarle una tecla
 
-**Interface**: [x] Theme · [x] UI Scale · [x] Font · [x] Font Size · [ ] Reload Fonts · [ ] Layout Type · [ ] Style ·
-[ ] Enable Blur · [ ] Animate Windows · [x] Accent Color · [ ] Background Color · [ ] Language · [x] Search
+**Interface**: [x] Theme · [x] UI Scale · [x] Font · [x] Font Size · [ ] Reload Fonts · [ ] Layout Type · [x] Style (redondeo) ·
+[ ] Enable Blur · [x] Animate Windows · [x] Accent Color · [x] Background Color · [ ] Language · [x] Search
 
 (*) Chocan con la regla de `AGENTS.md` "nada de funciones para subir completions ni interactuar con servidores de
 GD". El usuario decidió hacerlas igualmente (2026-11-11), ver Estado actual.
@@ -396,17 +400,17 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   Editor Extension (D) · [x] Free Scroll · Hide UI (ya lo trae el juego) · [x] Level Edit ·
   Multiple Editor Trails (M) · No C Mark (no se hace) · [x] Place Over · [x] Smooth Editor Trail ·
   [x] Toolbox Button Bypass · Trigger Value Bypass (M) · [x] Verify Hack
-- **Cosmetic** (casi todo F, un parche por opción): Coin Shower (M) · Frozen Animations · [`] Hide Pause Button ·
+- **Cosmetic** (casi todo F, un parche por opción): Coin Shower (M) · Frozen Animations · [x] Hide Pause Button ·
   [x] Hide Pause Menu · [x] Hide Player · Icon Randomizer (M) · No Camera (M) · No Camera Zoom · [x] No Circle Effect ·
-  [`] No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · [x] No Glow · [x] No Mirror ·
+  [x] No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · [x] No Glow · [x] No Mirror ·
   [x] No New Best Popup · [x] No Orb Ring · [x] No Particles · No Particles Classic · No Portal Circle · [x] No Portal Lightning ·
-  [x] No Pulse · [x] No Respawn Flash · [`] No Robot Fire · [`] No Shaders · [x] No Shake · [x] No Spider Dash · [`] No Swing Fire ·
+  [x] No Pulse · [x] No Respawn Flash · [x] No Robot Fire · [x] No Shaders · [x] No Shake · [x] No Spider Dash · [x] No Swing Fire ·
   [x] No Trail · No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
   [x] Show Total Attempts (label) · [x] Solid Wave Trail · [x] StartPos Reset Camera · [x] Stop Triggers on Death ·
-  [`] Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
+  [x] Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · [x] All Modes Platformer · [x] Auto Clicker ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · [x] Auto Kill · Auto Music Sync (M) ·
-  Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames / Steps / on Steps (ajustes del propio juego) · [x] Checkpoint Limit Bypass · [`] Collect Coins In Practice · Confirm Exit / Full Reset /
+  Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames / Steps / on Steps (ajustes del propio juego) · [x] Checkpoint Limit Bypass · [x] Collect Coins In Practice · Confirm Exit / Full Reset /
   Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · [x] Frame Stepper · [x] Hitbox Multiplier ·
   [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · [x] Noclip Limits · No Collision (F) ·
   [x] Pause During Complete · Practice Bug Fix (ya lo hace el juego) · [x] Practice Music · [x] Random Seed ·

@@ -39,6 +39,7 @@ int32_t g_tickOffset = 0;             // GJBaseGameLayer: ticks de física, leí
 int32_t g_deadOffset = 0;             // PlayLayer: jugador muerto, leído de kShowHitboxes
 int32_t g_totalRandomOffset = 0;      // GJGameLevel::m_attempts (aleatorio y semilla), de kLevelAttempts
 int32_t g_totalSeedOffset = 0;
+int32_t g_testModeOffset = 0;         // PlayLayer: "se juega desde un StartPos", de kSwitchStartPos
 
 // Velocidad del jugador 1: diferencia de posición entre dos frames / tiempo de juego
 bool g_hasLastPos = false;
@@ -166,6 +167,9 @@ void Labels::init(bool gameAvailable) {
     g_totalRandomOffset = readOffset(levelAttempts ? levelAttempts + sig::kLevelAttemptsRandom : nullptr);
     g_totalSeedOffset = readOffset(levelAttempts ? levelAttempts + sig::kLevelAttemptsSeed : nullptr);
     m_total = gameAvailable && plausible(g_totalRandomOffset) && plausible(g_totalSeedOffset);
+    const uint8_t* switchStartPos = core::memory::findPattern(exe, sig::kSwitchStartPos);
+    g_testModeOffset = readOffset(switchStartPos ? switchStartPos + sig::kSwitchTestMode : nullptr);
+    m_testMode = gameAvailable && plausible(g_testModeOffset);
     m_position = gameAvailable && g_getPosition;
     m_velocity = m_position && m_time;
     m_runs = g_runs = m_time && m_levelInfo && m_dead;
@@ -196,6 +200,7 @@ bool Labels::drawUI() {
     changed |= gui::toggle("Position", m_position, m_showPosition);
     changed |= gui::toggle("Velocity", m_velocity, m_showVelocity);
     changed |= gui::toggle("Dead", m_dead, m_showDead);
+    changed |= gui::toggle("Testmode", m_testMode, m_showTestMode);
     changed |= gui::toggle("Run from", m_runs, m_showRunFrom);
     changed |= gui::toggle("Best run", m_runs, m_showBestRun);
 
@@ -321,6 +326,8 @@ void Labels::drawOverlay(bool cheatsActive) {
         const bool dead = *(static_cast<const uint8_t*>(playLayer) + g_deadOffset) != 0;
         lines.push_back({dead ? "Dead" : "Alive", dead ? kRed : kWhite});
     }
+    if (m_showTestMode && m_testMode && *(static_cast<const uint8_t*>(playLayer) + g_testModeOffset) != 0)
+        lines.push_back({"Testmode", kRed});
     if (m_showRunFrom && m_runs) {
         snprintf(text, sizeof(text), "From %.0f%%", g_runFrom);
         lines.push_back({text, kWhite});
@@ -442,6 +449,7 @@ void Labels::load(const nlohmann::json& j) {
     m_showVelocity = j.value("velocity", m_showVelocity);
     m_showDead = j.value("dead", m_showDead);
     m_showRunFrom = j.value("run_from", m_showRunFrom);
+    m_showTestMode = j.value("testmode", m_showTestMode);
     m_showBestRun = j.value("best_run", m_showBestRun);
     m_x = std::clamp(j.value("x", m_x), 0.f, 1.f);
     m_y = std::clamp(j.value("y", m_y), 0.f, 1.f);
@@ -476,6 +484,7 @@ void Labels::save(nlohmann::json& j) const {
          {"velocity", m_showVelocity},
          {"dead", m_showDead},
          {"run_from", m_showRunFrom},
+         {"testmode", m_showTestMode},
          {"best_run", m_showBestRun},
          {"x", m_x},
          {"y", m_y},

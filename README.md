@@ -56,9 +56,11 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Player | Frame stepper, auto clicker | Probado |
 | Keybinds | Clic derecho sobre cualquier opción para asignarle una tecla | Probado |
 | Bot | Grabar y reproducir inputs, guardar y cargar replays | Probado |
-| Level | Practice coins, confirm restart, confirm practice mode, pause countdown | Hecho, falta probar |
-| Labels | Show taps | Hecho, falta probar |
-| Cosmetic | No robot & swing fire, no dash fire, trail always on, no shaders, hide pause button | Hecho, falta probar |
+| Level | Practice coins, confirm restart, confirm practice mode, pause countdown | Probado |
+| Labels | Show taps | Probado |
+| Cosmetic | No robot & swing fire, no dash fire, trail always on, no shaders, hide pause button | Probado |
+| Interface | Color de fondo, redondeo y animación al abrir | Probado |
+| Labels | Testmode | Probado |
 
 Las opciones se guardan en `config.json`, junto a la DLL.
 

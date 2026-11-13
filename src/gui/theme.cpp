@@ -39,6 +39,11 @@ constexpr float kMinFontSize = 10.f, kMaxFontSize = 28.f;
 
 int g_theme = 0;
 float g_accent[3] = {0.26f, 0.59f, 0.98f}; // azul de ImGui
+bool g_customBackground = false;             // color de fondo propio en vez del del tema
+float g_background[4] = {0.09f, 0.09f, 0.11f, 0.95f};
+float g_rounding = 6.f;                      // esquinas de las ventanas (los marcos, algo menos)
+bool g_animate = true;                       // el panel aparece con un fundido corto
+constexpr float kMaxRounding = 12.f;
 float g_scale = 1.f;
 int g_font = 0; // 0 = Segoe UI
 float g_fontSize = 16.f;
@@ -100,6 +105,14 @@ void applyStyle() {
     style.ItemInnerSpacing  = ImVec2(6.f, 4.f);
     style.ScrollbarSize     = 12.f;
     style.WindowTitleAlign  = ImVec2(0.5f, 0.5f);
+
+    style.WindowRounding = style.PopupRounding = g_rounding;
+    style.ChildRounding = style.FrameRounding = style.GrabRounding = style.TabRounding = g_rounding * 0.66f;
+    if (g_customBackground) {
+        const ImVec4 background(g_background[0], g_background[1], g_background[2], g_background[3]);
+        style.Colors[ImGuiCol_WindowBg] = background;
+        style.Colors[ImGuiCol_PopupBg] = background;
+    }
 
     // El color de acento sustituye al azul de los elementos activos
     const auto accent = [](float alpha) { return ImVec4(g_accent[0], g_accent[1], g_accent[2], alpha); };
@@ -169,6 +182,12 @@ bool drawUI() {
 
     changed |= ImGui::Combo("Tema", &g_theme, kThemes, IM_ARRAYSIZE(kThemes));
     changed |= ImGui::ColorEdit3("Color de acento", g_accent, ImGuiColorEditFlags_NoInputs);
+    changed |= ImGui::Checkbox("Color de fondo propio", &g_customBackground);
+    if (g_customBackground)
+        changed |= ImGui::ColorEdit4("Color de fondo", g_background,
+                                     ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar);
+    changed |= ImGui::SliderFloat("Redondeo", &g_rounding, 0.f, kMaxRounding, "%.0f");
+    changed |= ImGui::Checkbox("Animar al abrir", &g_animate);
 
     // La escala se aplica al soltar, para que el panel no cambie de tamaño mientras se arrastra
     static float scale = g_scale;
@@ -222,6 +241,12 @@ void load(const nlohmann::json& j) {
     const auto accent = j.find("accent");
     if (accent != j.end() && accent->is_array() && accent->size() == 3)
         for (int i = 0; i < 3; ++i) g_accent[i] = std::clamp((*accent)[i].get<float>(), 0.f, 1.f);
+    g_customBackground = j.value("custom_background", g_customBackground);
+    const auto background = j.find("background");
+    if (background != j.end() && background->is_array() && background->size() == 4)
+        for (int i = 0; i < 4; ++i) g_background[i] = std::clamp((*background)[i].get<float>(), 0.f, 1.f);
+    g_rounding = std::clamp(j.value("rounding", g_rounding), 0.f, kMaxRounding);
+    g_animate = j.value("animate", g_animate);
     g_fontPending = true;
     applyStyle();
 }
@@ -232,8 +257,16 @@ void save(nlohmann::json& j) {
          {"font", kFonts[g_font].name},
          {"font_size", g_fontSize},
          {"accent", {g_accent[0], g_accent[1], g_accent[2]}},
+         {"custom_background", g_customBackground},
+         {"background", {g_background[0], g_background[1], g_background[2], g_background[3]}},
+         {"rounding", g_rounding},
+         {"animate", g_animate},
          {"layout_version", kLayoutVersion}};
     g_layoutVersion = kLayoutVersion;
+}
+
+bool animate() {
+    return g_animate;
 }
 
 bool takeArrangeRequest() {
