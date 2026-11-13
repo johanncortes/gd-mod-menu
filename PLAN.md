@@ -310,7 +310,7 @@
 - [x] Labels Run from y Best run
 - [x] Noclip: límite de muertes y precisión mínima
 - [x] Instant mirror, Freeze attempts, No pulse, No orb ring
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego
 
 ## Fase 23 — Auto kill y Transition speed
 - [x] Auto kill

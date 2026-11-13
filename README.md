@@ -29,10 +29,10 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Level | Smart StartPos, StartPos reset camera | Probado |
 | Creator | Smooth editor trail | Probado |
 | Shortcuts | Uncomplete level | Probado |
-| Labels | Run from, best run | Hecho, falta probar |
-| Player | Noclip: límite de muertes y precisión mínima | Hecho, falta probar |
-| Cosmetic | Instant mirror, no pulse, no orb ring | Hecho, falta probar |
-| Level | Freeze attempts | Hecho, falta probar |
+| Labels | Run from, best run | Probado |
+| Player | Noclip: límite de muertes y precisión mínima | Probado |
+| Cosmetic | Instant mirror, no pulse, no orb ring | Probado |
+| Level | Freeze attempts | Probado |
 | Player | Auto kill | Hecho, falta probar |
 | Global | Transition speed | Hecho, falta probar |
 | Level | Auto practice mode, practice music sync, hide pause menu | Probado |
