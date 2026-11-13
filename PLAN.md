@@ -1,11 +1,13 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 23 **probada**. Fases 1 a 23 probadas y mergeadas en `main` (el usuario confirmó las fases 21, 22 y 23
-  el 2026-11-12).
+- Fase: 24 (Práctica y pausa) con código completo, **pendiente de probar en el juego**, rama `fase-24`. Sale de `main` (fases 1 a 23 probadas y mergeadas).
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: lo que el usuario elija de lo que queda sin marcar en las listas de abajo.
+- Próximo paso: que el usuario pruebe las fases pendientes (la DLL de la última rama las lleva todas). El usuario
+  pidió seguir trabajando sin esperar a la prueba: **no se mergean ni se marcan como probadas** hasta que él las
+  confirme. Al confirmar: commit `fase N: probada` por cada una y merge en orden.
 - Notas / bloqueos:
+  - **Fase 24** (nada probado en el juego todavía): *Practice coins* (parche en los dos tipos de moneda de `collisionCheckObjects`); *Confirm restart* y *Confirm practice mode* (hooks de los manejadores de `PauseLayer`: la primera pulsación no llega al juego y sale un aviso; confirmar al salir ya es un ajuste del juego, `PauseLayer::tryQuit`); *Pause countdown* (hook de `PlayLayer::resume` + filtro de update + audio en pausa durante 3 s; `setGameAudioPaused` admite ahora varios motivos a la vez); *Show taps* (Labels).
   - **Fase 23** (nada probado en el juego todavía): *Auto kill* (Player, bajo Noclip: al llegar al porcentaje
     se llama al `destroyPlayer` original, una vez por intento; si el intento empieza ya pasado ese porcentaje no
     mata) y *Transition speed* (Global > Universal, mismo hook que No transition).
@@ -314,6 +316,13 @@
 - [x] Transition speed
 - [x] Probado dentro del juego
 
+## Fase 24 — Práctica y pausa
+- [x] Practice coins
+- [x] Confirm restart, Confirm practice mode
+- [x] Pause countdown
+- [x] Show taps
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -321,16 +330,16 @@ de la fase 7.
 
 **Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [x] Pitch Shift · [x] Audio Speed (opción del
 speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
-[ ] Discord RPC · [x] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [ ] Show Taps · [x] Transition Speed ·
+[ ] Discord RPC · [x] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [`] Show Taps · [x] Transition Speed ·
 [ ] Transparent Lists
 
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [x] All Modes in Platformer · [ ] All Passable ·
 [ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [x] Auto Practice Mode · [ ] Auto Song Download ·
-[ ] Checkpoint Delay · [ ] Confirm Full Restart · [ ] Confirm Practice Mode · [ ] Confirm Restart ·
+[ ] Checkpoint Delay · [`] Confirm Full Restart · [`] Confirm Practice Mode · [`] Confirm Restart ·
 [x] Force Platformer · [x] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
 [x] Hitbox Multiplier · [x] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
 [ ] Mute Level SFX · [x] No Mirror · [x] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
-[ ] No Shaders · [ ] Pause Countdown · [x] Pause During Complete · [ ] Practice Coins · Practice Fix (ya lo hace el juego)
+[ ] No Shaders · [`] Pause Countdown · [x] Pause During Complete · [`] Practice Coins · Practice Fix (ya lo hace el juego)
 
 **Bypass**: [x] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [x] Checkpoint Limit ·
 [ ] Comment History Bypass · [x] Quick Chests · [x] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
@@ -389,7 +398,7 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · [x] All Modes Platformer · [x] Auto Clicker ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · [x] Auto Kill · Auto Music Sync (M) ·
-  Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames / Steps / on Steps (ajustes del propio juego) · [x] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
+  Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames / Steps / on Steps (ajustes del propio juego) · [x] Checkpoint Limit Bypass · [`] Collect Coins In Practice · Confirm Exit / Full Reset /
   Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · [x] Frame Stepper · [x] Hitbox Multiplier ·
   [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · [x] Noclip Limits · No Collision (F) ·
   [x] Pause During Complete · Practice Bug Fix (ya lo hace el juego) · [x] Practice Music · [x] Random Seed ·

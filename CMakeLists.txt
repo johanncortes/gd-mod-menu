@@ -92,6 +92,7 @@ add_library(gdmenu SHARED
     src/features/global/game_time.cpp
     src/features/level/level_objects.cpp
     src/features/level/level_tweaks.cpp
+    src/features/level/pause_tweaks.cpp
     src/features/level/smart_startpos.cpp
     src/features/global/safe_mode.cpp
     src/features/global/universal.cpp

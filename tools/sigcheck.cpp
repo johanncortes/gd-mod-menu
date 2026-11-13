@@ -133,6 +133,13 @@ int main(int argc, char** argv) {
         {"kPlatformerSwing", sig::kPlatformerSwing},
         {"kAudioScale", sig::kAudioScale},
         {"kRingSpawnCircle", sig::kRingSpawnCircle},
+        {"kSecretCoinPractice", sig::kSecretCoinPractice},
+        {"kUserCoinPractice", sig::kUserCoinPractice},
+        {"kPauseOnRestart", sig::kPauseOnRestart},
+        {"kPauseOnRestartFull", sig::kPauseOnRestartFull},
+        {"kPauseOnPracticeMode", sig::kPauseOnPracticeMode},
+        {"kPauseOnNormalMode", sig::kPauseOnNormalMode},
+        {"kPlayLayerResume", sig::kPlayLayerResume},
     };
 
     int failed = 0;
