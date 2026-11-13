@@ -1,13 +1,18 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 21 (descartadas revisadas, difíciles y de riesgo) con código completo, **pendiente de probar en el
-  juego**, rama `fase-21`. Fases 1 a 20 probadas y mergeadas en `main`.
+- Fase: 22 (labels, límites del noclip y parches sueltos) con código completo, **pendiente de probar en el
+  juego**, rama `fase-22` (sale de `fase-21`, que tampoco está probada). Fases 1 a 20 probadas y mergeadas en
+  `main`.
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: que el usuario pruebe la fase 21 (y las siguientes que haya en ramas `fase-N` sin mergear).
-  El usuario pidió seguir trabajando sin esperar a la prueba (2026-11-12): las fases nuevas van en ramas
-  encadenadas y **no se mergean ni se marcan como probadas** hasta que él las confirme.
+- Próximo paso: que el usuario pruebe las fases 21 y 22. El usuario pidió seguir trabajando sin esperar a la
+  prueba (2026-11-12): las fases nuevas van en ramas encadenadas y **no se mergean ni se marcan como probadas**
+  hasta que él las confirme.
 - Notas / bloqueos:
+  - **Fase 22** (nada probado en el juego todavía): labels *Run from* (porcentaje del que sale el intento) y
+    *Best run* (la muerte más lejana desde que se entró al nivel); *Noclip: límite de muertes* y *precisión
+    mínima* (pasado el límite, el siguiente golpe mata de verdad); *Instant mirror* (mismo hook que No mirror);
+    *Freeze attempts* (solo el total guardado del nivel, no el contador "Attempt N"); *No pulse* y *No orb ring*.
   - **Fase 21** (nada probado en el juego todavía). Hooks nuevos en `core::game`: `PlayLayer::init` y
     `PlayLayer::addObject` (avisos `onLevelInit` y `onAddObject`, este solo durante la carga inicial) y varios
     filtros de update (`addUpdateFilter`). Hecho:
@@ -298,6 +303,12 @@
 - [x] Smooth editor trail, Uncomplete level
 - [ ] Probado dentro del juego
 
+## Fase 22 — Labels, límites del noclip y parches sueltos
+- [x] Labels Run from y Best run
+- [x] Noclip: límite de muertes y precisión mínima
+- [x] Instant mirror, Freeze attempts, No pulse, No orb ring
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -311,8 +322,8 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [`] All Modes in Platformer · [ ] All Passable ·
 [ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [x] Auto Practice Mode · [ ] Auto Song Download ·
 [ ] Checkpoint Delay · [ ] Confirm Full Restart · [ ] Confirm Practice Mode · [ ] Confirm Restart ·
-[x] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
-[`] Hitbox Multiplier · [ ] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
+[x] Force Platformer · [`] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
+[`] Hitbox Multiplier · [`] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
 [ ] Mute Level SFX · [x] No Mirror · [x] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
 [ ] No Shaders · [ ] Pause Countdown · [x] Pause During Complete · [ ] Practice Coins · Practice Fix (ya lo hace el juego)
 
@@ -335,7 +346,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [`] Smooth Editor Trail · [x] Verify Bypass (*)
 
 **Labels**: [x] Show Labels · [ ] Show in Editor · [x] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
-[ ] Presets · [x] FPS · [ ] Testmode · [ ] Run From · [x] Attempt · [x] Percentage · [x] Level Time · [ ] Best Run ·
+[ ] Presets · [x] FPS · [ ] Testmode · [`] Run From · [x] Attempt · [x] Percentage · [x] Level Time · [`] Best Run ·
 [x] Clock · [x] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
 
 **Shortcuts**: [x] StartPos switcher (no sale en la captura, se mantiene) · [x] P1 Jump · [x] P2 Jump · [ ] Show Options · [`] Uncomplete Level · [x] Restart Level ·
@@ -366,8 +377,8 @@ proyecto. Lo que ya está hecho lleva `[x]`.
 - **Cosmetic** (casi todo F, un parche por opción): Coin Shower (M) · Frozen Animations · Hide Pause Button ·
   [x] Hide Pause Menu · [x] Hide Player · Icon Randomizer (M) · No Camera (M) · No Camera Zoom · [x] No Circle Effect ·
   No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · [x] No Glow · [x] No Mirror ·
-  [`] No New Best Popup · No Orb Ring · [x] No Particles · No Particles Classic · No Portal Circle · [x] No Portal Lightning ·
-  No Pulse · [x] No Respawn Flash · No Robot Fire · No Shaders · [x] No Shake · [x] No Spider Dash · No Swing Fire ·
+  [`] No New Best Popup · [`] No Orb Ring · [x] No Particles · No Particles Classic · No Portal Circle · [x] No Portal Lightning ·
+  [`] No Pulse · [x] No Respawn Flash · No Robot Fire · No Shaders · [x] No Shake · [x] No Spider Dash · No Swing Fire ·
   [x] No Trail · No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
   [`] Show Total Attempts (label) · [x] Solid Wave Trail · [`] StartPos Reset Camera · [`] Stop Triggers on Death ·
   Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
@@ -375,7 +386,7 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · Auto Kill (F) · Auto Music Sync (M) ·
   Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames / Steps / on Steps (ajustes del propio juego) · [x] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
   Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · [x] Frame Stepper · [`] Hitbox Multiplier ·
-  [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · Noclip Limits (F) · No Collision (F) ·
+  [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · [`] Noclip Limits · No Collision (F) ·
   [x] Pause During Complete · Practice Bug Fix (ya lo hace el juego) · [x] Practice Music · [`] Random Seed ·
   Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · [x] Show Hitboxes on Death ·
   Show Hitboxes Trail (F, el juego ya guarda el rastro) · [`] Show Layout · [x] Show Trajectory · [`] Show Triggers ·

@@ -29,6 +29,10 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Level | Smart StartPos, StartPos reset camera | Hecho, falta probar |
 | Creator | Smooth editor trail | Hecho, falta probar |
 | Shortcuts | Uncomplete level | Hecho, falta probar |
+| Labels | Run from, best run | Hecho, falta probar |
+| Player | Noclip: límite de muertes y precisión mínima | Hecho, falta probar |
+| Cosmetic | Instant mirror, no pulse, no orb ring | Hecho, falta probar |
+| Level | Freeze attempts | Hecho, falta probar |
 | Level | Auto practice mode, practice music sync, hide pause menu | Probado |
 | Level | StartPos switcher (Q = anterior, E = siguiente) | Probado |
 | Level | Pause during complete, checkpoint limit bypass, force platformer | Probado |

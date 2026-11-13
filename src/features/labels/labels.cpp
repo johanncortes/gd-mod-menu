@@ -45,6 +45,13 @@ bool g_hasLastPos = false;
 float g_lastPos[2] = {0.f, 0.f};
 float g_velocity[2] = {0.f, 0.f};
 
+// Run from / Best run: de qué porcentaje salió el intento y la muerte más lejana de la sesión
+bool g_runs = false;       // hay con qué seguirlos (porcentaje + "jugador muerto")
+bool g_newAttempt = false; // falta apuntar de dónde sale este intento
+bool g_wasDead = false;
+float g_runFrom = 0.f;
+float g_bestFrom = 0.f, g_bestTo = -1.f; // -1 = aún no hay ninguna
+
 // Tiempo de sesión: desde que se entró al nivel actual
 void* g_sessionLayer = nullptr;
 ULONGLONG g_sessionStart = 0;
@@ -67,8 +74,21 @@ int32_t fieldInt(void* object, int32_t offset) {
 
 void onLevelUpdate(void* gameLayer, float dt) {
     if (gameLayer != core::game::playLayer() || dt <= 0.f) return;
+    if (g_runs) {
+        const float percent = g_currentPercent(gameLayer);
+        if (g_newAttempt) {
+            g_newAttempt = false;
+            g_runFrom = percent;
+        }
+        const bool dead = *(static_cast<const uint8_t*>(gameLayer) + g_deadOffset) != 0;
+        if (dead && !g_wasDead && percent > g_bestTo) {
+            g_bestFrom = g_runFrom;
+            g_bestTo = percent;
+        }
+        g_wasDead = dead;
+    }
     void* player = core::game::player1(gameLayer);
-    if (!player) return;
+    if (!player || !g_getPosition) return;
     const float* pos = g_getPosition(player);
     if (g_hasLastPos) {
         g_velocity[0] = (pos[0] - g_lastPos[0]) / dt;
@@ -80,6 +100,8 @@ void onLevelUpdate(void* gameLayer, float dt) {
 }
 
 void onLevelReset(void*) {
+    g_newAttempt = true;
+    g_wasDead = false;
     g_hasLastPos = false; // el salto al punto de inicio no es velocidad
     g_velocity[0] = g_velocity[1] = 0.f;
 }
@@ -135,7 +157,8 @@ void Labels::init(bool gameAvailable) {
     m_total = gameAvailable && plausible(g_totalRandomOffset) && plausible(g_totalSeedOffset);
     m_position = gameAvailable && g_getPosition;
     m_velocity = m_position && m_time;
-    if (m_velocity) {
+    m_runs = g_runs = m_time && m_levelInfo && m_dead;
+    if (m_velocity || m_runs) {
         core::game::onUpdate(&onLevelUpdate);
         core::game::onResetLevel(&onLevelReset);
     }
@@ -161,6 +184,8 @@ bool Labels::drawUI() {
     changed |= gui::toggle("Position", m_position, m_showPosition);
     changed |= gui::toggle("Velocity", m_velocity, m_showVelocity);
     changed |= gui::toggle("Dead", m_dead, m_showDead);
+    changed |= gui::toggle("Run from", m_runs, m_showRunFrom);
+    changed |= gui::toggle("Best run", m_runs, m_showBestRun);
 
     // Aspecto (también lo usa el aviso del StartPos switcher)
     ImGui::Separator();
@@ -198,6 +223,7 @@ void Labels::drawOverlay(bool cheatsActive) {
     if (playLayer != g_sessionLayer) { // nivel nuevo (o se salió): empieza otra sesión
         g_sessionLayer = playLayer;
         g_sessionStart = GetTickCount64();
+        g_bestTo = -1.f;
     }
     if (!m_show || !playLayer) {
         g_dragging = false;
@@ -281,6 +307,15 @@ void Labels::drawOverlay(bool cheatsActive) {
     if (m_showDead && m_dead) {
         const bool dead = *(static_cast<const uint8_t*>(playLayer) + g_deadOffset) != 0;
         lines.push_back({dead ? "Dead" : "Alive", dead ? kRed : kWhite});
+    }
+    if (m_showRunFrom && m_runs) {
+        snprintf(text, sizeof(text), "From %.0f%%", g_runFrom);
+        lines.push_back({text, kWhite});
+    }
+    if (m_showBestRun && m_runs) {
+        if (g_bestTo < 0.f) snprintf(text, sizeof(text), "Best run -");
+        else snprintf(text, sizeof(text), "Best run %.0f-%.0f%%", g_bestFrom, g_bestTo);
+        lines.push_back({text, kWhite});
     }
     if (lines.empty()) {
         g_dragging = false;
@@ -392,6 +427,8 @@ void Labels::load(const nlohmann::json& j) {
     m_showPosition = j.value("position", m_showPosition);
     m_showVelocity = j.value("velocity", m_showVelocity);
     m_showDead = j.value("dead", m_showDead);
+    m_showRunFrom = j.value("run_from", m_showRunFrom);
+    m_showBestRun = j.value("best_run", m_showBestRun);
     m_x = std::clamp(j.value("x", m_x), 0.f, 1.f);
     m_y = std::clamp(j.value("y", m_y), 0.f, 1.f);
     m_alignRight = j.value("align_right", m_alignRight);
@@ -423,6 +460,8 @@ void Labels::save(nlohmann::json& j) const {
          {"position", m_showPosition},
          {"velocity", m_showVelocity},
          {"dead", m_showDead},
+         {"run_from", m_showRunFrom},
+         {"best_run", m_showBestRun},
          {"x", m_x},
          {"y", m_y},
          {"align_right", m_alignRight},

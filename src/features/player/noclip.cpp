@@ -2,6 +2,7 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -38,6 +39,18 @@ int g_hitFrames = 0;
 bool g_hitThisFrame = false;
 bool g_hitLastFrame = false;
 
+// Límites: pasado uno, el golpe siguiente mata de verdad (0 = sin límite)
+constexpr float kMinDeathLimit = 1.f, kMaxDeathLimit = 1000.f;
+constexpr int kAccuracyGraceFrames = 60; // al empezar el intento la precisión aún no dice nada
+int g_deathLimit = 0;
+float g_minAccuracy = 0.f; // en %
+
+bool limitReached() {
+    if (g_deathLimit > 0 && g_deaths >= g_deathLimit) return true;
+    return g_minAccuracy > 0.f && g_frames > kAccuracyGraceFrames &&
+           100.0 * (g_frames - g_hitFrames) / g_frames < g_minAccuracy;
+}
+
 void resetStats() {
     g_deaths = g_frames = g_hitFrames = 0;
     g_hitThisFrame = g_hitLastFrame = false;
@@ -65,7 +78,7 @@ void destroyPlayerHook(void* playLayer, void* player, void* object) {
             resetStats();
         }
         g_hitThisFrame = true;
-        return;
+        if (!limitReached()) return;
     }
     g_origDestroyPlayer(playLayer, player, object);
 }
@@ -139,15 +152,36 @@ bool Noclip::drawUI() {
     // El contador en pantalla está en la ventana Labels (Noclip deaths / Noclip accuracy)
     if (m_available && m_statsAvailable && m_enabled && g_frames > 0)
         ImGui::TextDisabled("  %d muertes, %.2f%%", g_deaths, 100.0 * (g_frames - g_hitFrames) / g_frames);
-    return changed;
+    // Límites: necesitan el contador
+    const bool limits = m_available && m_statsAvailable;
+    bool limitChanged = gui::toggleValue("Noclip: límite de muertes", limits, m_deathLimitOn, m_deathLimit,
+                                         kMinDeathLimit, kMaxDeathLimit, "%.0f");
+    limitChanged |= gui::toggleValue("Noclip: precisión mínima", limits, m_accuracyOn, m_minAccuracy, 1.f, 100.f,
+                                     "%.1f%%");
+    if (limitChanged) applyLimits();
+    return changed || limitChanged;
+}
+
+void Noclip::applyLimits() {
+    g_deathLimit = m_deathLimitOn ? static_cast<int>(m_deathLimit) : 0;
+    g_minAccuracy = m_accuracyOn ? m_minAccuracy : 0.f;
 }
 
 void Noclip::load(const nlohmann::json& j) {
+    m_deathLimitOn = j.value("death_limit_on", false);
+    m_deathLimit = std::clamp(j.value("death_limit", m_deathLimit), kMinDeathLimit, kMaxDeathLimit);
+    m_accuracyOn = j.value("min_accuracy_on", false);
+    m_minAccuracy = std::clamp(j.value("min_accuracy", m_minAccuracy), 1.f, 100.f);
+    applyLimits();
     j.value("enabled", false) ? enable() : disable();
 }
 
 void Noclip::save(nlohmann::json& j) const {
-    j = {{"enabled", m_enabled}};
+    j = {{"enabled", m_enabled},
+         {"death_limit_on", m_deathLimitOn},
+         {"death_limit", m_deathLimit},
+         {"min_accuracy_on", m_accuracyOn},
+         {"min_accuracy", m_minAccuracy}};
 }
 
 bool noclipStats(NoclipStats& out) {

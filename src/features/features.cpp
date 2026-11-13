@@ -107,6 +107,9 @@ ShowTriggers g_showTriggers;
 SmartStartPos g_smartStartPos;
 RandomSeed g_randomSeed;
 StopOnDeath g_stopOnDeath;
+// El total de intentos guardado del nivel no sube (el contador "Attempt N" de la sesión sí)
+PatchFeature g_freezeAttempts("Freeze attempts", "freeze_attempts", sig::kLevelAttempts, sig::kLevelAttemptsInc,
+                              {0x90, 0x90});
 // La onda y el swing funcionan en modo plataformas: sus portales y el modo inicial. Trampa.
 PatchFeature g_allModesPlatformer("All modes in platformer", "all_modes_platformer",
                                   {{sig::kPlatformerStartMode, sig::kPlatformerStartModeJump, {0xEB, 0x20}},
@@ -189,6 +192,10 @@ NoMirror g_noMirror;
 NoParticles g_noParticles;
 HidePlayer g_hidePlayer;
 NoNewBest g_noNewBest;
+// je -> jmp: los objetos que laten con la música se quedan quietos
+PatchFeature g_noPulse("No pulse", "no_pulse", sig::kAudioScale, sig::kAudioScaleJump, {0x90, 0xE9});
+// ret al inicio: los orbes no sueltan su círculo al activarlos
+PatchFeature g_noOrbRing("No orb ring", "no_orb_ring", sig::kRingSpawnCircle, 0, {0xC3});
 // jne -> jmp en GameObject::addGlow: ningún objeto crea su brillo (al entrar al nivel)
 PatchFeature g_noGlow("No glow", "no_glow", sig::kAddGlow, sig::kAddGlowJump, {0x90, 0xE9});
 // "test dl,dl" -> "xor edx,edx" en updateStreakBlend: estelas sin mezcla aditiva y onda sólida
@@ -271,6 +278,7 @@ void loadConfig() {
         g_checkpointLimit.load(level);
         g_forcePlatformer.load(level);
         g_allModesPlatformer.load(level);
+        g_freezeAttempts.load(level);
         g_showLayout.load(level);
         g_showTriggers.load(level);
         g_stopOnDeath.load(level);
@@ -315,6 +323,8 @@ void loadConfig() {
         g_noGlow.load(cosmetic);
         g_solidWaveTrail.load(cosmetic);
         g_noNewBest.load(cosmetic);
+        g_noPulse.load(cosmetic);
+        g_noOrbRing.load(cosmetic);
 
         g_labels.load(section(data, "labels"));
 
@@ -363,6 +373,7 @@ void saveConfig() {
     g_checkpointLimit.save(level);
     g_forcePlatformer.save(level);
     g_allModesPlatformer.save(level);
+    g_freezeAttempts.save(level);
     g_showLayout.save(level);
     g_showTriggers.save(level);
     g_stopOnDeath.save(level);
@@ -407,6 +418,8 @@ void saveConfig() {
     g_noGlow.save(cosmetic);
     g_solidWaveTrail.save(cosmetic);
     g_noNewBest.save(cosmetic);
+    g_noPulse.save(cosmetic);
+    g_noOrbRing.save(cosmetic);
 
     g_labels.save(data["labels"]);
 
@@ -443,6 +456,9 @@ void init() {
     g_allModesPlatformer.init();
     g_smoothTrail.init();
     g_noNewBest.init();
+    g_freezeAttempts.init();
+    g_noPulse.init();
+    g_noOrbRing.init();
     g_noTransition.init();
     g_display.init();
     g_allowLowVolume.init();
@@ -523,6 +539,9 @@ void shutdown() {
     g_allModesPlatformer.disable();
     g_smoothTrail.disable();
     g_noNewBest.disable();
+    g_freezeAttempts.disable();
+    g_noPulse.disable();
+    g_noOrbRing.disable();
     g_noclip.disable();
     g_hitboxes.disable();
     g_trajectory.disable();
@@ -660,6 +679,8 @@ void drawCosmetic() {
     changed |= g_solidWaveTrail.drawUI();
     changed |= g_hidePlayer.drawUI();
     changed |= g_noNewBest.drawUI();
+    changed |= g_noPulse.drawUI();
+    changed |= g_noOrbRing.drawUI();
     if (changed) markDirty();
 }
 
@@ -672,6 +693,7 @@ void drawLevel() {
     changed |= g_forcePlatformer.drawUI();
     changed |= g_allModesPlatformer.drawUI();
     changed |= g_stopOnDeath.drawUI();
+    changed |= g_freezeAttempts.drawUI();
     changed |= g_randomSeed.drawUI();
     changed |= g_showLayout.drawUI();
     changed |= g_showTriggers.drawUI();
