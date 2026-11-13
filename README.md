@@ -12,14 +12,12 @@ Para practicar niveles, ver hitboxes y trayectorias, grabar replays y trabajar m
 
 </div>
 
-<!-- CAPTURAS: guarda las imágenes en docs/img/ con estos nombres y quita este comentario.
 <div align="center">
-  <img src="docs/img/panel.png" alt="El panel abierto en el menú del juego" width="90%">
+  <img src="docs/img/panel.png" alt="El panel abierto en el juego" width="90%">
   <br><br>
-  <img src="docs/img/nivel.png" alt="Hitboxes, trayectoria y labels dentro de un nivel" width="45%">
-  <img src="docs/img/interface.png" alt="Opciones de aspecto del panel" width="45%">
+  <img src="docs/img/nivel.png" alt="Hitboxes, trayectoria y labels dentro de un nivel" width="64%">
+  <img src="docs/img/interface.png" alt="Opciones de aspecto del panel" width="24%">
 </div>
--->
 
 ## Instalación
 
