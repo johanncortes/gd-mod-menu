@@ -16,7 +16,7 @@ src/
   gui/               # ImGui: ventanas, tema, keybinds
   features/          # una carpeta/archivo por categoría (global, player, level, bypass, creator, labels, bot)
   config/            # guardar/cargar config.json
-injector/            # pequeño .exe para inyectar la DLL durante el desarrollo
+injector/            # main.cpp: inyector de desarrollo; launcher.cpp: GDModMenu.exe para usuarios (DLL dentro)
 docs/firmas.md       # registro de firmas encontradas
 ```
 
@@ -39,7 +39,7 @@ docs/firmas.md       # registro de firmas encontradas
 cmake -B build -A x64
 cmake --build build --config Release
 ```
-Salida: `build/Release/gdmenu.dll` e `injector.exe`.
+Salida: `build/Release/gdmenu.dll`, `injector.exe` y `GDModMenu.exe` (lanzador para usuarios).
 
 ## Flujo de trabajo (obligatorio para cualquier agente)
 1. Antes de empezar, lee `PLAN.md` (sección **Estado actual**).
