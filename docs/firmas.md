@@ -102,6 +102,22 @@
 | GameObject::addGlow: if (!m_hasNoGlow) | GeometryDash.exe | ver `kAddGlow` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14028B0F9 (dentro de 0x14028B0D0); `jne` en +18 -> `90 E9`. No glow (fase 20) |
 | PlayerObject::updateStreakBlend(bool) | GeometryDash.exe | ver `kStreakBlend` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404E6EE5; `test dl,dl` en +16 -> `xor edx,edx` (`31 D2`). Solid wave trail (fase 20) |
 | GJBaseGameLayer::loadLevelSettings: copia a m_player1 / m_player2 | GeometryDash.exe | ver `kLevelSettingsPlayers` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140344C60; +39 -> `m_player2` (+0xDC0). `core::game::player2()` (Hide player) (fase 20) |
+| PlayLayer::init(GJGameLevel*, bool) | GeometryDash.exe | ver `kPlayLayerInit` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1405039E0. Hook de `core::game`: aviso `onLevelInit` (fase 21) |
+| PlayLayer::addObject(GameObject*) | GeometryDash.exe | ver `kPlayLayerAddObject` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14050C690. Hook de `core::game`: aviso `onAddObject` durante la carga (fase 21) |
+| PlayLayer::addObject: ¿entra en las secciones? | GeometryDash.exe | ver `kAddObjectSection` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14050C726; +2 -> `m_objectID` (+0x40C), +86 -> índice de sección (+0x278) (fase 21) |
+| GJBaseGameLayer::addToSection(GameObject*) | GeometryDash.exe | ver `kAddToSection` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14032F280. Hook de Show layout (fase 21) |
+| GameObject::getObjectRect() | GeometryDash.exe | ver `kObjectRectScale` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140294820; +15 / +7 -> factores de escala de la hitbox (+0x394, +0x398). Hitbox multiplier (fase 21) |
+| GJBaseGameLayer::checkCollisions: radio del objeto | GeometryDash.exe | ver `kObjectRadius` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14031BB4B; +2 -> `m_isObjectRectDirty` (+0x368), +25 -> `m_objectRadius` (+0x38C) (fase 21) |
+| PlayLayer::showNewBest | GeometryDash.exe | ver `kShowNewBest` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140507E20. Hook de No new best popup (fase 21) |
+| RewardUnlockLayer::step2 / showCloseButton | GeometryDash.exe | ver `kRewardStep2`, `kRewardShowClose` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1405645D0, 0x140565DE0. Hooks de Fast chests (fase 21) |
+| PlayLayer::resetLevel: m_level->m_attempts += 1 | GeometryDash.exe | ver `kLevelAttempts` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140519916; +3 -> `PlayLayer::m_level` (+0x878), +9 / +15 -> `m_attempts` aleatorio y semilla (+0x364, +0x368). Label Total attempts (fase 21) |
+| PlayLayer::resetLevel: semilla del intento | GeometryDash.exe | ver `kRandomSeed` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140518EEC; `je` en +7 -> `90 90`; +12 -> semilla guardada (+0x33F0). Random seed (fase 21) |
+| LevelEditorLayer::postUpdate: punto del rastro | GeometryDash.exe | ver `kEditorTrailInterval` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140400ACA; `jb` en +25 -> 6 nop. Smooth editor trail (fase 21) |
+| GJGameLevel::savePercentage | GeometryDash.exe | ver `kSavePercentage` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14026424E; offsets de práctica (+0x3C0), normal (+0x39C valor, +0x3A0 semilla, +0x3A4 aleatorio) y normal nuevo (+0x3B4, +0x3B8, +0x3BC). Uncomplete level (fase 21) |
+| GJBaseGameLayer::loadStartPosObject | GeometryDash.exe | ver `kLoadStartPosSettings`, `kStartPosResetCamera` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14033E4F2, 0x14033E5A5; `StartPosObject::m_startSettings` (+0x740), `m_resetCamera` (+0x1C0). Smart StartPos (fase 21) |
+| GJBaseGameLayer::setupLevelStart | GeometryDash.exe | ver `kSetupLevelStart`, `...Dual`, `...Mini`, `...Mirror` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1403193BB, 0x140319403, 0x14031948A, 0x140319C6C; gravedad (+0x171), dual (+0x151), mini (+0x150), espejo (+0x152), velocidad (+0x14C). Smart StartPos (fase 21) |
+| GJBaseGameLayer::setupLevelStart: plataformas sin onda ni swing | GeometryDash.exe | ver `kPlatformerStartMode` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1403194FE; `jne` en +7 -> `EB 20`; +20 -> `m_startMode` (+0x148). All modes in platformer (fase 21) |
+| GJBaseGameLayer::collisionCheckObjects: portales de onda y swing | GeometryDash.exe | ver `kPlatformerWave`, `kPlatformerSwing` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14031C617, 0x14031C458; `jne` en +7 -> 6 nop. All modes in platformer (fase 21) |
 
 ## Notas de ingeniería inversa
 
@@ -161,3 +177,20 @@
 - **Triggers en el nivel (2.2091)**: `PlayLayer::addObject` (0x14050C690) no mete en las secciones de dibujo a los
   objetos de tipo 0x14 (triggers): les pone `+0x278 = -1`. Por eso *Show triggers* no se hizo: meterlos en las
   secciones también los metería en el bucle de colisiones.
+- **GameObjectType (2.2091)**, confirmado con `setupLevelStart` y `collisionCheckObjects`: 0 sólido, 2 peligro,
+  3 / 4 portal de gravedad invertida / normal, 5 nave, 6 cubo, 7 decoración, 14 / 15 espejo sí / no, 16 bola,
+  17 / 18 tamaño normal / mini, 19 ovni, 0x14 trigger, 23 / 24 dual / solo, 26 onda, 27 robot, 33 araña, 41 swing,
+  42 gravedad alterna, 0x2F peligro animado. Portales de velocidad por número de objeto: 200 (lenta), 201 (normal),
+  202, 203 y 1334.
+- **Secciones (2.2091)**: un objeto con el índice de sección (+0x278) a -1 no se dibuja ni entra en el bucle de
+  colisiones; `removeObjectFromSection` y `updateObjectSection` lo ignoran. El juego lo usa para los triggers y
+  *Show layout* para la decoración. *Show triggers* no los mete en las secciones: dibuja encima con ImGui.
+- **Hitbox de un objeto (2.2091)**: rectángulo y caja orientada salen de ancho * escala del objeto * factor de
+  hitbox (+0x394 / +0x398); las circulares usan `m_objectRadius` (+0x38C) * la escala mayor. *Hitbox multiplier*
+  multiplica esos tres números al cargar el nivel.
+- **Checkpoints (2.2091)**: `PlayerObject::saveToCheckpoint` (0x1404FFD80) copia unos 250 campos del jugador.
+  Por eso *Practice bug fix* no se hizo: el juego ya guarda ese estado.
+- **Click between steps / Click on steps**: son ajustes del propio juego en 2.2091
+  (`GameSettingsLayer::buildTabContent`, 0x1402C2DF0). No se duplican en el panel.
+- **Semilla aleatoria (2.2091)**: global en 0x14090BF68, la fija `PlayLayer::resetLevel` con la hora salvo que
+  el nivel tenga una guardada (+0x33F0) y el byte +0x3280 esté a 1.

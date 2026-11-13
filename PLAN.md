@@ -1,10 +1,34 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 20 (Cosmetic 2) **probada** y mergeada en `main`. Fases 1 a 20 probadas.
+- Fase: 21 (descartadas revisadas, difíciles y de riesgo) con código completo, **pendiente de probar en el
+  juego**, rama `fase-21`. Fases 1 a 20 probadas y mergeadas en `main`.
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: fase 21 (funciones difíciles y de riesgo, y revisar de nuevo las descartadas).
+- Próximo paso: que el usuario pruebe la fase 21 (y las siguientes que haya en ramas `fase-N` sin mergear).
+  El usuario pidió seguir trabajando sin esperar a la prueba (2026-11-12): las fases nuevas van en ramas
+  encadenadas y **no se mergean ni se marcan como probadas** hasta que él las confirme.
 - Notas / bloqueos:
+  - **Fase 21** (nada probado en el juego todavía). Hooks nuevos en `core::game`: `PlayLayer::init` y
+    `PlayLayer::addObject` (avisos `onLevelInit` y `onAddObject`, este solo durante la carga inicial) y varios
+    filtros de update (`addUpdateFilter`). Hecho:
+    - *No new best popup* (Cosmetic): hook de `showNewBest`; si hay orbes o diamantes se deja pasar.
+    - *Fast chests* (Global > Universal): tiempo del juego x4 entre `RewardUnlockLayer::step2` y
+      `showCloseButton` (máximo 8 s). Antes de step2 no, porque ahí se espera al servidor.
+    - *Lock delta* (Global > Display, trampa): dt fijo de 1/FPS en el hook de `CCScheduler::update`.
+    - *Total attempts* (Labels): intentos totales del nivel.
+    - *Show layout* (Level, trampa): la decoración no entra en las secciones de dibujo. No recolorea ni fuerza
+      la visibilidad de los bloques: si el creador los hizo invisibles, usar junto con Mostrar hitboxes.
+    - *Show triggers* (Level): etiqueta de ImGui sobre cada trigger que el juego no dibuja.
+    - *Hitbox multiplier* (Level, trampa): solo peligros (tipos 2 y 0x2F).
+    - *Random seed* (Level, trampa), *Stop triggers on death* (Level), *All modes in platformer* (Level, trampa).
+    - *Smart StartPos* y *StartPos reset camera* (Level).
+    - *Smooth editor trail* (Creator) y *Uncomplete level* (Shortcuts > Utility, pide dos pulsaciones; solo
+      pone a 0 los porcentajes normal y práctica, no toca estrellas, orbes ni la lista de completados).
+    Las de Level que actúan sobre objetos (layout, triggers, hitbox, smart startpos) se aplican al entrar al
+    nivel. **Revisadas y no hechas**: *Practice bug fix* y *Click between steps / on steps* (el juego ya lo
+    hace, ver `docs/firmas.md`), *Click between frames* (lo cubre el ajuste del juego), *Frame extrapolation*
+    (habría que interpolar la posición de todo lo que se mueve entre ticks; con Physics bypass a los FPS del
+    monitor no hace falta), *Anti-Kick* y *No (C) mark* (regla de servidores de `AGENTS.md`).
   - **Fase 20**: No glow (parche en `GameObject::addGlow`, se nota al entrar al nivel), Solid wave trail (parche en
     `updateStreakBlend`: las dos estelas sin mezcla aditiva y la de la onda sólida; se aplica al crear el jugador) y
     Hide player (oculta los dos iconos tras cada frame del nivel). **Descartadas tras mirarlas**: *Show triggers*
@@ -266,6 +290,14 @@
 - [x] No glow, Solid wave trail, Hide player
 - [x] Probado dentro del juego
 
+## Fase 21 — Descartadas revisadas, difíciles y de riesgo
+- [x] No new best popup, Fast chests, Lock delta, label Total attempts
+- [x] Show layout, Show triggers, Hitbox multiplier (peligros)
+- [x] Random seed, Stop triggers on death, All modes in platformer
+- [x] Smart StartPos, StartPos reset camera
+- [x] Smooth editor trail, Uncomplete level
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -276,16 +308,16 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Discord RPC · [x] Lock Cursor · [ ] No Short Numbers · [x] Safe Mode · [ ] Show Taps · [ ] Transition Speed ·
 [ ] Transparent Lists
 
-**Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [ ] All Modes in Platformer · [ ] All Passable ·
+**Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [`] All Modes in Platformer · [ ] All Passable ·
 [ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [x] Auto Practice Mode · [ ] Auto Song Download ·
 [ ] Checkpoint Delay · [ ] Confirm Full Restart · [ ] Confirm Practice Mode · [ ] Confirm Restart ·
 [x] Force Platformer · [ ] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
-[ ] Hitbox Multiplier · [ ] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
+[`] Hitbox Multiplier · [ ] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
 [ ] Mute Level SFX · [x] No Mirror · [x] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
-[ ] No Shaders · [ ] Pause Countdown · [x] Pause During Complete · [ ] Practice Coins · [ ] Practice Fix
+[ ] No Shaders · [ ] Pause Countdown · [x] Pause During Complete · [ ] Practice Coins · Practice Fix (ya lo hace el juego)
 
 **Bypass**: [x] Allow Low Volume · [x] Character Filter Bypass · [x] Character Limit Bypass · [x] Checkpoint Limit ·
-[ ] Comment History Bypass · [ ] Quick Chests · [x] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
+[ ] Comment History Bypass · [`] Quick Chests · [x] Instant Complete (*) · [ ] Level Kick · [ ] Menu Gameplay ·
 [ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
 
@@ -300,13 +332,13 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 
 **Creator**: [x] Custom Object Bypass · [x] Default Song Bypass · [x] Free Scroll · [ ] Hide Triggers · [ ] Hide UI ·
 [x] Level Copy Bypass · [x] Level Edit · [ ] No (C) Mark · [ ] Reset Percent on Save · [x] Slider Limit ·
-[ ] Smooth Editor Trail · [x] Verify Bypass (*)
+[`] Smooth Editor Trail · [x] Verify Bypass (*)
 
 **Labels**: [x] Show Labels · [ ] Show in Editor · [x] Cheat Indicator · [ ] Import Label · [ ] Add New Label ·
 [ ] Presets · [x] FPS · [ ] Testmode · [ ] Run From · [x] Attempt · [x] Percentage · [x] Level Time · [ ] Best Run ·
 [x] Clock · [x] CPS · [x] Noclip Accuracy · [x] Noclip Deaths
 
-**Shortcuts**: [x] StartPos switcher (no sale en la captura, se mantiene) · [x] P1 Jump · [x] P2 Jump · [ ] Show Options · [ ] Uncomplete Level · [x] Restart Level ·
+**Shortcuts**: [x] StartPos switcher (no sale en la captura, se mantiene) · [x] P1 Jump · [x] P2 Jump · [ ] Show Options · [`] Uncomplete Level · [x] Restart Level ·
 [x] Toggle Practice Mode · [x] Place Checkpoint · [x] Remove Checkpoint · [ ] Inject DLL · [x] Save Folder ·
 [ ] Reset BG Volume · [ ] Reset SFX Volume
 
@@ -329,38 +361,37 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [x] Unlock Icons · [x] Unlock Shops · [x] Unlock Vaults
 - **Creator**: Accurate Save (M) · [x] Copy Hack · [x] Custom Object Bypass · [x] Default Song Bypass ·
   Editor Extension (D) · [x] Free Scroll · Hide UI (ya lo trae el juego) · [x] Level Edit ·
-  Multiple Editor Trails (M) · No C Mark (no se hace) · [x] Place Over · Smooth Editor Trail (M, pendiente) ·
+  Multiple Editor Trails (M) · No C Mark (no se hace) · [x] Place Over · [`] Smooth Editor Trail ·
   [x] Toolbox Button Bypass · Trigger Value Bypass (M) · [x] Verify Hack
 - **Cosmetic** (casi todo F, un parche por opción): Coin Shower (M) · Frozen Animations · Hide Pause Button ·
   [x] Hide Pause Menu · [x] Hide Player · Icon Randomizer (M) · No Camera (M) · No Camera Zoom · [x] No Circle Effect ·
   No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · [x] No Glow · [x] No Mirror ·
-  No New Best Popup · No Orb Ring · [x] No Particles · No Particles Classic · No Portal Circle · [x] No Portal Lightning ·
+  [`] No New Best Popup · No Orb Ring · [x] No Particles · No Particles Classic · No Portal Circle · [x] No Portal Lightning ·
   No Pulse · [x] No Respawn Flash · No Robot Fire · No Shaders · [x] No Shake · [x] No Spider Dash · No Swing Fire ·
   [x] No Trail · No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
-  Show Total Attempts · [x] Solid Wave Trail · StartPos Reset Camera (M) · Stop Triggers on Death (M) ·
+  [`] Show Total Attempts (label) · [x] Solid Wave Trail · [`] StartPos Reset Camera · [`] Stop Triggers on Death ·
   Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
-- **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · All Modes Platformer (F) · [x] Auto Clicker ·
+- **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · [`] All Modes Platformer · [x] Auto Clicker ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · Auto Kill (F) · Auto Music Sync (M) ·
-  Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames (D) · Click Between Steps (D) ·
-  Click on Steps (D) · [x] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
-  Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · [x] Frame Stepper · Hitbox Multiplier (M) ·
+  Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames / Steps / on Steps (ajustes del propio juego) · [x] Checkpoint Limit Bypass · Collect Coins In Practice (F) · Confirm Exit / Full Reset /
+  Normal / Practice / Reset (F) · Force Ice (F) · [x] Force Platformer · [x] Frame Stepper · [`] Hitbox Multiplier ·
   [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · Noclip Limits (F) · No Collision (F) ·
-  [x] Pause During Complete · Practice Bug Fix (D) · [x] Practice Music · Random Seed (M) ·
+  [x] Pause During Complete · Practice Bug Fix (ya lo hace el juego) · [x] Practice Music · [`] Random Seed ·
   Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · [x] Show Hitboxes on Death ·
-  Show Hitboxes Trail (F, el juego ya guarda el rastro) · Show Layout (D) · [x] Show Trajectory · Show Triggers (M) ·
-  [x] Smart StartPos (lo que hay es el StartPos switcher; el "smart" que ajusta velocidad y modo es D)
+  Show Hitboxes Trail (F, el juego ya guarda el rastro) · [`] Show Layout · [x] Show Trajectory · [`] Show Triggers ·
+  [x] StartPos switcher · [`] Smart StartPos
 - **Status** (labels): Field Formatting (M) · Font · Scale · Opacity · Hide Status (F) · [x] Noclip Accuracy ·
   [x] Noclip Deaths · [x] Attempts · [x] Jumps · [x] Percentage · [x] Level Time · [x] Session Time · [x] Clock ·
   [x] Frame Counter · [x] Position · [x] Velocity · [x] Dead · Replay State (con el bot)
-- **Universal**: [x] Allow Low Volume · Compact Lists (M) · Custom Background (M) · Fast Chests (F) ·
+- **Universal**: [x] Allow Low Volume · Compact Lists (M) · Custom Background (M) · [`] Fast Chests ·
   Load Audio to Memory (M) · [x] Lock Cursor · Main Menu Play (D) · No Music Fade Out (F) · [x] No Transition ·
   [x] Pitch Shifter · [x] Thread Priority · Transition Customizer (M) · Transparent Lists (M)
 - **Display**: [x] FPS · [x] Unlock FPS · [x] Physics TPS · Frame Extrapolation (D) · [x] Vertical Sync ·
-  Lock Delta (M) · Real Time (M) · [x] Borderless · [x] Fullscreen
+  [`] Lock Delta · Real Time (M) · [x] Borderless · [x] Fullscreen
 - **Speedhack**: [x] Speed · [x] Speedhack Audio · Classic Mode (F)
 - **Cheat Safety**: [x] Safe Mode · [x] Auto Safe Mode · Safe Mode Popup (texto en el panel) · [x] Disable Cheats ·
   Ruleset (N/A, es propio de Mega Hack)
-- **Utility**: [x] P1 Click / P2 Click / Left / Right · Uncomplete Level (M) · [x] Restart Level ·
+- **Utility**: [x] P1 Click / P2 Click / Left / Right · [`] Uncomplete Level · [x] Restart Level ·
   [x] Practice Mode · Settings (F) · [x] Resources / AppData · Toggle DevTools (N/A) · Crash Game (N/A)
 - **Replay**: es la fase 7 (Record, Play, guardar y cargar). Convert (.json, .gdr) es M.
 - **Keybinds**: [x] asignar tecla a una opción · [x] View Keybinds · [x] Remove Keybinds · [x] Disable in Editor

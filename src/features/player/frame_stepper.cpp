@@ -33,7 +33,7 @@ bool updateFilter(void* gameLayer, float& dt) {
 
 void FrameStepper::init(bool gameAvailable) {
     m_available = gameAvailable && core::game::levelHooksAvailable();
-    if (m_available) core::game::setUpdateFilter(&updateFilter);
+    if (m_available) core::game::addUpdateFilter(&updateFilter);
     core::logMsg("Frame stepper: %s", m_available ? "listo" : "no disponible (hooks de nivel)");
 }
 

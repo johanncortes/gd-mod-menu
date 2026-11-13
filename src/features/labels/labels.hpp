@@ -24,6 +24,7 @@ private:
     bool m_position = false;  // posición del jugador 1
     bool m_velocity = false;  // velocidad del jugador 1 (posición + hooks de nivel)
     bool m_dead = false;      // "jugador muerto" (offset de kShowHitboxes)
+    bool m_total = false;     // intentos totales del nivel (offsets de kLevelAttempts)
 
     bool m_show = true;
     bool m_showCheat = true;
@@ -33,6 +34,7 @@ private:
     bool m_showNoclipAccuracy = true;
     bool m_showPercent = false;
     bool m_showAttempt = false;
+    bool m_showTotal = false;
     bool m_showTime = false;
     bool m_showClock = false;
     bool m_showJumps = false;

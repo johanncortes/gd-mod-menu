@@ -14,9 +14,11 @@
 #include "features/bypass/instant_complete.hpp"
 #include "features/cosmetic/hide_player.hpp"
 #include "features/cosmetic/no_mirror.hpp"
+#include "features/cosmetic/no_new_best.hpp"
 #include "features/cosmetic/no_particles.hpp"
 #include "features/global/display.hpp"
 #include "features/global/fps_bypass.hpp"
+#include "features/global/game_time.hpp"
 #include "features/global/safe_mode.hpp"
 #include "features/global/screenshot.hpp"
 #include "features/global/speedhack.hpp"
@@ -25,6 +27,9 @@
 #include "features/labels/labels.hpp"
 #include "features/level/auto_practice.hpp"
 #include "features/level/hide_pause.hpp"
+#include "features/level/level_objects.hpp"
+#include "features/level/level_tweaks.hpp"
+#include "features/level/smart_startpos.hpp"
 #include "features/level/startpos_switcher.hpp"
 #include "features/patch_feature.hpp"
 #include "features/player/auto_clicker.hpp"
@@ -56,6 +61,8 @@ Display g_display;
 Screenshot g_screenshot;
 NoTransition g_noTransition;
 HighPriority g_highPriority;
+FastChests g_fastChests;
+LockDelta g_lockDelta;
 // Los deslizadores de volumen ya no saltan a 0 por debajo de 0.03
 PatchFeature g_allowLowVolume("Allow low volume", "allow_low_volume",
                               {{sig::kMusicSliderPause, sig::kMusicSliderPauseJump, {0xEB}},
@@ -94,6 +101,18 @@ PatchFeature g_forcePlatformer("Force platformer", "force_platformer",
                                {{sig::kLoadLevelSettings, sig::kLoadLevelSettingsPlatformer,
                                  {0xB2, 0x01, 0x90, 0x90, 0x90, 0x90, 0x90}}},
                                true);
+ShowLayout g_showLayout;
+HitboxMultiplier g_hitboxMultiplier;
+ShowTriggers g_showTriggers;
+SmartStartPos g_smartStartPos;
+RandomSeed g_randomSeed;
+StopOnDeath g_stopOnDeath;
+// La onda y el swing funcionan en modo plataformas: sus portales y el modo inicial. Trampa.
+PatchFeature g_allModesPlatformer("All modes in platformer", "all_modes_platformer",
+                                  {{sig::kPlatformerStartMode, sig::kPlatformerStartModeJump, {0xEB, 0x20}},
+                                   {sig::kPlatformerWave, sig::kPlatformerPortalJump, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90}},
+                                   {sig::kPlatformerSwing, sig::kPlatformerPortalJump, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90}}},
+                                  true);
 
 // --- Bypass ---
 // "mov al,1; ret" al inicio de las dos comprobaciones
@@ -160,12 +179,16 @@ PatchFeature g_toolboxButtons("Toolbox button bypass", "toolbox_buttons",
                                {sig::kToolboxPerRow, sig::kToolboxMaxValue, {0x18}},
                                {sig::kToolboxRows, sig::kToolboxMaxCompare, {0x06}},
                                {sig::kToolboxRows, sig::kToolboxMaxValue, {0x06}}});
+// El rastro del playtest del editor añade un punto en cada frame en vez de cada 1/30 s
+PatchFeature g_smoothTrail("Smooth editor trail", "smooth_editor_trail", sig::kEditorTrailInterval,
+                           sig::kEditorTrailJump, {0x90, 0x90, 0x90, 0x90, 0x90, 0x90});
 
 // --- Cosmetic ---
 // (Sin efecto de muerte y Sin parpadeo al reaparecer, arriba, también salen en esta ventana)
 NoMirror g_noMirror;
 NoParticles g_noParticles;
 HidePlayer g_hidePlayer;
+NoNewBest g_noNewBest;
 // jne -> jmp en GameObject::addGlow: ningún objeto crea su brillo (al entrar al nivel)
 PatchFeature g_noGlow("No glow", "no_glow", sig::kAddGlow, sig::kAddGlowJump, {0x90, 0xE9});
 // "test dl,dl" -> "xor edx,edx" en updateStreakBlend: estelas sin mezcla aditiva y onda sólida
@@ -221,11 +244,13 @@ void loadConfig() {
         g_fpsBypass.load(section(global, "fps_bypass"));
         g_tpsBypass.load(section(global, "tps_bypass"));
         g_safeMode.load(section(global, "cheat_safety"));
+        g_lockDelta.load(section(global, "lock_delta"));
         const nlohmann::json universal = section(global, "universal");
         g_lockCursor.load(universal);
         g_noTransition.load(universal);
         g_highPriority.load(universal);
         g_allowLowVolume.load(universal);
+        g_fastChests.load(universal);
 
         const nlohmann::json player = section(data, "player");
         g_noclip.load(section(player, "noclip"));
@@ -245,6 +270,13 @@ void loadConfig() {
         g_pauseDuringComplete.load(level);
         g_checkpointLimit.load(level);
         g_forcePlatformer.load(level);
+        g_allModesPlatformer.load(level);
+        g_showLayout.load(level);
+        g_showTriggers.load(level);
+        g_stopOnDeath.load(level);
+        g_hitboxMultiplier.load(section(level, "hitbox_multiplier"));
+        g_smartStartPos.load(section(level, "smart_startpos"));
+        g_randomSeed.load(section(level, "random_seed"));
 
         const nlohmann::json bypass = section(data, "bypass");
         g_unlockIcons.load(bypass);
@@ -267,6 +299,7 @@ void loadConfig() {
         g_levelEdit.load(creator);
         g_defaultSongs.load(creator);
         g_toolboxButtons.load(creator);
+        g_smoothTrail.load(creator);
 
         const nlohmann::json cosmetic = section(data, "cosmetic");
         g_noShake.load(cosmetic);
@@ -281,6 +314,7 @@ void loadConfig() {
         g_hidePlayer.load(cosmetic);
         g_noGlow.load(cosmetic);
         g_solidWaveTrail.load(cosmetic);
+        g_noNewBest.load(cosmetic);
 
         g_labels.load(section(data, "labels"));
 
@@ -302,11 +336,13 @@ void saveConfig() {
     g_fpsBypass.save(global["fps_bypass"]);
     g_tpsBypass.save(global["tps_bypass"]);
     g_safeMode.save(global["cheat_safety"]);
+    g_lockDelta.save(global["lock_delta"]);
     nlohmann::json& universal = global["universal"];
     g_lockCursor.save(universal);
     g_noTransition.save(universal);
     g_highPriority.save(universal);
     g_allowLowVolume.save(universal);
+    g_fastChests.save(universal);
 
     nlohmann::json& player = data["player"];
     g_noclip.save(player["noclip"]);
@@ -326,6 +362,13 @@ void saveConfig() {
     g_pauseDuringComplete.save(level);
     g_checkpointLimit.save(level);
     g_forcePlatformer.save(level);
+    g_allModesPlatformer.save(level);
+    g_showLayout.save(level);
+    g_showTriggers.save(level);
+    g_stopOnDeath.save(level);
+    g_hitboxMultiplier.save(level["hitbox_multiplier"]);
+    g_smartStartPos.save(level["smart_startpos"]);
+    g_randomSeed.save(level["random_seed"]);
 
     nlohmann::json& bypass = data["bypass"];
     g_unlockIcons.save(bypass);
@@ -348,6 +391,7 @@ void saveConfig() {
     g_levelEdit.save(creator);
     g_defaultSongs.save(creator);
     g_toolboxButtons.save(creator);
+    g_smoothTrail.save(creator);
 
     nlohmann::json& cosmetic = data["cosmetic"];
     g_noShake.save(cosmetic);
@@ -362,6 +406,7 @@ void saveConfig() {
     g_hidePlayer.save(cosmetic);
     g_noGlow.save(cosmetic);
     g_solidWaveTrail.save(cosmetic);
+    g_noNewBest.save(cosmetic);
 
     g_labels.save(data["labels"]);
 
@@ -378,6 +423,8 @@ void saveConfig() {
 void init() {
     if (g_ready) return;
     g_speedhack.init();
+    g_fastChests.init(); // después del speedhack: usan su hook del tiempo
+    g_lockDelta.init();
     g_fpsBypass.init();
     g_tpsBypass.init();
 
@@ -386,6 +433,16 @@ void init() {
     uint8_t* destroyPlayer = core::memory::findPattern(GetModuleHandleW(nullptr), core::signatures::kDestroyPlayer);
     const bool gameAvailable = core::game::init(); // GameManager y hooks de nivel compartidos
     g_safeMode.init(gameAvailable);
+    initLevelObjects(gameAvailable);
+    g_showLayout.init();
+    g_hitboxMultiplier.init();
+    g_showTriggers.init();
+    g_smartStartPos.init(gameAvailable);
+    g_randomSeed.init(gameAvailable);
+    g_stopOnDeath.init(gameAvailable); // antes que g_hitboxes, que hookea la función de su firma
+    g_allModesPlatformer.init();
+    g_smoothTrail.init();
+    g_noNewBest.init();
     g_noTransition.init();
     g_display.init();
     g_allowLowVolume.init();
@@ -455,6 +512,17 @@ void shutdown() {
     g_noTransition.disable();
     g_highPriority.disable();
     g_allowLowVolume.disable();
+    g_fastChests.disable();
+    g_lockDelta.disable();
+    g_showLayout.disable();
+    g_hitboxMultiplier.disable();
+    g_showTriggers.disable();
+    g_smartStartPos.disable();
+    g_randomSeed.disable();
+    g_stopOnDeath.disable();
+    g_allModesPlatformer.disable();
+    g_smoothTrail.disable();
+    g_noNewBest.disable();
     g_noclip.disable();
     g_hitboxes.disable();
     g_trajectory.disable();
@@ -516,6 +584,8 @@ void update() {
     g_screenshot.update(); // antes de que ImGui dibuje encima
     g_frameStepper.update();
     g_autoClicker.update();
+    g_fastChests.update();
+    updateLevelObjects();
     g_lockCursor.update(gui::isMenuOpen());
     g_display.update();
     // Se espera un momento tras el último cambio para no escribir el archivo en cada tecla
@@ -532,6 +602,11 @@ void disableCheats() {
     g_jumpHack.disable();
     g_frameStepper.disable();
     g_autoClicker.disable();
+    g_lockDelta.disable();
+    g_showLayout.disable();
+    g_hitboxMultiplier.disable();
+    g_randomSeed.disable();
+    g_allModesPlatformer.disable();
     markDirty();
 }
 
@@ -542,12 +617,14 @@ void drawGlobal() {
 
     ImGui::SeparatorText("Display");
     g_display.drawUI();
+    changed |= g_lockDelta.drawUI();
 
     ImGui::SeparatorText("Universal");
     changed |= g_lockCursor.drawUI();
     changed |= g_noTransition.drawUI();
     changed |= g_allowLowVolume.drawUI();
     changed |= g_highPriority.drawUI();
+    changed |= g_fastChests.drawUI();
 
     ImGui::SeparatorText("Cheat safety");
     changed |= g_safeMode.drawUI();
@@ -582,6 +659,7 @@ void drawCosmetic() {
     changed |= g_noGlow.drawUI();
     changed |= g_solidWaveTrail.drawUI();
     changed |= g_hidePlayer.drawUI();
+    changed |= g_noNewBest.drawUI();
     if (changed) markDirty();
 }
 
@@ -592,7 +670,14 @@ void drawLevel() {
     changed |= g_pauseDuringComplete.drawUI();
     changed |= g_checkpointLimit.drawUI();
     changed |= g_forcePlatformer.drawUI();
+    changed |= g_allModesPlatformer.drawUI();
+    changed |= g_stopOnDeath.drawUI();
+    changed |= g_randomSeed.drawUI();
+    changed |= g_showLayout.drawUI();
+    changed |= g_showTriggers.drawUI();
+    changed |= g_hitboxMultiplier.drawUI();
     changed |= g_startPosSwitcher.drawUI();
+    changed |= g_smartStartPos.drawUI();
     if (changed) markDirty();
 }
 
@@ -620,6 +705,7 @@ void drawCreator() {
     changed |= g_levelEdit.drawUI();
     changed |= g_defaultSongs.drawUI();
     changed |= g_toolboxButtons.drawUI();
+    changed |= g_smoothTrail.drawUI();
     if (changed) markDirty();
 }
 
@@ -644,6 +730,7 @@ void drawInterface() {
 
 void drawOverlay() {
     if (!g_ready) return;
+    g_showTriggers.drawOverlay();
     g_trajectory.drawOverlay();
     g_labels.drawOverlay(cheatsActive());
     g_startPosSwitcher.drawOverlay();
@@ -652,7 +739,8 @@ void drawOverlay() {
 bool cheatsActive() {
     return g_speedhack.active() || g_tpsBypass.active() || g_noclip.active() || g_bot.active() ||
            g_forcePlatformer.cheatActive() || g_jumpHack.active() || g_frameStepper.active() ||
-           g_autoClicker.active();
+           g_autoClicker.active() || g_lockDelta.active() || g_showLayout.active() ||
+           g_hitboxMultiplier.active() || g_randomSeed.active() || g_allModesPlatformer.cheatActive();
 }
 
 } // namespace features

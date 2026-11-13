@@ -21,6 +21,14 @@ carga dentro del juego, **sin Geode**. Está pensado para practicar niveles y pa
 | Cosmetic | No shake, no portal lightning, no circle effect, no particles, no mirror | Probado |
 | Cosmetic | No trail, no wave trail, no ghost trail, no spider dash | Probado |
 | Cosmetic | No glow, solid wave trail, hide player | Probado |
+| Cosmetic | No new best popup | Hecho, falta probar |
+| Global | Fast chests, lock delta | Hecho, falta probar |
+| Labels | Total attempts | Hecho, falta probar |
+| Level | Show layout, show triggers, hitbox multiplier (peligros) | Hecho, falta probar |
+| Level | Random seed, stop triggers on death, all modes in platformer | Hecho, falta probar |
+| Level | Smart StartPos, StartPos reset camera | Hecho, falta probar |
+| Creator | Smooth editor trail | Hecho, falta probar |
+| Shortcuts | Uncomplete level | Hecho, falta probar |
 | Level | Auto practice mode, practice music sync, hide pause menu | Probado |
 | Level | StartPos switcher (Q = anterior, E = siguiente) | Probado |
 | Level | Pause during complete, checkpoint limit bypass, force platformer | Probado |
