@@ -330,7 +330,7 @@
 - [x] Trail always on
 - [x] No shaders
 - [x] Hide pause button
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego
 
 ## Fase 26 — Interface y label Testmode
 - [x] Color de fondo propio, Redondeo, Animar al abrir
