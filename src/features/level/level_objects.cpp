@@ -27,7 +27,7 @@ namespace {
 namespace sig = core::signatures;
 
 // GameObjectType (ver docs/firmas.md)
-constexpr int kTypeHazard = 2, kTypeDecoration = 7, kTypeTrigger = 0x14, kTypeAnimatedHazard = 0x2f;
+constexpr int kTypeSolid = 0, kTypeSlope = 25, kTypeHazard = 2, kTypeDecoration = 7, kTypeTrigger = 0x14, kTypeAnimatedHazard = 0x2f;
 constexpr int kCheckpointId = 44; // el checkpoint de práctica es un objeto de decoración
 constexpr float kMinFactor = 0.1f, kMaxFactor = 3.f;
 constexpr int kMaxDrawnTriggers = 400;
@@ -42,6 +42,8 @@ int32_t g_scaleXOffset = 0;  // factores de escala de la hitbox
 int32_t g_scaleYOffset = 0;
 int32_t g_radiusOffset = 0;  // radio de las hitbox circulares (0 = no es circular)
 int32_t g_rectDirtyOffset = 0; // "hay que recalcular el rectángulo guardado"
+int32_t g_iceOffset = 0;      // bool "es bloque de hielo"
+int32_t g_passableOffset = 0; // bool "se puede atravesar"
 
 // libcocos2d
 using GetPositionFn = const Point* (*)(void* node);
@@ -65,6 +67,8 @@ bool g_layoutEnabled = false;
 bool g_hitboxEnabled = false;
 float g_hitboxFactor = 1.f;
 bool g_triggersEnabled = false;
+bool g_forceIce = false;
+bool g_allPassable = false;
 
 template <typename T>
 T& fieldAt(void* object, int32_t offset) {
@@ -104,6 +108,9 @@ void onAddObject(void* playLayer, void* object) {
         if (g_layoutEnabled && core::game::objectId(object) != kCheckpointId) g_hidden.insert(object);
     } else if (type == kTypeHazard || type == kTypeAnimatedHazard) {
         if (g_hitboxEnabled) scaleHitbox(object, g_hitboxFactor);
+    } else if (type == kTypeSolid || type == kTypeSlope) {
+        if (g_forceIce) fieldAt<bool>(object, g_iceOffset) = true;
+        if (g_allPassable) fieldAt<bool>(object, g_passableOffset) = true;
     }
 }
 
@@ -159,6 +166,8 @@ void initLevelObjects(bool gameAvailable) {
     g_scaleYOffset = readOffset(sig::kObjectRectScale, sig::kObjectRectScaleY);
     g_radiusOffset = readOffset(sig::kObjectRadius, sig::kObjectRadiusOffset);
     g_rectDirtyOffset = readOffset(sig::kObjectRadius, sig::kObjectRadiusDirty);
+    g_iceOffset = readOffset(sig::kObjectIceBlock, sig::kObjectIceBlockOffset);
+    g_passableOffset = readOffset(sig::kObjectPassable, sig::kObjectPassableOffset);
     void* addToSection = core::memory::findPattern(exe, sig::kAddToSection);
 
     if (HMODULE cocos = GetModuleHandleW(L"libcocos2d.dll")) {
@@ -250,6 +259,46 @@ void HitboxMultiplier::load(const nlohmann::json& j) {
 
 void HitboxMultiplier::save(nlohmann::json& j) const {
     j = {{"enabled", m_enabled}, {"factor", m_factor}};
+}
+
+// --- Force ice / All passable ---
+void ObjectFlags::init() {
+    m_iceAvailable = core::game::loadHooksAvailable() && g_iceOffset;
+    m_passableAvailable = core::game::loadHooksAvailable() && g_passableOffset;
+    core::logMsg("Force ice: %s", m_iceAvailable ? "listo" : "no disponible");
+    core::logMsg("All passable: %s", m_passableAvailable ? "listo" : "no disponible");
+}
+
+void ObjectFlags::apply() {
+    g_forceIce = m_ice && m_iceAvailable;
+    g_allPassable = m_passable && m_passableAvailable;
+}
+
+void ObjectFlags::disable() {
+    m_ice = m_passable = false;
+    apply();
+}
+
+bool ObjectFlags::active() const {
+    return g_forceIce || g_allPassable;
+}
+
+bool ObjectFlags::drawUI() {
+    bool changed = gui::toggle("Force ice", m_iceAvailable, m_ice);
+    changed |= gui::toggle("All passable", m_passableAvailable, m_passable);
+    if (changed) apply();
+    return changed;
+}
+
+void ObjectFlags::load(const nlohmann::json& j) {
+    m_ice = j.value("force_ice", false);
+    m_passable = j.value("all_passable", false);
+    apply();
+}
+
+void ObjectFlags::save(nlohmann::json& j) const {
+    j["force_ice"] = m_ice;
+    j["all_passable"] = m_passable;
 }
 
 // --- Show triggers ---

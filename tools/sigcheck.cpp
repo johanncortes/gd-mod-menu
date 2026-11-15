@@ -148,6 +148,11 @@ int main(int argc, char** argv) {
         {"kWavePulse", sig::kWavePulse},
         {"kSpawnFirework", sig::kSpawnFirework},
         {"kCompleteCircle", sig::kCompleteCircle},
+        {"kUpdateZoom", sig::kUpdateZoom},
+        {"kPlayerDestroyed", sig::kPlayerDestroyed},
+        {"kShortNumber", sig::kShortNumber},
+        {"kObjectIceBlock", sig::kObjectIceBlock},
+        {"kObjectPassable", sig::kObjectPassable},
     };
 
     int failed = 0;
