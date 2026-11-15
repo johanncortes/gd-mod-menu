@@ -35,6 +35,7 @@
 #include "features/level/startpos_switcher.hpp"
 #include "features/patch_feature.hpp"
 #include "features/player/auto_clicker.hpp"
+#include "features/player/click_teleport.hpp"
 #include "features/player/frame_stepper.hpp"
 #include "features/player/hitboxes.hpp"
 #include "features/player/jump_hack.hpp"
@@ -81,6 +82,7 @@ Trajectory g_trajectory;
 JumpHack g_jumpHack;
 FrameStepper g_frameStepper;
 AutoClicker g_autoClicker;
+ClickTeleport g_clickTeleport;
 // je -> jmp: playerDestroyed siempre toma el camino "ocultar al jugador sin efecto"
 PatchFeature g_noDeathEffect("Sin efecto de muerte", "no_death_effect", core::signatures::kDeathEffect,
                              core::signatures::kDeathEffectJump, {0xEB});
@@ -207,6 +209,10 @@ NoNewBest g_noNewBest;
 PatchFeature g_noPulse("No pulse", "no_pulse", sig::kAudioScale, sig::kAudioScaleJump, {0x90, 0xE9});
 NoFire g_noFire;
 TrailAlwaysOn g_trailAlwaysOn;
+WaveTrailSize g_waveTrailSize;
+// je -> nop en triggerObject: el trigger Hide no esconde al jugador
+PatchFeature g_noHideTrigger("No hide trigger", "no_hide_trigger", sig::kHideTrigger, sig::kHideTriggerJump,
+                             {0x90, 0x90, 0x90, 0x90, 0x90, 0x90});
 // setVisible(true) -> setVisible(false): el fuego del dash (orbe de dash) no aparece
 PatchFeature g_noDashFire("No dash fire", "no_dash_fire", sig::kDashFireShow, sig::kDashFireShowValue, {0x00});
 // je -> jmp: el juego actúa como si no hubiera ningún shader activo
@@ -299,6 +305,7 @@ void loadConfig() {
         g_trajectory.load(section(player, "trajectory"));
         g_jumpHack.load(section(player, "jump_hack"));
         g_autoClicker.load(section(player, "auto_clicker"));
+        g_clickTeleport.load(player);
         g_respawnDelay.load(section(player, "respawn_delay"));
         g_noDeathEffect.load(player);
         g_noRespawnFlash.load(player);
@@ -369,6 +376,8 @@ void loadConfig() {
         g_waveTrailOnDeath.load(cosmetic);
         g_noFire.load(cosmetic);
         g_trailAlwaysOn.load(cosmetic);
+        g_noHideTrigger.load(cosmetic);
+        g_waveTrailSize.load(section(cosmetic, "wave_trail_size"));
         g_noDashFire.load(cosmetic);
         g_noShaders.load(cosmetic);
         g_hidePauseButton.load(cosmetic);
@@ -408,6 +417,7 @@ void saveConfig() {
     g_trajectory.save(player["trajectory"]);
     g_jumpHack.save(player["jump_hack"]);
     g_autoClicker.save(player["auto_clicker"]);
+    g_clickTeleport.save(player);
     g_respawnDelay.save(player["respawn_delay"]);
     g_noDeathEffect.save(player);
     g_noRespawnFlash.save(player);
@@ -478,6 +488,8 @@ void saveConfig() {
     g_waveTrailOnDeath.save(cosmetic);
     g_noFire.save(cosmetic);
     g_trailAlwaysOn.save(cosmetic);
+    g_noHideTrigger.save(cosmetic);
+    g_waveTrailSize.save(cosmetic["wave_trail_size"]);
     g_noDashFire.save(cosmetic);
     g_noShaders.save(cosmetic);
     g_hidePauseButton.save(cosmetic);
@@ -530,6 +542,9 @@ void init() {
     g_waveTrailOnDeath.init();
     g_noFire.init();
     g_trailAlwaysOn.init();
+    g_noHideTrigger.init();
+    g_waveTrailSize.init(gameAvailable);
+    g_clickTeleport.init(gameAvailable);
     g_noDashFire.init();
     g_noShaders.init();
     g_hidePauseButton.init();
@@ -628,6 +643,9 @@ void shutdown() {
     g_waveTrailOnDeath.disable();
     g_noFire.disable();
     g_trailAlwaysOn.disable();
+    g_noHideTrigger.disable();
+    g_waveTrailSize.disable();
+    g_clickTeleport.disable();
     g_noDashFire.disable();
     g_noShaders.disable();
     g_hidePauseButton.disable();
@@ -692,6 +710,8 @@ void update() {
     g_screenshot.update(); // antes de que ImGui dibuje encima
     g_frameStepper.update();
     g_autoClicker.update();
+    g_clickTeleport.update();
+    g_waveTrailSize.update();
     g_fastChests.update();
     g_pauseTweaks.update();
     updateLevelObjects();
@@ -711,6 +731,7 @@ void disableCheats() {
     g_jumpHack.disable();
     g_frameStepper.disable();
     g_autoClicker.disable();
+    g_clickTeleport.disable();
     g_lockDelta.disable();
     g_showLayout.disable();
     g_objectFlags.disable();
@@ -750,6 +771,7 @@ void drawPlayer() {
     changed |= g_trajectory.drawUI();
     changed |= g_jumpHack.drawUI();
     changed |= g_autoClicker.drawUI();
+    changed |= g_clickTeleport.drawUI();
     changed |= g_frameStepper.drawUI();
     changed |= g_respawnDelay.drawUI();
     if (changed) markDirty();
@@ -781,6 +803,8 @@ void drawCosmetic() {
     changed |= g_noFire.drawUI();
     changed |= g_noDashFire.drawUI();
     changed |= g_trailAlwaysOn.drawUI();
+    changed |= g_waveTrailSize.drawUI();
+    changed |= g_noHideTrigger.drawUI();
     changed |= g_noShaders.drawUI();
     changed |= g_hidePauseButton.drawUI();
     if (changed) markDirty();
@@ -867,7 +891,7 @@ void drawOverlay() {
 bool cheatsActive() {
     return g_speedhack.active() || g_tpsBypass.active() || g_noclip.active() || g_bot.active() ||
            g_forcePlatformer.cheatActive() || g_jumpHack.active() || g_frameStepper.active() ||
-           g_autoClicker.active() || g_lockDelta.active() || g_showLayout.active() || g_objectFlags.active() ||
+           g_autoClicker.active() || g_clickTeleport.active() || g_lockDelta.active() || g_showLayout.active() || g_objectFlags.active() ||
            g_hitboxMultiplier.active() || g_randomSeed.active() || g_allModesPlatformer.cheatActive();
 }
 

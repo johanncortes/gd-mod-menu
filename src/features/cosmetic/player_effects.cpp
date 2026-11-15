@@ -2,6 +2,7 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <vector>
@@ -9,6 +10,7 @@
 #include <MinHook.h>
 #include <nlohmann/json.hpp>
 
+#include "core/game.hpp"
 #include "core/log.hpp"
 #include "core/signatures.hpp"
 #include "gui/widgets.hpp"
@@ -43,6 +45,8 @@ const void* resolveEntry(const void* entry) {
     memcpy(&target, code + 6 + disp, sizeof(target));
     return target;
 }
+
+constexpr float kMinWaveSize = 0.f, kMaxWaveSize = 5.f;
 
 // --- Trail always on ---
 using StreakFn = void (*)(void* streak);
@@ -142,6 +146,61 @@ void TrailAlwaysOn::load(const nlohmann::json& j) {
 
 void TrailAlwaysOn::save(nlohmann::json& j) const {
     j["trail_always_on"] = m_enabled;
+}
+
+void WaveTrailSize::init(bool gameAvailable) {
+    uint8_t* site = core::memory::findPattern(GetModuleHandleW(nullptr), sig::kWavePulse);
+    if (site) {
+        int32_t field;
+        memcpy(&field, site + sig::kWavePulseField, 4);
+        if (field > 0 && field < 0x10000) m_field = field;
+        const std::vector<uint8_t> nops(8, 0x90);
+        m_store1.set(site + sig::kWavePulseStore1, nops);
+        m_store2.set(site + sig::kWavePulseStore2, nops);
+    }
+    m_available = gameAvailable && site && m_field;
+    core::logMsg("Wave trail size: %s", m_available ? "listo" : "no disponible");
+}
+
+void WaveTrailSize::enable() {
+    m_enabled = true;
+    if (m_available) {
+        m_store1.apply();
+        m_store2.apply();
+    }
+}
+
+void WaveTrailSize::disable() {
+    m_enabled = false;
+    if (m_available) {
+        m_store1.revert();
+        m_store2.revert();
+    }
+}
+
+void WaveTrailSize::update() {
+    if (!m_enabled || !m_available) return;
+    void* layer = core::game::playLayer();
+    if (!layer) return;
+    for (void* player : {core::game::player1(layer), core::game::player2(layer)})
+        if (player) memcpy(static_cast<uint8_t*>(player) + m_field, &m_size, sizeof(m_size));
+}
+
+bool WaveTrailSize::drawUI() {
+    bool enabled = m_enabled;
+    const bool changed =
+        gui::toggleValue("Wave trail size", m_available, enabled, m_size, kMinWaveSize, kMaxWaveSize, "x%.2f");
+    if (changed) enabled ? enable() : disable();
+    return changed;
+}
+
+void WaveTrailSize::load(const nlohmann::json& j) {
+    m_size = std::clamp(j.value("size", m_size), kMinWaveSize, kMaxWaveSize);
+    j.value("enabled", false) ? enable() : disable();
+}
+
+void WaveTrailSize::save(nlohmann::json& j) const {
+    j = {{"enabled", m_enabled}, {"size", m_size}};
 }
 
 } // namespace features

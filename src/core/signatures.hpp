@@ -814,6 +814,11 @@ inline constexpr char kWavePulse[] =
     "84 C0 74 09 80 BE ?? ?? ?? ?? 00 74 04 41 0F 28 F0 48 8B 86 ?? ?? ?? ?? F3 0F 11 B0 ?? ?? ?? ?? "
     "48 8B 86 ?? ?? ?? ?? F3 0F 11 B0 ?? ?? ?? ??";
 inline constexpr int kWavePulseCopy = 13;
+// Wave trail size (fase 31): los dos "movss [jugador + X], xmm6" (+24 y +39, 8 bytes cada uno) -> nop, y
+// el panel escribe ese campo (X sale de +28: PlayerObject, pulso de la estela de la onda).
+inline constexpr int kWavePulseStore1 = 24;
+inline constexpr int kWavePulseStore2 = 39;
+inline constexpr int kWavePulseField = 28;
 
 // PlayLayer::spawnFirework() y PlayLayer::spawnCircle(), inicios: los fuegos artificiales y los círculos
 // de completar un nivel (se llaman con un CCCallFunc). Hide level complete VFX: ret en las dos.
@@ -853,5 +858,12 @@ inline constexpr char kObjectPassable[] =
     "40 53 48 83 EC 20 80 B9 AE 02 00 00 00 48 8B D9 0F 94 C0 88 81 AE 02 00 00 48 8B 89 ?? ?? ?? ?? "
     "48 85 C9 74 0C 88 81 ?? ?? ?? ??";
 inline constexpr int kObjectPassableOffset = 39;
+
+// --- Fase 31 (más opciones sueltas). GD 2.2091, Steam build 26002420. ---
+
+// EffectGameObject::triggerObject: "cmp ecx, 1612 (trigger Hide); jg ...; je (esconder al jugador)".
+// No hide trigger: el "je" (+12, 6 bytes) -> nop; el trigger Hide cae en una rama que no hace nada.
+inline constexpr char kHideTrigger[] = "81 F9 4C 06 00 00 0F 8F ?? ?? ?? ?? 0F 84 ?? ?? ?? ??";
+inline constexpr int kHideTriggerJump = 12;
 
 } // namespace core::signatures

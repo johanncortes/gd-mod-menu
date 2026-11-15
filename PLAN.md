@@ -1,10 +1,20 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 30 probada y mergeada en `main` (fases 1 a 30 probadas). Beta `v1.0.1-beta` publicada (fases 1 a 29; la 30 aún no está en ninguna release).
+- Fase: 31 (más opciones sueltas) con código completo, **pendiente de probar en el juego**, rama `fase-31`. Fases 1
+  a 30 probadas y mergeadas en `main`. Beta `v1.0.1-beta` publicada (fases 1 a 29; la 30 y la 31 aún no están en
+  ninguna release).
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: fase 31 (más funciones sueltas de la lista ampliada), rama `fase-31`.
+- Próximo paso: que el usuario pruebe la fase 31. Después: merge a `main` y borrar la rama remota.
 - Notas / bloqueos:
+  - **Fase 31** (sin probar): *No hide trigger* (Cosmetic; en `triggerObject` el trigger Hide ya no esconde al
+    jugador), *Wave trail size* (Cosmetic; se quitan los dos guardados del pulso en `updateVisibility` y el panel
+    escribe el campo del jugador cada frame; comparte firma con *No wave pulse*, que con esta opción activa no
+    tiene efecto) y *Click teleport* (Player, trampa: clic derecho con el panel cerrado lleva al jugador 1 al
+    cursor; `convertToNodeSpace` del padre del jugador + su `setPosition` virtual). Miradas y no hechas: *Pause
+    buffering* (no está claro qué comprobación quita Mega Hack; `UILayer::onPause` limita a 3 pausas por
+    intento) y *No end shake* (no hay `shakeCamera` en `playEndAnimationToPos`). Escala y opacidad de los labels
+    ya existían (Interface).
   - **Fase 30**: *No camera zoom* (ret en `GJBaseGameLayer::updateZoom`), *Wave trail on death*
     (`playerDestroyed` ya no apaga la estela de la onda), *No short numbers* (Global; `intToShortString` nunca
     abrevia), *Force ice* y *All passable* (Level, trampa: al cargar el nivel se marcan los bloques y pendientes
@@ -374,6 +384,11 @@
 - [x] Force ice, All passable (Level)
 - [x] Probado dentro del juego
 
+## Fase 31 — Más opciones sueltas (2)
+- [x] No hide trigger, Wave trail size (Cosmetic)
+- [x] Click teleport (Player)
+- [ ] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
@@ -397,9 +412,9 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 [ ] Music Customizer · [ ] Pause Buffering · [x] Practice Music Sync · [x] Unlock Icons · [x] Unlock Main Levels ·
 [ ] Unlock Paths · [x] Unlock Shops · [x] Unlock Vaults
 
-**Player**: [x] Always Show Trail · [x] AutoClicker · [x] Auto Kill · [ ] Ball Rotation Bug · [ ] Click Teleport ·
+**Player**: [x] Always Show Trail · [x] AutoClicker · [x] Auto Kill · [ ] Ball Rotation Bug · [`] Click Teleport ·
 [ ] Custom Wave Trail · [x] Frame Stepper · [x] Jump Hack · [ ] Mute Level Audio on Death ·
-[ ] Mute Rewards SFX on Death · [x] No Death Effect · [x] No Ghost Trail · [ ] No Hide Trigger ·
+[ ] Mute Rewards SFX on Death · [x] No Death Effect · [x] No Ghost Trail · [`] No Hide Trigger ·
 [ ] No Platformer Jump Anim · [x] No Respawn Flash · [x] No Robot Fire · [x] No Spider Dash · [x] No Trail ·
 [ ] No Vehicle Particles · [x] Noclip · [x] Show Trajectory · [x] Solid Wave Trail · [x] Respawn Delay ·
 [x] Mostrar hitboxes (no sale en la captura, se mantiene)
@@ -446,7 +461,7 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   [x] No Pulse · [x] No Respawn Flash · [x] No Robot Fire · [x] No Shaders · [x] No Shake · [x] No Spider Dash · [x] No Swing Fire ·
   [x] No Trail · [x] No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
   [x] Show Total Attempts (label) · [x] Solid Wave Trail · [x] StartPos Reset Camera · [x] Stop Triggers on Death ·
-  [x] Trail Always On · Trail Cutting · Wave Pulse Size · [x] Wave Trail on Death
+  [x] Trail Always On · Trail Cutting · [`] Wave Pulse Size (como Wave trail size, grosor fijo) · [x] Wave Trail on Death
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · [x] All Modes Platformer · [x] Auto Clicker ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · [x] Auto Kill · Auto Music Sync (M) ·
   Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames / Steps / on Steps (ajustes del propio juego) · [x] Checkpoint Limit Bypass · [x] Collect Coins In Practice · Confirm Exit / Full Reset /

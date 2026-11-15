@@ -42,4 +42,26 @@ private:
     bool m_enabled = false;
 };
 
+// Wave trail size: grosor fijo para la estela de la onda, en vez del pulso de la música. Se quitan
+// (nop) las dos instrucciones de PlayLayer::updateVisibility que guardan el pulso en los jugadores
+// y el panel escribe ese campo cada frame.
+class WaveTrailSize {
+public:
+    void init(bool gameAvailable); // gameAvailable: core::game::init() funcionó
+    void enable();
+    void disable();
+    void update(); // una vez por frame
+    bool drawUI(); // true si el usuario cambió algo
+
+    void load(const nlohmann::json& j);
+    void save(nlohmann::json& j) const;
+
+private:
+    bool m_available = false;
+    bool m_enabled = false;
+    float m_size = 1.f;
+    int m_field = 0; // offset del pulso en PlayerObject
+    core::memory::Patch m_store1, m_store2;
+};
+
 } // namespace features

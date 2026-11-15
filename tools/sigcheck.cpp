@@ -153,6 +153,7 @@ int main(int argc, char** argv) {
         {"kShortNumber", sig::kShortNumber},
         {"kObjectIceBlock", sig::kObjectIceBlock},
         {"kObjectPassable", sig::kObjectPassable},
+        {"kHideTrigger", sig::kHideTrigger},
     };
 
     int failed = 0;

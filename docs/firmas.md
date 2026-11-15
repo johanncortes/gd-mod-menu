@@ -135,6 +135,8 @@
 | PlayerObject::playerDestroyed | GeometryDash.exe | ver `kPlayerDestroyed` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F5FF0; `je` en +23 -> `EB` (no llama a `fadeOutStreak2`). Wave trail on death (fase 30) |
 | GameToolbox::intToShortString: rama de abreviar | GeometryDash.exe | ver `kShortNumber` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14007402D; `jge` en +45 -> `90 90`. No short numbers (fase 30) |
 | SetupObjectOptionsPopup::onIceBlock / onPassable | GeometryDash.exe | ver `kObjectIceBlock`, `kObjectPassable` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140596740, 0x140596C60; en +39 el offset de GameObject: hielo 0x519, atravesable 0x515. Force ice, All passable (fase 30) |
+| EffectGameObject::triggerObject: trigger Hide | GeometryDash.exe | ver `kHideTrigger` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140647F66; `je` en +12 -> 6 nop. No hide trigger (fase 31) |
+| PlayLayer::updateVisibility: guardado del pulso | GeometryDash.exe | ver `kWavePulse` (misma firma que No wave pulse) en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14050E263; `movss [jugador+0xAB4], xmm6` en +24 y +39 -> 8 nop cada uno; el offset del campo sale de +28. Wave trail size (fase 31) |
 
 ## Notas de ingeniería inversa
 

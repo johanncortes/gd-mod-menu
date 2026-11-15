@@ -85,6 +85,7 @@ add_library(gdmenu SHARED
     src/features/player/jump_hack.cpp
     src/features/player/frame_stepper.cpp
     src/features/player/auto_clicker.cpp
+    src/features/player/click_teleport.cpp
     src/features/cosmetic/no_mirror.cpp
     src/features/cosmetic/no_particles.cpp
     src/features/cosmetic/hide_player.cpp
