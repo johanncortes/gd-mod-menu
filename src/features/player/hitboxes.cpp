@@ -7,6 +7,7 @@
 #include <MinHook.h>
 #include <nlohmann/json.hpp>
 
+#include "core/game.hpp"
 #include "core/log.hpp"
 #include "core/memory.hpp"
 #include "core/signatures.hpp"
@@ -46,6 +47,21 @@ bool showHitboxesHook(void* playLayer) {
     return g_enabled || (g_onDeath && playerDead(playLayer)) || g_origShowHitboxes(playLayer);
 }
 
+// Tras cada frame del nivel. El juego enseña el nodo de hitboxes al morir, pero al empezar el
+// intento siguiente solo lo esconde en modo normal desde el principio: en práctica o desde un
+// StartPos se quedaba a la vista. Cuando el jugador deja de estar muerto se le pide que lo revise.
+bool g_wasDead = false;
+void onLevelUpdate(void* gameLayer, float) {
+    if (gameLayer != core::game::playLayer()) return;
+    const bool dead = playerDead(gameLayer);
+    if (g_wasDead && !dead && g_onDeath && !g_refreshing) {
+        g_refreshing = true;
+        g_updateVisibility(gameLayer);
+        g_refreshing = false;
+    }
+    g_wasDead = dead;
+}
+
 } // namespace
 
 void Hitboxes::init() {
@@ -63,6 +79,7 @@ void Hitboxes::init() {
     m_available = MH_CreateHook(showHitboxes, &showHitboxesHook, reinterpret_cast<void**>(&g_origShowHitboxes)) == MH_OK &&
                   MH_EnableHook(showHitboxes) == MH_OK;
     if (!m_available) m_onDeathAvailable = false;
+    if (m_onDeathAvailable && core::game::levelHooksAvailable()) core::game::onUpdate(&onLevelUpdate);
     core::logMsg("Hitboxes: %s (firmas en %p y %p)", m_available ? "listo" : "no disponible (hook)",
                  static_cast<void*>(showHitboxes), static_cast<void*>(updateVisibility));
 }

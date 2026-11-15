@@ -1,12 +1,15 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 27 **probada**. Fases 1 a 27 probadas y mergeadas en `main`. Publicada la versión beta `v1.0.0-beta`
-  (release de GitHub con `GDModMenu.exe`, 2026-11-13).
+- Fase: 28 **probada**. Fases 1 a 28 probadas y mergeadas en `main`. Beta `v1.0.0-beta` publicada (aún sin el
+  arreglo de la fase 28); el repositorio es público.
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: el usuario añadirá más funciones más adelante. Para una
-  versión nueva: compilar en `release/` con `-DGDMENU_DEV=OFF` y crear la release con ese `GDModMenu.exe`.
+- Próximo paso: fase 29 (más opciones pendientes de dificultad baja) y publicar una versión nueva.
 - Notas / bloqueos:
+  - **Fase 28** (bug de la beta): con *Hitboxes al morir*, en práctica o desde un StartPos las hitboxes seguían a
+    la vista en el intento siguiente, porque el juego solo esconde ese nodo al reiniciar en modo normal desde el
+    principio. Ahora, cuando el jugador deja de estar muerto, se llama a la función del juego que revisa si el
+    nodo debe verse (`kUpdateHitboxVisibility`), desde el aviso `core::game::onUpdate`.
   - **Fase 27**: `GDModMenu.exe` (`injector/launcher.cpp`) lleva `gdmenu.dll` como recurso; al abrirlo la deja en
     la carpeta GDModMenu de LOCALAPPDATA (ahí quedan también `config.json` y `gdmenu.log`), abre el juego por
     Steam si hace falta, espera a que tenga ventana y la inyecta. README rehecho para usuarios. **Decisiones del
@@ -348,6 +351,10 @@
 - [x] Probado
 - [x] Release en GitHub (`v1.0.0-beta`)
 - [x] Capturas en `docs/img/`
+
+## Fase 28 — Arreglo: Hitboxes al morir se quedaban a la vista
+- [x] Las hitboxes se esconden al empezar el intento siguiente (práctica y StartPos)
+- [x] Probado dentro del juego
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
