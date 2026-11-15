@@ -62,6 +62,9 @@ LockCursor g_lockCursor;
 Display g_display;
 Screenshot g_screenshot;
 NoTransition g_noTransition;
+// Los números grandes se escriben enteros (12345 en vez de 12.3K): nunca se toma la rama que abrevia
+PatchFeature g_noShortNumbers("No short numbers", "no_short_numbers", core::signatures::kShortNumber,
+                              core::signatures::kShortNumberJump, {0x90, 0x90});
 HighPriority g_highPriority;
 FastChests g_fastChests;
 LockDelta g_lockDelta;
@@ -106,6 +109,7 @@ PatchFeature g_forcePlatformer("Force platformer", "force_platformer",
 ShowLayout g_showLayout;
 HitboxMultiplier g_hitboxMultiplier;
 ShowTriggers g_showTriggers;
+ObjectFlags g_objectFlags;
 SmartStartPos g_smartStartPos;
 RandomSeed g_randomSeed;
 StopOnDeath g_stopOnDeath;
@@ -220,6 +224,11 @@ PatchFeature g_noWavePulse("No wave pulse", "no_wave_pulse", sig::kWavePulse, si
 // ret al inicio de las dos: sin fuegos artificiales ni círculos al completar un nivel
 PatchFeature g_hideCompleteVfx("Hide level complete VFX", "hide_complete_vfx",
                                {{sig::kSpawnFirework, 0, {0xC3}}, {sig::kCompleteCircle, 0, {0xC3}}});
+// ret al inicio de updateZoom: los triggers de zoom no cambian el zoom de la cámara
+PatchFeature g_noCameraZoom("No camera zoom", "no_camera_zoom", sig::kUpdateZoom, 0, {0xC3});
+// je -> jmp en playerDestroyed: la estela de la onda no se apaga al morir
+PatchFeature g_waveTrailOnDeath("Wave trail on death", "wave_trail_on_death", sig::kPlayerDestroyed,
+                                sig::kPlayerDestroyedWaveJump, {0xEB});
 // jne -> jmp en GameObject::addGlow: ningún objeto crea su brillo (al entrar al nivel)
 PatchFeature g_noGlow("No glow", "no_glow", sig::kAddGlow, sig::kAddGlowJump, {0x90, 0xE9});
 // "test dl,dl" -> "xor edx,edx" en updateStreakBlend: estelas sin mezcla aditiva y onda sólida
@@ -279,6 +288,7 @@ void loadConfig() {
         const nlohmann::json universal = section(global, "universal");
         g_lockCursor.load(universal);
         g_noTransition.load(universal);
+        g_noShortNumbers.load(universal);
         g_highPriority.load(universal);
         g_allowLowVolume.load(universal);
         g_fastChests.load(universal);
@@ -306,6 +316,7 @@ void loadConfig() {
         g_practiceCoins.load(level);
         g_pauseTweaks.load(level);
         g_showLayout.load(level);
+        g_objectFlags.load(level);
         g_showTriggers.load(level);
         g_stopOnDeath.load(level);
         g_hitboxMultiplier.load(section(level, "hitbox_multiplier"));
@@ -354,6 +365,8 @@ void loadConfig() {
         g_noPortalCircle.load(cosmetic);
         g_noWavePulse.load(cosmetic);
         g_hideCompleteVfx.load(cosmetic);
+        g_noCameraZoom.load(cosmetic);
+        g_waveTrailOnDeath.load(cosmetic);
         g_noFire.load(cosmetic);
         g_trailAlwaysOn.load(cosmetic);
         g_noDashFire.load(cosmetic);
@@ -384,6 +397,7 @@ void saveConfig() {
     nlohmann::json& universal = global["universal"];
     g_lockCursor.save(universal);
     g_noTransition.save(universal);
+    g_noShortNumbers.save(universal);
     g_highPriority.save(universal);
     g_allowLowVolume.save(universal);
     g_fastChests.save(universal);
@@ -411,6 +425,7 @@ void saveConfig() {
     g_practiceCoins.save(level);
     g_pauseTweaks.save(level);
     g_showLayout.save(level);
+    g_objectFlags.save(level);
     g_showTriggers.save(level);
     g_stopOnDeath.save(level);
     g_hitboxMultiplier.save(level["hitbox_multiplier"]);
@@ -459,6 +474,8 @@ void saveConfig() {
     g_noPortalCircle.save(cosmetic);
     g_noWavePulse.save(cosmetic);
     g_hideCompleteVfx.save(cosmetic);
+    g_noCameraZoom.save(cosmetic);
+    g_waveTrailOnDeath.save(cosmetic);
     g_noFire.save(cosmetic);
     g_trailAlwaysOn.save(cosmetic);
     g_noDashFire.save(cosmetic);
@@ -492,6 +509,7 @@ void init() {
     g_safeMode.init(gameAvailable);
     initLevelObjects(gameAvailable);
     g_showLayout.init();
+    g_objectFlags.init();
     g_hitboxMultiplier.init();
     g_showTriggers.init();
     g_smartStartPos.init(gameAvailable);
@@ -508,12 +526,15 @@ void init() {
     g_noPortalCircle.init();
     g_noWavePulse.init();
     g_hideCompleteVfx.init();
+    g_noCameraZoom.init();
+    g_waveTrailOnDeath.init();
     g_noFire.init();
     g_trailAlwaysOn.init();
     g_noDashFire.init();
     g_noShaders.init();
     g_hidePauseButton.init();
     g_noTransition.init();
+    g_noShortNumbers.init();
     g_display.init();
     g_allowLowVolume.init();
     g_noDeathEffect.init();
@@ -580,11 +601,13 @@ void shutdown() {
     g_safeMode.disable();
     g_lockCursor.disable();
     g_noTransition.disable();
+    g_noShortNumbers.disable();
     g_highPriority.disable();
     g_allowLowVolume.disable();
     g_fastChests.disable();
     g_lockDelta.disable();
     g_showLayout.disable();
+    g_objectFlags.disable();
     g_hitboxMultiplier.disable();
     g_showTriggers.disable();
     g_smartStartPos.disable();
@@ -601,6 +624,8 @@ void shutdown() {
     g_noPortalCircle.disable();
     g_noWavePulse.disable();
     g_hideCompleteVfx.disable();
+    g_noCameraZoom.disable();
+    g_waveTrailOnDeath.disable();
     g_noFire.disable();
     g_trailAlwaysOn.disable();
     g_noDashFire.disable();
@@ -688,6 +713,7 @@ void disableCheats() {
     g_autoClicker.disable();
     g_lockDelta.disable();
     g_showLayout.disable();
+    g_objectFlags.disable();
     g_hitboxMultiplier.disable();
     g_randomSeed.disable();
     g_allModesPlatformer.disable();
@@ -706,6 +732,7 @@ void drawGlobal() {
     ImGui::SeparatorText("Universal");
     changed |= g_lockCursor.drawUI();
     changed |= g_noTransition.drawUI();
+    changed |= g_noShortNumbers.drawUI();
     changed |= g_allowLowVolume.drawUI();
     changed |= g_highPriority.drawUI();
     changed |= g_fastChests.drawUI();
@@ -749,6 +776,8 @@ void drawCosmetic() {
     changed |= g_noPortalCircle.drawUI();
     changed |= g_noWavePulse.drawUI();
     changed |= g_hideCompleteVfx.drawUI();
+    changed |= g_noCameraZoom.drawUI();
+    changed |= g_waveTrailOnDeath.drawUI();
     changed |= g_noFire.drawUI();
     changed |= g_noDashFire.drawUI();
     changed |= g_trailAlwaysOn.drawUI();
@@ -771,6 +800,7 @@ void drawLevel() {
     changed |= g_pauseTweaks.drawUI();
     changed |= g_randomSeed.drawUI();
     changed |= g_showLayout.drawUI();
+    changed |= g_objectFlags.drawUI();
     changed |= g_showTriggers.drawUI();
     changed |= g_hitboxMultiplier.drawUI();
     changed |= g_startPosSwitcher.drawUI();
@@ -837,7 +867,7 @@ void drawOverlay() {
 bool cheatsActive() {
     return g_speedhack.active() || g_tpsBypass.active() || g_noclip.active() || g_bot.active() ||
            g_forcePlatformer.cheatActive() || g_jumpHack.active() || g_frameStepper.active() ||
-           g_autoClicker.active() || g_lockDelta.active() || g_showLayout.active() ||
+           g_autoClicker.active() || g_lockDelta.active() || g_showLayout.active() || g_objectFlags.active() ||
            g_hitboxMultiplier.active() || g_randomSeed.active() || g_allModesPlatformer.cheatActive();
 }
 

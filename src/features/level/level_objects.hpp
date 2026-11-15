@@ -3,8 +3,8 @@
 
 namespace features {
 
-// Tres opciones que actúan sobre los objetos del nivel mientras PlayLayer los carga (avisos de
-// core::game::onAddObject). Las tres se aplican al entrar al nivel: cambiarlas a mitad de uno no
+// Opciones que actúan sobre los objetos del nivel mientras PlayLayer los carga (avisos de
+// core::game::onAddObject). Todas se aplican al entrar al nivel: cambiarlas a mitad de uno no
 // hace nada hasta volver a entrar.
 
 // Localiza offsets e instala el hook que comparten. Llamar antes de los init() de las clases.
@@ -50,6 +50,29 @@ private:
     bool m_available = false;
     bool m_enabled = false;
     float m_factor = 0.8f;
+};
+
+// Force ice y All passable: marcan todos los bloques y pendientes del nivel como "bloque de hielo"
+// (el jugador resbala) o como "atravesable" (son las casillas Ice block y Passable del editor).
+// Trampa las dos.
+class ObjectFlags {
+public:
+    void init();
+    void disable(); // apaga las dos
+    bool drawUI();  // true si el usuario cambió algo
+
+    void load(const nlohmann::json& j);
+    void save(nlohmann::json& j) const;
+
+    bool active() const;
+
+private:
+    void apply();
+
+    bool m_iceAvailable = false;
+    bool m_passableAvailable = false;
+    bool m_ice = false;
+    bool m_passable = false;
 };
 
 // Show triggers: marca en pantalla dónde están los triggers del nivel (el juego no los dibuja),

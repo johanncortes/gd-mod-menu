@@ -131,6 +131,10 @@
 | PlayerObject::spawnPortalCircle | GeometryDash.exe | ver `kSpawnPortalCircle` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F5A00; `C3` al inicio. No portal circle (fase 29) |
 | PlayLayer::updateVisibility: pulso de los jugadores | GeometryDash.exe | ver `kWavePulse` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14050E263; `movaps xmm6,xmm8` en +13 -> 4 nop. No wave pulse (fase 29) |
 | PlayLayer::spawnFirework / spawnCircle | GeometryDash.exe | ver `kSpawnFirework`, `kCompleteCircle` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14050A8A0, 0x14050A7B0; `C3` al inicio. Hide level complete VFX (fase 29) |
+| GJBaseGameLayer::updateZoom | GeometryDash.exe | ver `kUpdateZoom` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14033EAC0; `C3` al inicio. No camera zoom (fase 30) |
+| PlayerObject::playerDestroyed | GeometryDash.exe | ver `kPlayerDestroyed` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F5FF0; `je` en +23 -> `EB` (no llama a `fadeOutStreak2`). Wave trail on death (fase 30) |
+| GameToolbox::intToShortString: rama de abreviar | GeometryDash.exe | ver `kShortNumber` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14007402D; `jge` en +45 -> `90 90`. No short numbers (fase 30) |
+| SetupObjectOptionsPopup::onIceBlock / onPassable | GeometryDash.exe | ver `kObjectIceBlock`, `kObjectPassable` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x140596740, 0x140596C60; en +39 el offset de GameObject: hielo 0x519, atravesable 0x515. Force ice, All passable (fase 30) |
 
 ## Notas de ingeniería inversa
 

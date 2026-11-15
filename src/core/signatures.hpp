@@ -823,4 +823,35 @@ inline constexpr char kSpawnFirework[] =
 inline constexpr char kCompleteCircle[] =
     "48 89 5C 24 10 57 48 83 EC 30 48 8B D9 FF 15 ?? ?? ?? ?? 48 8B C8 FF 15 ?? ?? ?? ?? F3 0F 10 15 ?? ?? ?? ??";
 
+// --- Fase 30 (más opciones sueltas). GD 2.2091, Steam build 26002420. ---
+
+// GJBaseGameLayer::updateZoom(float, float, int, float, int, int), inicio: lo que cambia el zoom de la
+// cámara (triggers de zoom). No camera zoom: ret.
+inline constexpr char kUpdateZoom[] =
+    "48 89 5C 24 08 57 48 81 EC 80 00 00 00 0F 29 74 24 70 48 8B D9 0F 29 7C 24 60 0F 28 F2 0F 57 FF";
+
+// PlayerObject::playerDestroyed(bool), inicio: "si es onda, fadeOutStreak2(0.2)" (apaga la estela de la
+// onda al morir). Wave trail on death: el "je" (+23) -> "jmp", nunca se apaga.
+inline constexpr char kPlayerDestroyed[] =
+    "48 89 5C 24 08 57 48 83 EC 20 80 B9 ?? ?? ?? ?? 00 0F B6 FA 48 8B D9 74 0D F3 0F 10 0D ?? ?? ?? ??";
+inline constexpr int kPlayerDestroyedWaveJump = 23;
+
+// GameToolbox::intToShortString(int, bool): tras escribir el signo, "cmp ebx, 1000; jge (abreviar)".
+// No short numbers: el "jge" (+45) -> 2 nop, siempre escribe el número entero.
+inline constexpr char kShortNumber[] =
+    "85 DB 79 23 F7 DB 48 8D 05 ?? ?? ?? ?? 48 89 44 24 20 48 89 6C 24 28 48 8D 54 24 20 48 8D 4C 24 40 "
+    "FF 15 ?? ?? ?? ?? 81 FB E8 03 00 00 7D 12";
+inline constexpr int kShortNumberJump = 45;
+
+// SetupObjectOptionsPopup::onIceBlock y ::onPassable, inicios: de "mov [objeto + X], al" (+39) sale el
+// offset en GameObject de "es bloque de hielo" (0x519) y de "se puede atravesar" (0x515).
+inline constexpr char kObjectIceBlock[] =
+    "40 53 48 83 EC 20 80 B9 A8 02 00 00 00 48 8B D9 0F 94 C0 88 81 A8 02 00 00 48 8B 89 ?? ?? ?? ?? "
+    "48 85 C9 74 0C 88 81 ?? ?? ?? ??";
+inline constexpr int kObjectIceBlockOffset = 39;
+inline constexpr char kObjectPassable[] =
+    "40 53 48 83 EC 20 80 B9 AE 02 00 00 00 48 8B D9 0F 94 C0 88 81 AE 02 00 00 48 8B 89 ?? ?? ?? ?? "
+    "48 85 C9 74 0C 88 81 ?? ?? ?? ??";
+inline constexpr int kObjectPassableOffset = 39;
+
 } // namespace core::signatures
