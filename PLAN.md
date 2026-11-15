@@ -1,12 +1,11 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 30 (más opciones sueltas) con código completo, **pendiente de probar en el juego**, rama `fase-30`. Fases 1
-  a 29 probadas y mergeadas en `main`. Beta `v1.0.1-beta` publicada (fases 1 a 29).
+- Fase: 30 probada y mergeada en `main` (fases 1 a 30 probadas). Beta `v1.0.1-beta` publicada (fases 1 a 29; la 30 aún no está en ninguna release).
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: que el usuario pruebe la fase 30. Después: merge a `main` y borrar la rama remota.
+- Próximo paso: fase 31 (más funciones sueltas de la lista ampliada), rama `fase-31`.
 - Notas / bloqueos:
-  - **Fase 30** (sin probar): *No camera zoom* (ret en `GJBaseGameLayer::updateZoom`), *Wave trail on death*
+  - **Fase 30**: *No camera zoom* (ret en `GJBaseGameLayer::updateZoom`), *Wave trail on death*
     (`playerDestroyed` ya no apaga la estela de la onda), *No short numbers* (Global; `intToShortString` nunca
     abrevia), *Force ice* y *All passable* (Level, trampa: al cargar el nivel se marcan los bloques y pendientes
     con las casillas Ice block / Passable del editor, desde el aviso `core::game::onAddObject`; se aplican al
@@ -373,7 +372,7 @@
 - [x] No camera zoom, Wave trail on death (Cosmetic)
 - [x] No short numbers (Global)
 - [x] Force ice, All passable (Level)
-- [ ] Probado dentro del juego
+- [x] Probado dentro del juego
 
 ## Lista final de funciones (objetivo)
 Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
@@ -382,10 +381,10 @@ de la fase 7.
 
 **Global**: [x] FPS Bypass · [x] Physics Bypass · [x] Speedhack · [x] Pitch Shift · [x] Audio Speed (opción del
 speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Editor Levels · [ ] Compact Profile Comments ·
-[ ] Discord RPC · [x] Lock Cursor · [`] No Short Numbers · [x] Safe Mode · [x] Show Taps · [x] Transition Speed ·
+[ ] Discord RPC · [x] Lock Cursor · [x] No Short Numbers · [x] Safe Mode · [x] Show Taps · [x] Transition Speed ·
 [ ] Transparent Lists
 
-**Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [x] All Modes in Platformer · [`] All Passable ·
+**Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [x] All Modes in Platformer · [x] All Passable ·
 [ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [x] Auto Practice Mode · [ ] Auto Song Download ·
 [ ] Checkpoint Delay · [x] Confirm Full Restart · [x] Confirm Practice Mode · [x] Confirm Restart ·
 [x] Force Platformer · [x] Freeze Attempts · [x] Hide Level Complete VFX · [x] Hide Pause Menu ·
@@ -441,17 +440,17 @@ proyecto. Lo que ya está hecho lleva `[x]`.
   Multiple Editor Trails (M) · No C Mark (no se hace) · [x] Place Over · [x] Smooth Editor Trail ·
   [x] Toolbox Button Bypass · Trigger Value Bypass (M) · [x] Verify Hack
 - **Cosmetic** (casi todo F, un parche por opción): Coin Shower (M) · Frozen Animations · [x] Hide Pause Button ·
-  [x] Hide Pause Menu · [x] Hide Player · Icon Randomizer (M) · No Camera (M) · [`] No Camera Zoom · [x] No Circle Effect ·
+  [x] Hide Pause Menu · [x] Hide Player · Icon Randomizer (M) · No Camera (M) · [x] No Camera Zoom · [x] No Circle Effect ·
   [x] No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · [x] No Glow · [x] No Mirror ·
   [x] No New Best Popup · [x] No Orb Ring · [x] No Particles · No Particles Classic · [x] No Portal Circle · [x] No Portal Lightning ·
   [x] No Pulse · [x] No Respawn Flash · [x] No Robot Fire · [x] No Shaders · [x] No Shake · [x] No Spider Dash · [x] No Swing Fire ·
   [x] No Trail · [x] No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
   [x] Show Total Attempts (label) · [x] Solid Wave Trail · [x] StartPos Reset Camera · [x] Stop Triggers on Death ·
-  [x] Trail Always On · Trail Cutting · Wave Pulse Size · [`] Wave Trail on Death
+  [x] Trail Always On · Trail Cutting · Wave Pulse Size · [x] Wave Trail on Death
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · [x] All Modes Platformer · [x] Auto Clicker ·
   Auto Deafen (M, pulsa el atajo de Discord a cierto porcentaje) · [x] Auto Kill · Auto Music Sync (M) ·
   Auto Pickup Coins (M) · Auto Song Download (M) · Click Between Frames / Steps / on Steps (ajustes del propio juego) · [x] Checkpoint Limit Bypass · [x] Collect Coins In Practice · Confirm Exit / Full Reset /
-  Normal / Practice / Reset (F) · [`] Force Ice · [x] Force Platformer · [x] Frame Stepper · [x] Hitbox Multiplier ·
+  Normal / Practice / Reset (F) · [x] Force Ice · [x] Force Platformer · [x] Frame Stepper · [x] Hitbox Multiplier ·
   [x] Instant Complete · Jumpscare (M) · [x] Jump Hack · [x] Noclip · [x] Noclip Limits · No Collision (F) ·
   [x] Pause During Complete · Practice Bug Fix (ya lo hace el juego) · [x] Practice Music · [x] Random Seed ·
   Replay Last Checkpoint (M) · [x] Respawn Time · Shipcopter (M) · [x] Show Hitboxes · [x] Show Hitboxes on Death ·
