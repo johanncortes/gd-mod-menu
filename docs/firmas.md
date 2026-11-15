@@ -128,6 +128,9 @@
 | PlayerObject::startDashing: muestra el fuego del dash | GeometryDash.exe | ver `kDashFireShow` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F3C0C; `B2 01` en +32 -> `B2 00`. No dash fire (fase 25) |
 | GJBaseGameLayer::updateShaderLayer: ¿hay shader activo? | GeometryDash.exe | ver `kShaderActive` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14032A52A; `je` en +39 -> `90 E9`. No shaders (fase 25) |
 | UILayer::init: botón de pausa | GeometryDash.exe | ver `kPauseButtonCursor` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1406702B9; `jne` en +14 -> `90 90`. Hide pause button (fase 25) |
+| PlayerObject::spawnPortalCircle | GeometryDash.exe | ver `kSpawnPortalCircle` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x1404F5A00; `C3` al inicio. No portal circle (fase 29) |
+| PlayLayer::updateVisibility: pulso de los jugadores | GeometryDash.exe | ver `kWavePulse` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14050E263; `movaps xmm6,xmm8` en +13 -> 4 nop. No wave pulse (fase 29) |
+| PlayLayer::spawnFirework / spawnCircle | GeometryDash.exe | ver `kSpawnFirework`, `kCompleteCircle` en `signatures.hpp` | 2.2091, build Steam 26002420 | 0x14050A8A0, 0x14050A7B0; `C3` al inicio. Hide level complete VFX (fase 29) |
 
 ## Notas de ingeniería inversa
 

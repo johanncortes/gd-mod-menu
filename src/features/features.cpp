@@ -212,6 +212,14 @@ PatchFeature g_hidePauseButton("Hide pause button", "hide_pause_button", sig::kP
                                sig::kPauseButtonCursorJump, {0x90, 0x90});
 // ret al inicio: los orbes no sueltan su círculo al activarlos
 PatchFeature g_noOrbRing("No orb ring", "no_orb_ring", sig::kRingSpawnCircle, 0, {0xC3});
+// ret al inicio: el jugador no suelta su círculo al cruzar un portal
+PatchFeature g_noPortalCircle("No portal circle", "no_portal_circle", sig::kSpawnPortalCircle, 0, {0xC3});
+// La estela de la onda no late con la música (se queda con el pulso fijo de práctica)
+PatchFeature g_noWavePulse("No wave pulse", "no_wave_pulse", sig::kWavePulse, sig::kWavePulseCopy,
+                           {0x90, 0x90, 0x90, 0x90});
+// ret al inicio de las dos: sin fuegos artificiales ni círculos al completar un nivel
+PatchFeature g_hideCompleteVfx("Hide level complete VFX", "hide_complete_vfx",
+                               {{sig::kSpawnFirework, 0, {0xC3}}, {sig::kCompleteCircle, 0, {0xC3}}});
 // jne -> jmp en GameObject::addGlow: ningún objeto crea su brillo (al entrar al nivel)
 PatchFeature g_noGlow("No glow", "no_glow", sig::kAddGlow, sig::kAddGlowJump, {0x90, 0xE9});
 // "test dl,dl" -> "xor edx,edx" en updateStreakBlend: estelas sin mezcla aditiva y onda sólida
@@ -343,6 +351,9 @@ void loadConfig() {
         g_noNewBest.load(cosmetic);
         g_noPulse.load(cosmetic);
         g_noOrbRing.load(cosmetic);
+        g_noPortalCircle.load(cosmetic);
+        g_noWavePulse.load(cosmetic);
+        g_hideCompleteVfx.load(cosmetic);
         g_noFire.load(cosmetic);
         g_trailAlwaysOn.load(cosmetic);
         g_noDashFire.load(cosmetic);
@@ -445,6 +456,9 @@ void saveConfig() {
     g_noNewBest.save(cosmetic);
     g_noPulse.save(cosmetic);
     g_noOrbRing.save(cosmetic);
+    g_noPortalCircle.save(cosmetic);
+    g_noWavePulse.save(cosmetic);
+    g_hideCompleteVfx.save(cosmetic);
     g_noFire.save(cosmetic);
     g_trailAlwaysOn.save(cosmetic);
     g_noDashFire.save(cosmetic);
@@ -491,6 +505,9 @@ void init() {
     g_pauseTweaks.init(gameAvailable);
     g_noPulse.init();
     g_noOrbRing.init();
+    g_noPortalCircle.init();
+    g_noWavePulse.init();
+    g_hideCompleteVfx.init();
     g_noFire.init();
     g_trailAlwaysOn.init();
     g_noDashFire.init();
@@ -581,6 +598,9 @@ void shutdown() {
     g_pauseTweaks.disable();
     g_noPulse.disable();
     g_noOrbRing.disable();
+    g_noPortalCircle.disable();
+    g_noWavePulse.disable();
+    g_hideCompleteVfx.disable();
     g_noFire.disable();
     g_trailAlwaysOn.disable();
     g_noDashFire.disable();
@@ -726,6 +746,9 @@ void drawCosmetic() {
     changed |= g_noNewBest.drawUI();
     changed |= g_noPulse.drawUI();
     changed |= g_noOrbRing.drawUI();
+    changed |= g_noPortalCircle.drawUI();
+    changed |= g_noWavePulse.drawUI();
+    changed |= g_hideCompleteVfx.drawUI();
     changed |= g_noFire.drawUI();
     changed |= g_noDashFire.drawUI();
     changed |= g_trailAlwaysOn.drawUI();

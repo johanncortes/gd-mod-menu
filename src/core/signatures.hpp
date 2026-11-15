@@ -800,4 +800,27 @@ inline constexpr char kPauseButtonCursor[] =
     "48 8D 15 ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 75 12 48 8B 8E ?? ?? ?? ?? 48 8B 01 33 D2 FF 90 ?? ?? ?? ??";
 inline constexpr int kPauseButtonCursorJump = 14;
 
+// --- Fase 29 (cosméticos sueltos). GD 2.2091, Steam build 26002420. ---
+
+// PlayerObject::spawnPortalCircle(ccColor3B, float), inicio: el círculo que sale del jugador al cruzar
+// un portal. No portal circle: ret.
+inline constexpr char kSpawnPortalCircle[] =
+    "48 89 5C 24 10 48 89 74 24 18 48 89 7C 24 20 41 56 48 83 EC 40 0F 29 74 24 30 0F 28 F2 4C 8B F2 48 8B F1";
+
+// PlayLayer::updateVisibility: "pulso = (práctica sin música) ? 0.5 : pulso de la música" y lo guarda en
+// los dos jugadores (es lo que hace latir la estela de la onda). No wave pulse: el "movaps xmm6, xmm8"
+// (+13) -> 4 nop, y se queda el 0.5.
+inline constexpr char kWavePulse[] =
+    "84 C0 74 09 80 BE ?? ?? ?? ?? 00 74 04 41 0F 28 F0 48 8B 86 ?? ?? ?? ?? F3 0F 11 B0 ?? ?? ?? ?? "
+    "48 8B 86 ?? ?? ?? ?? F3 0F 11 B0 ?? ?? ?? ??";
+inline constexpr int kWavePulseCopy = 13;
+
+// PlayLayer::spawnFirework() y PlayLayer::spawnCircle(), inicios: los fuegos artificiales y los círculos
+// de completar un nivel (se llaman con un CCCallFunc). Hide level complete VFX: ret en las dos.
+inline constexpr char kSpawnFirework[] =
+    "48 8B C4 48 89 58 10 48 89 78 18 55 48 8D 68 A1 48 81 EC B0 00 00 00 0F 29 70 E8 0F 29 78 D8 "
+    "48 8B 05 ?? ?? ?? ??";
+inline constexpr char kCompleteCircle[] =
+    "48 89 5C 24 10 57 48 83 EC 30 48 8B D9 FF 15 ?? ?? ?? ?? 48 8B C8 FF 15 ?? ?? ?? ?? F3 0F 10 15 ?? ?? ?? ??";
+
 } // namespace core::signatures
