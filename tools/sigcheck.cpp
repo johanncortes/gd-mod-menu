@@ -144,6 +144,10 @@ int main(int argc, char** argv) {
         {"kDashFireShow", sig::kDashFireShow},
         {"kShaderActive", sig::kShaderActive},
         {"kPauseButtonCursor", sig::kPauseButtonCursor},
+        {"kSpawnPortalCircle", sig::kSpawnPortalCircle},
+        {"kWavePulse", sig::kWavePulse},
+        {"kSpawnFirework", sig::kSpawnFirework},
+        {"kCompleteCircle", sig::kCompleteCircle},
     };
 
     int failed = 0;

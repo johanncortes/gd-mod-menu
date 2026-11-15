@@ -1,11 +1,14 @@
 # Plan — GD Mod Menu
 
 ## Estado actual
-- Fase: 28 **probada**. Fases 1 a 28 probadas y mergeadas en `main`. Beta `v1.0.0-beta` publicada (aún sin el
-  arreglo de la fase 28); el repositorio es público.
+- Fase: 29 probada y mergeada en `main` (fases 1 a 29 probadas). Beta `v1.0.1-beta` publicada con las fases 28 y 29.
 - Último agente: Claude (Fable 5.2)
-- Próximo paso: fase 29 (más opciones pendientes de dificultad baja) y publicar una versión nueva.
+- Próximo paso: fase 30 (más funciones sueltas de la lista ampliada), rama `fase-30`.
 - Notas / bloqueos:
+  - **Fase 29**: *No portal circle* (ret en `PlayerObject::spawnPortalCircle`), *No wave pulse* (en
+    `updateVisibility` el pulso de los jugadores se queda en el 0.5 fijo que usa el juego en práctica sin música) y
+    *Hide level complete VFX* (ret en `PlayLayer::spawnFirework` y `spawnCircle`; el destello y el texto de
+    "Level Complete" siguen, porque `showCompleteEffect` también arranca el final del nivel).
   - **Fase 28** (bug de la beta): con *Hitboxes al morir*, en práctica o desde un StartPos las hitboxes seguían a
     la vista en el intento siguiente, porque el juego solo esconde ese nodo al reiniciar en modo normal desde el
     principio. Ahora, cuando el jugador deja de estar muerto, se llama a la función del juego que revisa si el
@@ -356,8 +359,12 @@
 - [x] Las hitboxes se esconden al empezar el intento siguiente (práctica y StartPos)
 - [x] Probado dentro del juego
 
+## Fase 29 — Cosméticos sueltos
+- [x] No portal circle, No wave pulse, Hide level complete VFX
+- [x] Probado dentro del juego
+
 ## Lista final de funciones (objetivo)
-Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[`]` = hecho sin probar,
+Referencia: captura del panel que pasó el usuario (2026-11-11). `[x]` = hecho y probado, `[x]` = hecho sin probar,
 `[ ]` = pendiente. Las fases de arriba dicen en qué orden se hacen; lo que no aparece en ninguna fase va después
 de la fase 7.
 
@@ -369,7 +376,7 @@ speedhack) · [ ] Sync with Speedhack · [x] Auto Safe Mode · [ ] Compact Edito
 **Level**: [ ] 0% Practice Completion · [ ] Accurate Percentage · [x] All Modes in Platformer · [ ] All Passable ·
 [ ] Always Show Coins · [ ] Auto LDM · [ ] Auto Pickup Coins · [x] Auto Practice Mode · [ ] Auto Song Download ·
 [ ] Checkpoint Delay · [x] Confirm Full Restart · [x] Confirm Practice Mode · [x] Confirm Restart ·
-[x] Force Platformer · [x] Freeze Attempts · [ ] Hide Level Complete VFX · [x] Hide Pause Menu ·
+[x] Force Platformer · [x] Freeze Attempts · [x] Hide Level Complete VFX · [x] Hide Pause Menu ·
 [x] Hitbox Multiplier · [x] Instant Mirror · [ ] Legacy Reverse Physics · [ ] Match Percent/Time Fonts ·
 [ ] Mute Level SFX · [x] No Mirror · [x] No Object Glow · [x] No Particles · [x] No Portal Lightning ·
 [x] No Shaders · [x] Pause Countdown · [x] Pause During Complete · [x] Practice Coins · Practice Fix (ya lo hace el juego)
@@ -424,9 +431,9 @@ proyecto. Lo que ya está hecho lleva `[x]`.
 - **Cosmetic** (casi todo F, un parche por opción): Coin Shower (M) · Frozen Animations · [x] Hide Pause Button ·
   [x] Hide Pause Menu · [x] Hide Player · Icon Randomizer (M) · No Camera (M) · No Camera Zoom · [x] No Circle Effect ·
   [x] No Dash Fire · [x] No Death Effect · No Do Not Flip · No End Shake · [x] No Ghost Trail · [x] No Glow · [x] No Mirror ·
-  [x] No New Best Popup · [x] No Orb Ring · [x] No Particles · No Particles Classic · No Portal Circle · [x] No Portal Lightning ·
+  [x] No New Best Popup · [x] No Orb Ring · [x] No Particles · No Particles Classic · [x] No Portal Circle · [x] No Portal Lightning ·
   [x] No Pulse · [x] No Respawn Flash · [x] No Robot Fire · [x] No Shaders · [x] No Shake · [x] No Spider Dash · [x] No Swing Fire ·
-  [x] No Trail · No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
+  [x] No Trail · [x] No Wave Pulse · [x] No Wave Trail · No Trail Behind Wave · Player 1 on Top · Player on Top ·
   [x] Show Total Attempts (label) · [x] Solid Wave Trail · [x] StartPos Reset Camera · [x] Stop Triggers on Death ·
   [x] Trail Always On · Trail Cutting · Wave Pulse Size · Wave Trail on Death
 - **Level**: 0% Practice Complete (F) · Allow Pause Buffering (F) · [x] All Modes Platformer · [x] Auto Clicker ·
